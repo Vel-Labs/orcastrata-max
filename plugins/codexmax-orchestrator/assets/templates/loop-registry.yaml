@@ -1,0 +1,28 @@
+schema_version: 1
+registry_id: workspace-loop-registry
+workspace_root: .
+mode: advisory_report_only
+logical_root_ids:
+  - workspace
+  - codexmax_repo
+contract_refs:
+  registry:
+    root_id: codexmax_repo
+    path: plugins/codexmax-orchestrator/assets/contracts/loop-registry.md
+    sha256: sha256:979da22c102670cc70ffb60dd64283952e84ebc41e887aa2e90a53af460a3d9c
+  events:
+    root_id: codexmax_repo
+    path: plugins/codexmax-orchestrator/assets/contracts/loop-events.md
+    sha256: sha256:f5f08a230b45cb0a1f9f6127c97959dbb0d0afd3352e8987c609f97109593955
+action_profile_contract:
+  schema_version: 1
+  resolution: version_bound_codexmax_source
+  allowed_profile_ids:
+    - ops-config-fast
+    - goalbuddy-board-fast
+    - skill-contract-fast
+    - codexmax-loop-focused
+    - codexmax-repository-full
+    - git-diff-sanity
+    - receipt-completeness
+loops: []

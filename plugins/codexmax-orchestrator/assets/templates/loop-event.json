@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "artifact_type": "LoopEvent",
+  "event_id": "event-example-001",
+  "event_type": "file.changed",
+  "occurred_at": "2026-07-27T12:00:00Z",
+  "observed_at": "2026-07-27T12:00:01Z",
+  "source": {
+    "adapter_id": "fixture",
+    "source_event_id": "fixture-source-001",
+    "trust": "fixture"
+  },
+  "origin": {
+    "run_id": null,
+    "loop_id": null,
+    "depth": 0,
+    "ancestry": []
+  },
+  "workspace_root": ".",
+  "subject": {
+    "paths": [{"root_id": "workspace", "path": "_ops/services/config.yaml"}],
+    "goalbuddy_board": null,
+    "workgraph": null
+  },
+  "requested_scope": {
+    "read": [{"root_id": "workspace", "path": "_ops/services/config.yaml"}],
+    "write": []
+  },
+  "authority": {
+    "board": null,
+    "receipt": null,
+    "mutation_mode": "advisory_report_only"
+  },
+  "dedupe_key": "ops-services-config-example-001"
+}

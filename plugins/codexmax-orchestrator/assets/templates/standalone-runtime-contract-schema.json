@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/contracts/standalone-runtime-contract-v1.schema.json",
+  "title": "StandaloneRuntimeContract v1",
+  "description": "Strict aggregate semantic envelope. The side-effect-free Python validator supplies cross-component constraints that JSON Schema cannot express.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "contract_version",
+    "component_versions",
+    "runtime_manifest",
+    "source_identity",
+    "route",
+    "capability_evidence",
+    "qualification",
+    "role_policy",
+    "assignment_authority",
+    "preflight_result",
+    "plan_result",
+    "capacity_authority",
+    "run",
+    "events",
+    "receipts",
+    "continuation",
+    "delegation",
+    "task_journal",
+    "recall",
+    "compatibility",
+    "downstream_fork",
+    "integrity"
+  ],
+  "properties": {
+    "contract": {"const": "StandaloneRuntimeContract"},
+    "contract_version": {"const": 1},
+    "component_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assignment_authority", "capability_evidence", "capacity_authority", "compatibility", "continuation", "delegation", "downstream_fork", "event", "plan", "preflight", "qualification", "receipt", "role_policy", "route_identity", "run", "runtime_manifest", "task_journal"],
+      "properties": {
+        "assignment_authority": {"const": 1},
+        "capability_evidence": {"const": 1},
+        "capacity_authority": {"const": 1},
+        "compatibility": {"const": 1},
+        "continuation": {"const": 1},
+        "delegation": {"const": 1},
+        "downstream_fork": {"const": 1},
+        "event": {"const": 1},
+        "plan": {"const": 1},
+        "preflight": {"const": 1},
+        "qualification": {"const": 1},
+        "receipt": {"const": 1},
+        "role_policy": {"const": 1},
+        "route_identity": {"const": 1},
+        "run": {"const": 1},
+        "runtime_manifest": {"const": 1},
+        "task_journal": {"const": 1}
+      }
+    },
+    "runtime_manifest": {"$ref": "#/$defs/runtimeManifest"},
+    "source_identity": {"$ref": "#/$defs/sourceIdentity"},
+    "route": {"$ref": "#/$defs/routeIdentity"},
+    "capability_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/capabilityEvidence"}},
+    "qualification": {"$ref": "#/$defs/qualification"},
+    "role_policy": {"$ref": "#/$defs/rolePolicy"},
+    "assignment_authority": {"$ref": "#/$defs/assignmentAuthority"},
+    "preflight_result": {"$ref": "#/$defs/preflightResult"},
+    "plan_result": {"$ref": "#/$defs/planResult"},
+    "capacity_authority": {"$ref": "#/$defs/capacityAuthority"},
+    "run": {"$ref": "#/$defs/run"},
+    "events": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/event"}},
+    "receipts": {"$ref": "#/$defs/receipts"},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "delegation": {"$ref": "#/$defs/delegation"},
+    "task_journal": {"$ref": "#/$defs/taskJournal"},
+    "recall": {"$ref": "#/$defs/recall"},
+    "compatibility": {"$ref": "#/$defs/compatibility"},
+    "downstream_fork": {"$ref": "#/$defs/downstreamFork"},
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest_algorithm", "canonicalization", "digest_scope", "object_digest", "predecessor_chains", "signature_state", "authenticity_claimed"],
+      "properties": {
+        "digest_algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "rfc8785-profile:sorted-ascii-no-floats-v1"},
+        "digest_scope": {"const": "entire_document_excluding_integrity.object_digest"},
+        "object_digest": {"$ref": "#/$defs/sha256"},
+        "predecessor_chains": {"const": true},
+        "signature_state": {"enum": ["not_configured", "unknown"]},
+        "authenticity_claimed": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "runtimeManifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["runtime_id", "runtime_version", "api_version", "source_sha256", "candidate_sha256", "workspace_root_sha256", "isolation_id", "process_mode", "endpoint_kind", "supported_transports", "health", "degraded_reasons", "recovery_instructions", "mandatory_model_hop", "model_can_admit"],
+      "properties": {"runtime_id": {"type": "string"}, "runtime_version": {"type": "string"}, "api_version": {"type": "string"}, "source_sha256": {"$ref": "#/$defs/sha256"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "workspace_root_sha256": {"$ref": "#/$defs/sha256"}, "isolation_id": {"type": "string"}, "process_mode": {"const": "foreground"}, "endpoint_kind": {"enum": ["unix_socket", "loopback_http"]}, "supported_transports": {"type": "array", "minItems": 1, "items": {"enum": ["local_cli", "in_process", "unix_socket", "loopback_http"]}, "uniqueItems": true}, "health": {"type": "string"}, "degraded_reasons": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "recovery_instructions": {"type": "string"}, "mandatory_model_hop": {"const": false}, "model_can_admit": {"const": false}},
+      "allOf": [
+        {"if": {"properties": {"endpoint_kind": {"const": "unix_socket"}}}, "then": {"properties": {"supported_transports": {"contains": {"const": "unix_socket"}, "not": {"contains": {"const": "loopback_http"}}}}}},
+        {"if": {"properties": {"endpoint_kind": {"const": "loopback_http"}}}, "then": {"properties": {"supported_transports": {"contains": {"const": "loopback_http"}, "not": {"contains": {"const": "unix_socket"}}}}}}
+      ]
+    },
+    "sourceIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository_commit", "repository_tree", "plugin_version", "manifest_sha256", "source_tree_sha256", "release_status"],
+      "properties": {"repository_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "repository_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "plugin_version": {"type": "string"}, "manifest_sha256": {"$ref": "#/$defs/sha256"}, "source_tree_sha256": {"$ref": "#/$defs/sha256"}, "release_status": {"enum": ["development_anchor", "candidate", "released"]}}
+    },
+    "routeIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["route_id", "provider_id", "exact_model", "runtime_id", "runtime_version", "adapter_id", "adapter_version", "adapter_sha256", "transport_id", "service_reference_class", "billing_basis", "billing_provenance", "independence_group", "input_delivery_profile"],
+      "properties": {"route_id": {"type": "string"}, "provider_id": {"type": "string"}, "exact_model": {"type": "string"}, "runtime_id": {"type": "string"}, "runtime_version": {"type": "string"}, "adapter_id": {"type": "string"}, "adapter_version": {"type": "string"}, "adapter_sha256": {"$ref": "#/$defs/sha256"}, "transport_id": {"type": "string"}, "service_reference_class": {"type": "string"}, "billing_basis": {"type": "string"}, "billing_provenance": {"type": "string"}, "independence_group": {"type": "string"}, "input_delivery_profile": {"type": "string"}}
+    },
+    "capabilityEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["capability", "level", "status", "polarity", "evidence_ref", "evidence_sha256", "route_id", "provider_id", "exact_model", "runtime_id", "host_id", "adapter_sha256", "task_profile_sha256", "evaluation_manifest_sha256", "collected_at", "expires_at", "invalidated_by", "contradiction_refs"],
+      "properties": {"capability": {"enum": ["local_file_read", "filesystem_write", "command", "browser", "connector", "network", "provider"]}, "level": {"enum": ["none", "unknown", "read_only", "scoped"]}, "status": {"enum": ["declared", "observed", "unknown", "stale", "contradictory", "recalled"]}, "polarity": {"enum": ["positive", "negative", "unknown"]}, "evidence_ref": {"type": "string"}, "evidence_sha256": {"$ref": "#/$defs/sha256"}, "route_id": {"type": "string"}, "provider_id": {"type": "string"}, "exact_model": {"type": "string"}, "runtime_id": {"type": "string"}, "host_id": {"type": "string"}, "adapter_sha256": {"$ref": "#/$defs/sha256"}, "task_profile_sha256": {"$ref": "#/$defs/sha256"}, "evaluation_manifest_sha256": {"$ref": "#/$defs/sha256"}, "collected_at": {"$ref": "#/$defs/timestamp"}, "expires_at": {"$ref": "#/$defs/timestamp"}, "invalidated_by": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "contradiction_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}
+    },
+    "qualification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["qualification_id", "qualification_sha256", "route_id", "adapter_sha256", "task_profile_sha256", "evaluation_manifest_sha256", "observed_at", "expires_at", "evaluated_at", "effective_status", "signature_state"],
+      "properties": {"qualification_id": {"type": "string"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "route_id": {"type": "string"}, "adapter_sha256": {"$ref": "#/$defs/sha256"}, "task_profile_sha256": {"$ref": "#/$defs/sha256"}, "evaluation_manifest_sha256": {"$ref": "#/$defs/sha256"}, "observed_at": {"$ref": "#/$defs/timestamp"}, "expires_at": {"$ref": "#/$defs/timestamp"}, "evaluated_at": {"$ref": "#/$defs/timestamp"}, "effective_status": {"enum": ["recalled", "expired", "stale", "active"]}, "signature_state": {"enum": ["not_configured", "unknown"]}}
+    },
+    "effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["filesystem_write", "command", "browser", "connector", "network", "provider"],
+      "properties": {"filesystem_write": {"type": "boolean"}, "command": {"type": "boolean"}, "browser": {"type": "boolean"}, "connector": {"type": "boolean"}, "network": {"type": "boolean"}, "provider": {"type": "boolean"}}
+    },
+    "rolePolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["role_id", "requirements", "maximum_effects", "affinity_weights", "independence_requirement", "consequence_ceiling", "billing_ceiling", "fallback_ceiling", "allowed_route_filters", "incompatibility_reasons"],
+      "properties": {"role_id": {"type": "string"}, "requirements": {"type": "object", "propertyNames": {"pattern": "^[a-z0-9._:-]+$"}, "additionalProperties": {"type": "string"}}, "maximum_effects": {"$ref": "#/$defs/effects"}, "affinity_weights": {"type": "object", "propertyNames": {"pattern": "^[a-z0-9._:-]+$"}, "additionalProperties": {"type": "integer", "minimum": 0}}, "independence_requirement": {"type": "string"}, "consequence_ceiling": {"type": "string"}, "billing_ceiling": {"type": "string"}, "fallback_ceiling": {"type": "string"}, "allowed_route_filters": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "incompatibility_reasons": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}
+    },
+    "scopeContainment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["resolution_policy", "workspace_root_sha256", "source_scope_sha256", "declared_scope_paths", "resolved_path_identities", "resolved_scope_paths_sha256", "resolution_evidence_sha256", "checked_at", "result", "effect_gate_policy", "pre_effect_recheck_required", "fail_closed", "filesystem_proof_claimed"],
+      "properties": {"resolution_policy": {"const": "realpath_symlink_containment_v1"}, "workspace_root_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "declared_scope_paths": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}, "resolved_path_identities": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/resolvedPathIdentity"}}, "resolved_scope_paths_sha256": {"$ref": "#/$defs/sha256"}, "resolution_evidence_sha256": {"$ref": "#/$defs/sha256"}, "checked_at": {"$ref": "#/$defs/timestamp"}, "result": {"const": "contained"}, "effect_gate_policy": {"$ref": "#/$defs/effectGatePolicy"}, "pre_effect_recheck_required": {"const": true}, "fail_closed": {"const": true}, "filesystem_proof_claimed": {"const": false}}
+    },
+    "resolvedPathIdentity": {"type": "object", "additionalProperties": false, "required": ["requested_path", "resolved_path_sha256", "containing_workspace_root_sha256", "resolution_status"], "properties": {"requested_path": {"type": "string"}, "resolved_path_sha256": {"$ref": "#/$defs/sha256"}, "containing_workspace_root_sha256": {"$ref": "#/$defs/sha256"}, "resolution_status": {"const": "resolved_contained"}}},
+    "effectGatePolicy": {"type": "object", "additionalProperties": false, "required": ["recheck_timing", "missing_evidence", "stale_evidence", "identity_mismatch", "outside_workspace", "ambiguous_resolution"], "properties": {"recheck_timing": {"const": "immediately_before_each_effect"}, "missing_evidence": {"const": "deny"}, "stale_evidence": {"const": "deny"}, "identity_mismatch": {"const": "deny"}, "outside_workspace": {"const": "deny"}, "ambiguous_resolution": {"const": "deny"}}},
+    "effectTargets": {"type": "object", "additionalProperties": false, "required": ["filesystem_write", "command", "browser", "connector", "network", "provider"], "properties": {"filesystem_write": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "command": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "browser": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "connector": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "network": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "provider": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}}},
+    "assignmentAuthority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["assignment_id", "authority_id", "authority_sha256", "source_scope_sha256", "scope_paths", "allowed_tools", "requested_effects", "effect_targets", "consequence_level", "mutation_mode", "route_policy", "allowed_route_ids", "fallback_policy", "billing_ceiling", "limits", "issued_at", "expires_at", "approver_ref", "revocation_ref", "expected_artifacts", "validation_policy_sha256", "return_schema_sha256", "scope_containment", "status"],
+      "properties": {"assignment_id": {"type": "string"}, "authority_id": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "scope_paths": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^(?!/)(?![A-Za-z]:)(?!.*%)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*//)[^/]+(?:/[^/]+)*$"}, "uniqueItems": true}, "allowed_tools": {"type": "array", "items": {"enum": ["read_file", "write_fixture"]}, "uniqueItems": true}, "requested_effects": {"$ref": "#/$defs/effects"}, "effect_targets": {"$ref": "#/$defs/effectTargets"}, "consequence_level": {"type": "string"}, "mutation_mode": {"enum": ["read_only", "new_files_only"]}, "route_policy": {"type": "string"}, "allowed_route_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "fallback_policy": {"type": "string"}, "billing_ceiling": {"type": "string"}, "limits": {"$ref": "#/$defs/finiteLimits"}, "issued_at": {"$ref": "#/$defs/timestamp"}, "expires_at": {"$ref": "#/$defs/timestamp"}, "approver_ref": {"type": "string"}, "revocation_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "expected_artifacts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "validation_policy_sha256": {"$ref": "#/$defs/sha256"}, "return_schema_sha256": {"$ref": "#/$defs/sha256"}, "scope_containment": {"$ref": "#/$defs/scopeContainment"}, "status": {"enum": ["active", "expired", "revoked", "unknown"]}}
+    },
+    "gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate", "status", "reason_codes"],
+      "properties": {"gate": {"type": "string"}, "status": {"enum": ["pass", "fail", "unknown", "stale"]}, "reason_codes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}
+    },
+    "preflightSideEffects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["capacity_allocated", "route_selected", "provider_called", "ledger_appended", "policy_activated"],
+      "properties": {"capacity_allocated": {"const": false}, "route_selected": {"const": false}, "provider_called": {"const": false}, "ledger_appended": {"const": false}, "policy_activated": {"const": false}}
+    },
+    "preflightResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["preflight_id", "qualification_id", "qualification_sha256", "authority_sha256", "source_scope_sha256", "containment_evidence_sha256", "effect_recheck_requirements_sha256", "route_id", "assignment_id", "configured_preference", "effective_eligibility", "gate_order", "gates", "evidence_state", "health", "quota", "capacity", "billing", "billing_basis", "billing_provenance", "fallback_allowed", "probe_lease_ref", "evaluated_at", "side_effects"],
+      "properties": {"preflight_id": {"type": "string"}, "qualification_id": {"type": "string"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "containment_evidence_sha256": {"$ref": "#/$defs/sha256"}, "effect_recheck_requirements_sha256": {"$ref": "#/$defs/sha256"}, "route_id": {"type": "string"}, "assignment_id": {"type": "string"}, "configured_preference": {"type": "string"}, "effective_eligibility": {"enum": ["eligible", "ineligible"]}, "gate_order": {"const": ["identity_schema", "task_source", "capability_freshness", "assignment_authority", "privacy_consequence_independence", "billing_fallback", "health_quota_capacity"]}, "gates": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/gate"}}, "evidence_state": {"enum": ["active", "stale", "contradictory", "unknown", "recalled"]}, "health": {"enum": ["eligible", "ineligible", "unknown", "stale", "unavailable"]}, "quota": {"enum": ["eligible", "ineligible", "unknown", "stale", "unavailable"]}, "capacity": {"enum": ["eligible", "ineligible", "unknown", "stale", "unavailable"]}, "billing": {"enum": ["eligible", "ineligible", "unknown", "stale", "unavailable"]}, "billing_basis": {"type": "string"}, "billing_provenance": {"type": "string"}, "fallback_allowed": {"type": "boolean"}, "probe_lease_ref": {"type": "string"}, "evaluated_at": {"$ref": "#/$defs/timestamp"}, "side_effects": {"$ref": "#/$defs/preflightSideEffects"}}
+    },
+    "planResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "preflight_id", "assignment_id", "authority_sha256", "source_scope_sha256", "qualification_sha256", "containment_evidence_sha256", "effect_recheck_requirements_sha256", "selected_route_id", "eligibility_basis", "capacity_lease_ref", "provider_effect", "filesystem_effect", "ledger_effect", "admission_status"],
+      "properties": {"plan_id": {"type": "string"}, "preflight_id": {"type": "string"}, "assignment_id": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "containment_evidence_sha256": {"$ref": "#/$defs/sha256"}, "effect_recheck_requirements_sha256": {"$ref": "#/$defs/sha256"}, "selected_route_id": {"type": "string"}, "eligibility_basis": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "capacity_lease_ref": {"type": "null"}, "provider_effect": {"const": false}, "filesystem_effect": {"const": false}, "ledger_effect": {"const": false}, "admission_status": {"const": "not_requested"}}
+    },
+    "capacityAdapter": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adapter_id", "adapter_version", "authority_domain", "kind", "qualified", "sole_capacity_authority", "compatibility_only"],
+      "properties": {"adapter_id": {"type": "string"}, "adapter_version": {"type": "string"}, "authority_domain": {"type": "string"}, "kind": {"enum": ["shared_sqlite_fleet", "isolated_local"]}, "qualified": {"type": "boolean"}, "sole_capacity_authority": {"type": "boolean"}, "compatibility_only": {"type": "boolean"}}
+    },
+    "dispatchSchedulerBoundary": {"type": "object", "additionalProperties": false, "required": ["owns_run_scheduling", "allocates_shared_capacity"], "properties": {"owns_run_scheduling": {"const": true}, "allocates_shared_capacity": {"const": false}}},
+    "dispatchLedgerBoundary": {"type": "object", "additionalProperties": false, "required": ["records_run_accounting", "allocates_shared_capacity", "capacity_lease_ref_external"], "properties": {"records_run_accounting": {"const": true}, "allocates_shared_capacity": {"const": false}, "capacity_lease_ref_external": {"const": true}}},
+    "preflightBrokerBoundary": {"type": "object", "additionalProperties": false, "required": ["probe_serialization_only", "probe_lease_ref"], "properties": {"probe_serialization_only": {"const": true}, "probe_lease_ref": {"type": "string"}}},
+    "capacityAuthority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority_domain", "selected_adapter_id", "adapters", "dispatch_scheduler", "dispatch_ledger", "preflight_broker"],
+      "properties": {"authority_domain": {"type": "string"}, "selected_adapter_id": {"type": "string"}, "adapters": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/capacityAdapter"}}, "dispatch_scheduler": {"$ref": "#/$defs/dispatchSchedulerBoundary"}, "dispatch_ledger": {"$ref": "#/$defs/dispatchLedgerBoundary"}, "preflight_broker": {"$ref": "#/$defs/preflightBrokerBoundary"}}
+    },
+    "effectRecheckReceipt": {"type": "object", "additionalProperties": false, "required": ["receipt_id", "receipt_sha256", "run_id", "effect_kind", "effect_sequence", "target_identity_sha256", "authority_sha256", "source_scope_sha256", "qualification_sha256", "containment_evidence_sha256", "checked_at", "result", "effect_phase", "effect_gate_policy_sha256", "effect_boundary_at", "effect_boundary_sha256"], "properties": {"receipt_id": {"type": "string"}, "receipt_sha256": {"$ref": "#/$defs/sha256"}, "run_id": {"type": "string"}, "effect_kind": {"enum": ["filesystem_write", "command", "browser", "connector", "network", "provider"]}, "effect_sequence": {"type": "integer", "minimum": 1}, "target_identity_sha256": {"$ref": "#/$defs/sha256"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "containment_evidence_sha256": {"$ref": "#/$defs/sha256"}, "checked_at": {"$ref": "#/$defs/timestamp"}, "result": {"const": "pass"}, "effect_phase": {"const": "execution"}, "effect_gate_policy_sha256": {"$ref": "#/$defs/sha256"}, "effect_boundary_at": {"$ref": "#/$defs/timestamp"}, "effect_boundary_sha256": {"$ref": "#/$defs/sha256"}}},
+    "run": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_id", "preflight_id", "assignment_id", "authority_sha256", "source_scope_sha256", "qualification_sha256", "containment_evidence_sha256", "effect_recheck_receipts", "route_id", "adapter_sha256", "capacity_authority_domain", "capacity_lease_ref", "run_execution_fence", "preflight_probe_lease_ref", "lifecycle", "terminal_outcome", "successor_run_id", "predecessor_run_id", "acceptance_claimed"],
+      "properties": {"run_id": {"type": "string"}, "preflight_id": {"type": "string"}, "assignment_id": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "containment_evidence_sha256": {"$ref": "#/$defs/sha256"}, "effect_recheck_receipts": {"type": "array", "items": {"$ref": "#/$defs/effectRecheckReceipt"}}, "route_id": {"type": "string"}, "adapter_sha256": {"$ref": "#/$defs/sha256"}, "capacity_authority_domain": {"type": "string"}, "capacity_lease_ref": {"type": "string"}, "run_execution_fence": {"type": "string"}, "preflight_probe_lease_ref": {"type": "string"}, "lifecycle": {"type": "array", "prefixItems": [{"const": "created"}, {"const": "preflighted"}, {"const": "planned"}, {"const": "admitted"}, {"const": "launching"}, {"const": "running"}, {"const": "reconciling"}, {"const": "quality_checked"}, {"const": "review_pending"}, {"const": "terminal"}], "items": false, "minItems": 10, "maxItems": 10}, "terminal_outcome": {"enum": ["completed", "denied", "cancelled", "failed", "timed_out", "unavailable", "unreconciled", "superseded", "recovered_to_successor"]}, "successor_run_id": {"type": ["string", "null"]}, "predecessor_run_id": {"type": ["string", "null"]}, "acceptance_claimed": {"const": false}}
+    },
+    "event": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "sequence", "event_type", "run_id", "predecessor_event_sha256", "object_sha256", "recorded_at"],
+      "properties": {"event_id": {"type": "string"}, "sequence": {"type": "integer", "minimum": 1}, "event_type": {"enum": ["run_created", "run_preflighted", "run_planned", "run_admitted", "run_launching", "run_running", "run_reconciling", "run_quality_checked", "run_review_pending", "run_terminal"]}, "run_id": {"type": "string"}, "predecessor_event_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "object_sha256": {"$ref": "#/$defs/sha256"}, "recorded_at": {"$ref": "#/$defs/timestamp"}}
+    },
+    "executionReceipt": {"type": "object", "additionalProperties": false, "required": ["status", "preflight_id", "run_id", "route_id", "adapter_sha256", "authority_sha256", "source_scope_sha256", "qualification_sha256", "containment_evidence_sha256", "effect_recheck_receipt_sha256s", "capacity_lease_ref", "source_sha256"], "properties": {"status": {"enum": ["completed", "failed", "unknown", "unreconciled"]}, "preflight_id": {"type": "string"}, "run_id": {"type": "string"}, "route_id": {"type": "string"}, "adapter_sha256": {"$ref": "#/$defs/sha256"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "source_scope_sha256": {"$ref": "#/$defs/sha256"}, "qualification_sha256": {"$ref": "#/$defs/sha256"}, "containment_evidence_sha256": {"$ref": "#/$defs/sha256"}, "effect_recheck_receipt_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha256"}, "uniqueItems": true}, "capacity_lease_ref": {"type": "string"}, "source_sha256": {"$ref": "#/$defs/sha256"}}},
+    "qualityReceipt": {"type": "object", "additionalProperties": false, "required": ["disposition", "execution_success_implied", "evidence_sha256"], "properties": {"disposition": {"enum": ["accepted", "rejected", "unknown", "not_evaluated"]}, "execution_success_implied": {"const": false}, "evidence_sha256": {"$ref": "#/$defs/sha256"}}},
+    "usageReceipt": {"type": "object", "additionalProperties": false, "required": ["tokens", "external_cost", "provenance", "anti_double_counting_id"], "properties": {"tokens": {"oneOf": [{"const": "unknown"}, {"type": "integer", "minimum": 0}]}, "external_cost": {"oneOf": [{"const": "unknown"}, {"type": "integer", "minimum": 0}]}, "provenance": {"enum": ["observed", "estimated", "unknown"]}, "anti_double_counting_id": {"type": "string"}}, "oneOf": [{"properties": {"tokens": {"const": "unknown"}, "external_cost": {"const": "unknown"}, "provenance": {"const": "unknown"}}}, {"properties": {"tokens": {"type": "integer", "minimum": 0}, "external_cost": {"type": "integer", "minimum": 0}, "provenance": {"enum": ["observed", "estimated"]}}}]},
+    "artifactReceipt": {"type": "object", "additionalProperties": false, "required": ["artifact_ref", "sha256", "redaction_class", "run_id", "source_sha256", "authority_sha256"], "properties": {"artifact_ref": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha256"}, "redaction_class": {"enum": ["public_fixture", "internal", "restricted"]}, "run_id": {"type": "string"}, "source_sha256": {"$ref": "#/$defs/sha256"}, "authority_sha256": {"$ref": "#/$defs/sha256"}}},
+    "lineageReceipt": {"type": "object", "additionalProperties": false, "required": ["root_run_id", "parent_run_id", "child_run_ids", "current_run_id"], "properties": {"root_run_id": {"type": "string"}, "parent_run_id": {"type": ["string", "null"]}, "child_run_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "current_run_id": {"type": "string"}}},
+    "recoveryReceipt": {"type": "object", "additionalProperties": false, "required": ["attempted", "predecessor_run_id", "successor_run_id", "outcome"], "properties": {"attempted": {"type": "boolean"}, "predecessor_run_id": {"type": ["string", "null"]}, "successor_run_id": {"type": ["string", "null"]}, "outcome": {"enum": ["not_attempted", "recovered_to_successor", "superseded", "failed"]}}},
+    "receipts": {"type": "object", "additionalProperties": false, "required": ["execution", "quality", "usage", "artifacts", "lineage", "recovery"], "properties": {"execution": {"$ref": "#/$defs/executionReceipt"}, "quality": {"$ref": "#/$defs/qualityReceipt"}, "usage": {"$ref": "#/$defs/usageReceipt"}, "artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifactReceipt"}}, "lineage": {"$ref": "#/$defs/lineageReceipt"}, "recovery": {"$ref": "#/$defs/recoveryReceipt"}}},
+    "continuation": {"type": "object", "additionalProperties": false, "required": ["checkpoint_id", "run_id", "context_rollover_id", "handoff_sha256", "remaining_limits", "message_cursor", "predecessor_immutable", "authority_recheck_required", "capability_recheck_required"], "properties": {"checkpoint_id": {"type": "string"}, "run_id": {"type": "string"}, "context_rollover_id": {"type": "string"}, "handoff_sha256": {"$ref": "#/$defs/sha256"}, "remaining_limits": {"$ref": "#/$defs/finiteLimits"}, "message_cursor": {"type": ["string", "null"]}, "predecessor_immutable": {"const": true}, "authority_recheck_required": {"const": true}, "capability_recheck_required": {"const": true}}},
+    "structuralLimits": {"type": "object", "additionalProperties": false, "required": ["depth", "children_per_parent", "active_children_per_parent", "active_descendants_per_root", "child_to_child_message_edges"], "properties": {"depth": {"const": 1}, "children_per_parent": {"const": 1}, "active_children_per_parent": {"const": 1}, "active_descendants_per_root": {"const": 1}, "child_to_child_message_edges": {"const": 0}}},
+    "delegation": {"type": "object", "additionalProperties": false, "required": ["request_id", "status", "proposed_by", "admitted_by", "parent_run_id", "child_run_id", "parent_route_id", "child_route_preference", "child_route_requirement", "objective", "expected_artifact", "scope_paths", "allowed_tools", "effects", "disclosure_refs", "egress", "network", "billing_ceiling", "fallback_policy", "limits", "structural_limits", "validation_policy_sha256", "return_schema_sha256", "cycle_check", "independent_admission", "direct_spawn", "authority_relation"], "properties": {"request_id": {"type": "string"}, "status": {"enum": ["proposed", "admitted", "denied", "cancelled", "recalled"]}, "proposed_by": {"type": "string"}, "admitted_by": {"const": "codexmax-runtime"}, "parent_run_id": {"type": "string"}, "child_run_id": {"type": "string"}, "parent_route_id": {"type": "string"}, "child_route_preference": {"type": "string"}, "child_route_requirement": {"type": ["string", "null"]}, "objective": {"type": "string"}, "expected_artifact": {"type": "string"}, "scope_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "allowed_tools": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "effects": {"$ref": "#/$defs/effects"}, "disclosure_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "egress": {"const": "none"}, "network": {"const": "none"}, "billing_ceiling": {"type": "string"}, "fallback_policy": {"type": "string"}, "limits": {"$ref": "#/$defs/finiteLimits"}, "structural_limits": {"$ref": "#/$defs/structuralLimits"}, "validation_policy_sha256": {"$ref": "#/$defs/sha256"}, "return_schema_sha256": {"$ref": "#/$defs/sha256"}, "cycle_check": {"const": "pass"}, "independent_admission": {"const": true}, "direct_spawn": {"const": false}, "authority_relation": {"const": "strict_subset"}}},
+    "journalMessage": {"type": "object", "additionalProperties": false, "required": ["message_id", "message_type", "sender_run_id", "recipient_scope", "authority_sha256", "predecessor_message_sha256", "reply_to", "recorded_at", "expires_at", "redaction_class", "content", "content_bytes", "content_sha256", "message_sha256", "artifact_refs", "untrusted_evidence", "executable", "grants_authority", "mutates_policy", "mutates_goalbuddy"], "properties": {"message_id": {"type": "string"}, "message_type": {"enum": ["finding", "artifact_ready", "question", "response", "blocker", "handoff_request", "delegation_request", "lease_or_budget_notice", "claim_challenge", "supersession"]}, "sender_run_id": {"type": "string"}, "recipient_scope": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "predecessor_message_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "reply_to": {"type": ["string", "null"]}, "recorded_at": {"$ref": "#/$defs/timestamp"}, "expires_at": {"$ref": "#/$defs/timestamp"}, "redaction_class": {"enum": ["public_fixture", "internal", "restricted"]}, "content": {"type": "string"}, "content_bytes": {"type": "integer", "minimum": 1}, "content_sha256": {"$ref": "#/$defs/sha256"}, "message_sha256": {"$ref": "#/$defs/sha256"}, "artifact_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "untrusted_evidence": {"const": true}, "executable": {"const": false}, "grants_authority": {"const": false}, "mutates_policy": {"const": false}, "mutates_goalbuddy": {"const": false}}},
+    "taskJournal": {"type": "object", "additionalProperties": false, "required": ["journal_id", "storage_kind", "scope_workgraph_id", "append_only", "global_discovery", "canonical_standalone_store", "messages", "covert_channel_controls", "recalled", "channel_open"], "properties": {"journal_id": {"type": "string"}, "storage_kind": {"const": "standalone_task_journal"}, "scope_workgraph_id": {"type": "string"}, "append_only": {"const": true}, "global_discovery": {"const": false}, "canonical_standalone_store": {"const": true}, "messages": {"type": "array", "items": {"$ref": "#/$defs/journalMessage"}}, "covert_channel_controls": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "recalled": {"type": "boolean"}, "channel_open": {"type": "boolean"}}},
+    "recallEvent": {"type": "object", "additionalProperties": false, "required": ["recall_id", "subject_kind", "subject_id", "authority_sha256", "recorded_at", "event_sha256"], "properties": {"recall_id": {"type": "string"}, "subject_kind": {"enum": ["qualification", "journal", "run"]}, "subject_id": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "recorded_at": {"$ref": "#/$defs/timestamp"}, "event_sha256": {"$ref": "#/$defs/sha256"}}},
+    "recall": {"type": "object", "additionalProperties": false, "required": ["status_precedence", "events", "blocks_new_admission", "fences_cancellation_and_reconciliation", "deletes_history"], "properties": {"status_precedence": {"const": ["recalled", "expired", "stale", "active"]}, "events": {"type": "array", "items": {"$ref": "#/$defs/recallEvent"}}, "blocks_new_admission": {"const": true}, "fences_cancellation_and_reconciliation": {"const": true}, "deletes_history": {"const": false}}},
+    "compatibility": {"type": "object", "additionalProperties": false, "required": ["legacy_contracts_unchanged", "aggregate_version_implies_components", "unknown_versions_fail_closed", "adapters"], "properties": {"legacy_contracts_unchanged": {"const": true}, "aggregate_version_implies_components": {"const": false}, "unknown_versions_fail_closed": {"const": true}, "adapters": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}},
+    "conformanceVersions": {"type": "object", "additionalProperties": false, "required": ["runtime", "event", "receipt", "adapter", "route_identity", "assignment_authority", "delegation", "task_journal", "capacity_authority"], "properties": {"runtime": {"const": 1}, "event": {"const": 1}, "receipt": {"const": 1}, "adapter": {"const": 1}, "route_identity": {"const": 1}, "assignment_authority": {"const": 1}, "delegation": {"const": 1}, "task_journal": {"const": 1}, "capacity_authority": {"const": 1}}},
+    "downstreamFork": {"type": "object", "additionalProperties": false, "required": ["upstream_version", "upstream_commit", "upstream_tree_sha256", "downstream_distribution_id", "fork_commit", "fork_sha256", "divergence_ledger_sha256", "overlay_classes", "forbidden_duplicate_authorities", "conformance_versions", "sanitized", "aol_admitted"], "properties": {"upstream_version": {"type": "string"}, "upstream_commit": {"type": "string"}, "upstream_tree_sha256": {"$ref": "#/$defs/sha256"}, "downstream_distribution_id": {"type": "string"}, "fork_commit": {"type": "string"}, "fork_sha256": {"$ref": "#/$defs/sha256"}, "divergence_ledger_sha256": {"$ref": "#/$defs/sha256"}, "overlay_classes": {"type": "array", "items": {"enum": ["client_adapter", "read_model_projection"]}, "minItems": 2, "maxItems": 2, "uniqueItems": true}, "forbidden_duplicate_authorities": {"type": "array", "items": {"enum": ["capacity", "assignment_authority", "acceptance"]}, "minItems": 3, "maxItems": 3, "uniqueItems": true}, "conformance_versions": {"$ref": "#/$defs/conformanceVersions"}, "sanitized": {"const": true}, "aol_admitted": {"const": false}}},
+    "finiteLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempts", "runtime_seconds", "uninterrupted_action_seconds", "tokens", "disclosure_bytes", "journal_messages", "message_bytes", "ttl_seconds", "external_cost_microunits"],
+      "properties": {
+        "attempts": {"type": "integer", "minimum": 1},
+        "runtime_seconds": {"type": "integer", "minimum": 1},
+        "uninterrupted_action_seconds": {"type": "integer", "minimum": 1},
+        "tokens": {"type": "integer", "minimum": 1},
+        "disclosure_bytes": {"type": "integer", "minimum": 1},
+        "journal_messages": {"type": "integer", "minimum": 1},
+        "message_bytes": {"type": "integer", "minimum": 1},
+        "ttl_seconds": {"type": "integer", "minimum": 1},
+        "external_cost_microunits": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "x-codexmax-component-definitions": [
+    "runtimeManifest",
+    "sourceIdentity",
+    "routeIdentity",
+    "capabilityEvidence",
+    "qualification",
+    "rolePolicy",
+    "assignmentAuthority",
+    "preflightResult",
+    "planResult",
+    "capacityAuthority",
+    "run",
+    "event",
+    "receipts",
+    "continuation",
+    "delegation",
+    "taskJournal",
+    "recall",
+    "compatibility",
+    "downstreamFork"
+  ],
+  "x-codexmax-cross-component-invariants": [
+    "aggregate and component versions negotiate independently",
+    "one qualified CapacityAuthorityAdapter is exclusive per authority_domain",
+    "capacity leases, run fences, and preflight probe leases are distinct",
+    "preflight and plan are side-effect-free",
+    "successful plan and run bind the exact eligible preflight identity",
+    "active assignment authority is unexpired and unrevoked at evaluated_at",
+    "assignment authority is issued no later than evaluated_at",
+    "assignment scope paths are normalized relative paths under runtime workspace identity",
+    "source scope and assignment authority digest domains are recomputed and bind workspace source scope approver and policies",
+    "percent encoded paths fail closed and explicit realpath symlink containment evidence requires a pre-effect recheck without filesystem proof claims",
+    "containment evidence digest covers every closed scope containment field except its own digest",
+    "preflight and plan bind effect recheck requirements rather than future receipts",
+    "each requested true effect has one ordered digest-bound single-use fresh boundary receipt",
+    "preflight binds the exact qualification identity",
+    "unknown billing basis provenance or gate state denies eligibility and successful completion",
+    "metered eligibility and completion are denied under the frozen zero external-cost budget including unknown usage",
+    "preflight fallback billing provenance and health bind assignment role route and runtime ceilings",
+    "capacity authority domain kind and every adapter identity are exact",
+    "continuation cursor names an existing authorized journal message",
+    "floating-point values are forbidden throughout the canonical domain",
+    "hard gates precede affinity and deterministic tie-breaking",
+    "child authority is a strict subset with finite ceilings",
+    "child validation policy and return schema digests equal explicit parent authority",
+    "child identity is acyclic and denied parents cannot materialize admitted child lifecycles",
+    "depth=1 fanout=1 active_children=1 active_descendants=1 child_edges=0",
+    "journal messages are append-only untrusted evidence and never authority",
+    "journal sender admission time ttl bytes count and redaction are derived and bounded",
+    "event ids types lifecycle order and timestamps are closed and monotonic",
+    "created and terminal run events occur exactly once at legal lifecycle boundaries",
+    "every run event and recall event occurs after evaluation and before authority and qualification expiry",
+    "terminal events occur before the earliest active capability-evidence expiry",
+    "recall identities are unique",
+    "successful usage remains within authority limits and run recall fences later success",
+    "recovery root predecessor and downstream source identities are cycle safe and exact",
+    "credential-like reference content is rejected across route artifact disclosure journal and downstream identifiers",
+    "credential-like content is rejected across every operational and exportable string surface",
+    "foreground process mode endpoint-compatible local transports and the exact downstream overlay allowlist are closed",
+    "duplicate JSON keys are rejected before object construction",
+    "recall precedes expiry, staleness, and active qualification",
+    "unknown is never coerced to zero, false, eligibility, success, or authority",
+    "SHA-256 proves integrity only; signing is unknown or not_configured",
+    "legacy v1 contracts remain unchanged behind explicit adapters"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "codexmax-loop-focused",
+  "command_identity": "codexmax.loop-focused.v1",
+  "argv": ["/usr/bin/python3", "-m", "unittest", "tests.test_loop_registry", "tests.test_loop_cli", "tests.test_loop_compilation", "tests.test_loop_actions", "tests.test_codex_loop_hook", "tests.test_harness_loop_adapter"],
+  "cwd": {"root_id": "codexmax_repo", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 300,
+  "max_output_bytes": 262144,
+  "validation_ids": ["codexmax-loop-focused"],
+  "parameters": []
+}

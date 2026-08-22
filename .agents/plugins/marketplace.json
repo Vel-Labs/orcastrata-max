@@ -1,0 +1,20 @@
+{
+  "name": "codexmax-orchestrator",
+  "interface": {
+    "displayName": "Orcastrata Max"
+  },
+  "plugins": [
+    {
+      "name": "codexmax-orchestrator",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codexmax-orchestrator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Coding"
+    }
+  ]
+}

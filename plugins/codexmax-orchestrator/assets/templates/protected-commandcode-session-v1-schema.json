@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/protected-commandcode-session-v1.json",
+  "title": "Protected Command Code public session request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "capability_id", "sequence", "task_id", "route_name",
+    "route_id", "model", "mode", "commandcode_version", "billing_basis",
+    "command_link_identity_sha256",
+    "package_identity_sha256", "entry_identity_sha256", "node_identity_sha256",
+    "sandbox_identity_sha256", "worktree_identity_sha256", "argv_sha256",
+    "environment_sha256", "credential_reference_sha256", "challenge_sha256",
+    "issued_at", "expires_at", "writer_service_id", "writer_build_sha256",
+    "writer_uid", "writer_session_sha256", "writer_receipt_sha256",
+    "anchor_service_id", "anchor_build_sha256", "anchor_uid",
+    "anchor_session_sha256", "anchor_receipt_sha256", "capability_checksum_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "capability_id": {"$ref": "#/$defs/id"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "task_id": {"$ref": "#/$defs/id"},
+    "route_name": {"type": "string"},
+    "route_id": {"type": "string"},
+    "model": {"type": "string"},
+    "mode": {"enum": ["read_only", "scoped_write"]},
+    "commandcode_version": {"const": "1.23.2"},
+    "billing_basis": {"const": "subscription"},
+    "command_link_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "package_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "entry_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "node_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "sandbox_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "worktree_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "argv_sha256": {"$ref": "#/$defs/sha256"},
+    "environment_sha256": {"$ref": "#/$defs/sha256"},
+    "credential_reference_sha256": {"$ref": "#/$defs/sha256"},
+    "challenge_sha256": {"$ref": "#/$defs/sha256"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "writer_service_id": {"$ref": "#/$defs/id"},
+    "writer_build_sha256": {"$ref": "#/$defs/sha256"},
+    "writer_uid": {"type": "integer", "minimum": 0},
+    "writer_session_sha256": {"$ref": "#/$defs/sha256"},
+    "writer_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "anchor_service_id": {"$ref": "#/$defs/id"},
+    "anchor_build_sha256": {"$ref": "#/$defs/sha256"},
+    "anchor_uid": {"type": "integer", "minimum": 0},
+    "anchor_session_sha256": {"$ref": "#/$defs/sha256"},
+    "anchor_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "capability_checksum_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "route_name": {"const": "worker_deepseek_v4_flash"},
+        "route_id": {"const": "commandcode-subscription-deepseek-v4-flash"},
+        "model": {"const": "deepseek/deepseek-v4-flash"}
+      }
+    },
+    {
+      "properties": {
+        "route_name": {"const": "worker_deepseek_v4_pro"},
+        "route_id": {"const": "commandcode-subscription-deepseek-v4-pro"},
+        "model": {"const": "deepseek/deepseek-v4-pro"}
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:@+-]{1,127}$"},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

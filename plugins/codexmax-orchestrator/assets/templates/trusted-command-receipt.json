@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "artifact_type": "TrustedCommandReceipt",
+  "authority": "trusted_local_runtime",
+  "provider_generated": false,
+  "purpose": "worker_self_test",
+  "target_lane_id": "lane-example",
+  "target_assignment_id": "assignment-example",
+  "commands": [
+    {
+      "command": "python3 -m unittest tests.test_example",
+      "execution_status": "completed",
+      "result": "pass"
+    }
+  ],
+  "result": "pass",
+  "receipt_sha256": "sha256:unknown"
+}

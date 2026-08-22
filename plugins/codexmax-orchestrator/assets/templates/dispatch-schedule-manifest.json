@@ -1,0 +1,58 @@
+{
+  "accepted": false,
+  "artifact_type": "DispatchScheduleManifest",
+  "bindings": {
+    "authority_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "board_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "config_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "supervisor_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "workgraph_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "envelope_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "goalbuddy_applied": false,
+  "identity": {
+    "assignment_id": "assignment-id",
+    "checkpoint_id": "T010",
+    "goal_id": "goal-id",
+    "task_id": "task-id"
+  },
+  "lease": null,
+  "ledger": {
+    "head_after": null,
+    "head_before": null,
+    "sequence_end": null,
+    "sequence_start": null
+  },
+  "manifest_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "quality_accepted": false,
+  "quality_receipt": {
+    "artifact_kind": "ArtifactQualityReceipt",
+    "path": "reports/example/quality.json",
+    "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "size_bytes": 0
+  },
+  "return_manifest": {
+    "artifact_kind": "DispatchReturnManifest",
+    "path": "reports/example/return.json",
+    "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "size_bytes": 0
+  },
+  "schedule_plan_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "selected_route": null,
+  "supervisor_applied": false,
+  "supervisor_event_bundle": {
+    "artifact_kind": "SupervisorEventBundle",
+    "path": "reports/example/supervisor-event-bundle.json",
+    "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "size_bytes": 0
+  },
+  "transport_succeeded": false,
+  "usage": {
+    "observed": {
+      "cost": "unknown",
+      "tokens": "unknown"
+    },
+    "reserved": null
+  }
+}

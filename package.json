@@ -1,0 +1,22 @@
+{
+  "name": "codexmax-orchestrator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Orcastrata Max is the open agentic orchestration plugin for Codex.",
+  "license": "Apache-2.0",
+  "author": "Vel Labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vel-Labs/orcastrata-max.git"
+  },
+  "homepage": "https://github.com/Vel-Labs/orcastrata-max#readme",
+  "bugs": {
+    "url": "https://github.com/Vel-Labs/orcastrata-max/issues"
+  },
+  "scripts": {
+    "validate:public": "python3 scripts/validate_public_release.py ."
+  },
+  "engines": {
+    "python": ">=3.11"
+  }
+}

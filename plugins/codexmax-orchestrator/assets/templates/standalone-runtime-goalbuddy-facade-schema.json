@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/standalone-runtime-goalbuddy-facade-v1.json",
+  "title": "Standalone Runtime GoalBuddy Facade v1",
+  "description": "Closed optional envelopes over the canonical WorkGraph CLI GoalBuddy adapter. Apply and recover effects remain owned by the embedded WorkGraph receipt.",
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/capabilitiesReceipt"},
+    {"$ref": "#/$defs/delegatedReceipt"}
+  ],
+  "$defs": {
+    "path": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^/"},
+    "text": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "emptyArguments": {"type": "object", "additionalProperties": false},
+    "snapshotArguments": {
+      "type": "object", "additionalProperties": false,
+      "required": ["board_path"],
+      "properties": {"board_path": {"$ref": "#/$defs/path"}}
+    },
+    "applyArguments": {
+      "type": "object", "additionalProperties": false,
+      "required": ["board_path", "updates_path", "journal_path", "update_id", "timestamp"],
+      "properties": {
+        "board_path": {"$ref": "#/$defs/path"},
+        "updates_path": {"$ref": "#/$defs/path"},
+        "journal_path": {"$ref": "#/$defs/path"},
+        "update_id": {"$ref": "#/$defs/text"},
+        "timestamp": {"$ref": "#/$defs/text"}
+      }
+    },
+    "recoverArguments": {
+      "type": "object", "additionalProperties": false,
+      "required": ["board_path", "updates_path", "journal_path", "timestamp"],
+      "properties": {
+        "board_path": {"$ref": "#/$defs/path"},
+        "updates_path": {"$ref": "#/$defs/path"},
+        "journal_path": {"$ref": "#/$defs/path"},
+        "timestamp": {"$ref": "#/$defs/text"}
+      }
+    },
+    "request": {
+      "oneOf": [
+        {"$ref": "#/$defs/capabilitiesRequest"},
+        {"$ref": "#/$defs/snapshotRequest"},
+        {"$ref": "#/$defs/applyRequest"},
+        {"$ref": "#/$defs/recoverRequest"}
+      ]
+    },
+    "capabilitiesRequest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "arguments"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_request_v1"}, "operation": {"const": "capabilities"}, "arguments": {"$ref": "#/$defs/emptyArguments"}}
+    },
+    "snapshotRequest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "arguments"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_request_v1"}, "operation": {"const": "snapshot"}, "arguments": {"$ref": "#/$defs/snapshotArguments"}}
+    },
+    "applyRequest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "arguments"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_request_v1"}, "operation": {"const": "apply"}, "arguments": {"$ref": "#/$defs/applyArguments"}}
+    },
+    "recoverRequest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "arguments"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_request_v1"}, "operation": {"const": "recover"}, "arguments": {"$ref": "#/$defs/recoverArguments"}}
+    },
+    "readEffects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["board_mutated", "wal_written", "updates_appended", "network_used", "provider_called", "authority_granted", "acceptance_granted"],
+      "properties": {"board_mutated": {"const": false}, "wal_written": {"const": false}, "updates_appended": {"const": false}, "network_used": {"const": false}, "provider_called": {"const": false}, "authority_granted": {"const": false}, "acceptance_granted": {"const": false}}
+    },
+    "readBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonical_adapter_owned", "effect_guarantees", "possible_partial_wal"],
+      "properties": {"canonical_adapter_owned": {"const": false}, "effect_guarantees": {"$ref": "#/$defs/readEffects"}, "possible_partial_wal": {"const": false}}
+    },
+    "mutationBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["all_false_claimed", "canonical_adapter_owned", "possible_partial_wal", "receipt_is_only_effect_truth"],
+      "properties": {"all_false_claimed": {"const": false}, "canonical_adapter_owned": {"const": true}, "possible_partial_wal": {"const": true}, "receipt_is_only_effect_truth": {"const": true}}
+    },
+    "capabilitySupport": {
+      "type": "object", "additionalProperties": false,
+      "required": ["apply_goalbuddy_v2", "migration", "network", "recover_goalbuddy_v2", "snapshot_goalbuddy_v2_v3"],
+      "properties": {"apply_goalbuddy_v2": {"const": true}, "migration": {"const": false}, "network": {"const": false}, "recover_goalbuddy_v2": {"const": true}, "snapshot_goalbuddy_v2_v3": {"const": true}}
+    },
+    "capabilities": {
+      "type": "object", "additionalProperties": false,
+      "required": ["acceptance_authority", "canonical_board_owner", "facade_version", "operations", "provider_or_billing_access", "support"],
+      "properties": {
+        "acceptance_authority": {"const": false}, "canonical_board_owner": {"const": "GoalBuddy"}, "facade_version": {"const": 1},
+        "operations": {"const": ["apply", "capabilities", "recover", "snapshot"]}, "provider_or_billing_access": {"const": false},
+        "support": {"$ref": "#/$defs/capabilitySupport"}
+      }
+    },
+    "capabilitiesReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "status", "capabilities", "effect_boundary"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_receipt_v1"}, "operation": {"const": "capabilities"}, "status": {"const": "ok"}, "capabilities": {"$ref": "#/$defs/capabilities"}, "effect_boundary": {"$ref": "#/$defs/readBoundary"}}
+    },
+    "delegatedReceipt": {
+      "oneOf": [
+        {"$ref": "#/$defs/snapshotReceipt"},
+        {"$ref": "#/$defs/mutationReceipt"}
+      ]
+    },
+    "snapshotReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "status", "workgraph_receipt", "workgraph_receipt_sha256", "effect_boundary"],
+      "properties": {
+        "schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_receipt_v1"},
+        "operation": {"const": "snapshot"}, "status": {"enum": ["ok", "error"]},
+        "workgraph_receipt": {"type": "object", "minProperties": 1}, "workgraph_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "effect_boundary": {"$ref": "#/$defs/readBoundary"}
+      }
+    },
+    "mutationReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "operation", "status", "workgraph_receipt", "workgraph_receipt_sha256", "effect_boundary"],
+      "properties": {
+        "schema_version": {"const": 1}, "artifact_type": {"const": "standalone_runtime_goalbuddy_receipt_v1"},
+        "operation": {"enum": ["apply", "recover"]}, "status": {"enum": ["ok", "error"]},
+        "workgraph_receipt": {"type": "object", "minProperties": 1}, "workgraph_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "effect_boundary": {"$ref": "#/$defs/mutationBoundary"}
+      }
+    }
+  }
+}

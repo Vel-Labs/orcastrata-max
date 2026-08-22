@@ -1,0 +1,14 @@
+:root { color-scheme: dark; font: 16px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: #0b1020; color: #e8edf7; }
+body { margin: 0; }
+main { max-width: 72rem; margin: auto; padding: 2rem; }
+header, section { background: #141c31; border: 1px solid #344466; border-radius: .75rem; margin: 0 0 1rem; padding: 1.25rem; }
+h1, h2, p { margin-top: 0; }
+.eyebrow { color: #82d8ff; text-transform: uppercase; letter-spacing: .08em; }
+.warning { color: #ffd995; }
+dl { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(20rem, 3fr); gap: .5rem 1rem; }
+dt { color: #9fc7ff; }
+dd { margin: 0; overflow-wrap: anywhere; }
+#controls { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+button { min-height: 3rem; border: 1px solid #6382ad; border-radius: .5rem; padding: .6rem; text-align: left; }
+button:disabled { background: #222b40; color: #bdc5d5; cursor: not-allowed; }
+@media (max-width: 44rem) { main { padding: 1rem; } dl { grid-template-columns: 1fr; } }

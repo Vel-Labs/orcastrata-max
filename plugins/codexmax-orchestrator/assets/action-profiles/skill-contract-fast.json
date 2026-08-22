@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "skill-contract-fast",
+  "command_identity": "codexmax.skill-contract-fast.v1",
+  "argv": ["/usr/bin/python3", "scripts/validate_repository.py"],
+  "cwd": {"root_id": "codexmax_repo", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 180,
+  "max_output_bytes": 65536,
+  "validation_ids": ["skill-contract-fast"],
+  "parameters": []
+}

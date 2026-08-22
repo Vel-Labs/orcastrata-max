@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "receipt-completeness",
+  "command_identity": "codexmax.receipt-completeness.v1",
+  "argv": ["/usr/bin/python3", "plugins/codexmax-orchestrator/scripts/loopctl.py", "verify-receipt", "plugins/codexmax-orchestrator/assets/templates/loop-run-receipt.json", "--json"],
+  "cwd": {"root_id": "codexmax_repo", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 120,
+  "max_output_bytes": 65536,
+  "validation_ids": ["receipt-completeness"],
+  "parameters": []
+}

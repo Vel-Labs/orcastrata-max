@@ -1,0 +1,1061 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codexmax:standalone-downstream-fork-kit:v2",
+  "title": "Standalone downstream fork kit v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "kit_id",
+    "upstream_anchor",
+    "fork_identity",
+    "overlay_policy",
+    "divergence_ledger",
+    "compatibility",
+    "lifecycle",
+    "external_mappings",
+    "evidence_catalog",
+    "handoff",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 2
+    },
+    "artifact_type": {
+      "const": "standalone_downstream_fork_kit_v2"
+    },
+    "kit_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "upstream_anchor": {
+      "$ref": "#/$defs/upstreamAnchor"
+    },
+    "fork_identity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/proposedFork"
+        },
+        {
+          "$ref": "#/$defs/createdFork"
+        }
+      ]
+    },
+    "overlay_policy": {
+      "$ref": "#/$defs/overlayPolicy"
+    },
+    "divergence_ledger": {
+      "$ref": "#/$defs/divergenceLedger"
+    },
+    "compatibility": {
+      "$ref": "#/$defs/compatibility"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/lifecycle"
+    },
+    "external_mappings": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/routeDecisionMapping"
+        },
+        {
+          "$ref": "#/$defs/assuranceMapping"
+        },
+        {
+          "$ref": "#/$defs/economicsMapping"
+        },
+        {
+          "$ref": "#/$defs/homeNowMapping"
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "handoff": {
+      "$ref": "#/$defs/handoff"
+    },
+    "integrity": {
+      "$ref": "#/$defs/integrity"
+    },
+    "evidence_catalog": {
+      "$ref": "#/$defs/evidenceCatalog"
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._:/-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "upstreamAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_name",
+        "version",
+        "release_manifest_sha256",
+        "source_tree_sha256",
+        "manifest_payload_rows",
+        "physical_files"
+      ],
+      "properties": {
+        "package_name": {
+          "const": "codexmax-orchestrator"
+        },
+        "version": {
+          "const": "0.6.0-rc.6+codex.20260816"
+        },
+        "release_manifest_sha256": {
+          "const": "sha256:c7abb4abc0d6ec92b631bfcee9cd0a40e58c45caad8df065fc21610ad4b59865"
+        },
+        "source_tree_sha256": {
+          "const": "sha256:c40a9f18462faa917963121f18db022044af90d877e8d087a5e860ae0938cc92"
+        },
+        "manifest_payload_rows": {
+          "type": "integer",
+          "const": 362
+        },
+        "physical_files": {
+          "type": "integer",
+          "const": 363
+        }
+      }
+    },
+    "proposedFork": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "distribution_id",
+        "fork_commit",
+        "fork_tree_sha256",
+        "build_id"
+      ],
+      "properties": {
+        "state": {
+          "const": "proposed_not_created"
+        },
+        "distribution_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "fork_commit": {
+          "type": "null"
+        },
+        "fork_tree_sha256": {
+          "type": "null"
+        },
+        "build_id": {
+          "type": "null"
+        }
+      }
+    },
+    "createdFork": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "distribution_id",
+        "fork_commit",
+        "fork_tree_sha256",
+        "build_id"
+      ],
+      "properties": {
+        "state": {
+          "const": "candidate_created_not_admitted"
+        },
+        "distribution_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "fork_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "fork_tree_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "build_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "overlayDeclarationBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overlay_class",
+        "mode",
+        "implementation_included",
+        "executable_logic_included",
+        "grants_capability",
+        "grants_authority",
+        "allocates_capacity",
+        "creates_lease",
+        "normalizes_billing",
+        "counts_usage",
+        "creates_receipt_truth",
+        "accepts_work",
+        "mutates_board_truth",
+        "mutates_policy_truth",
+        "calls_provider",
+        "changes_shared_components"
+      ],
+      "properties": {
+        "overlay_class": {
+          "enum": [
+            "client_adapter",
+            "read_model_projection"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "translate_only",
+            "project_only"
+          ]
+        },
+        "implementation_included": {
+          "const": false
+        },
+        "executable_logic_included": {
+          "const": false
+        },
+        "grants_capability": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "allocates_capacity": {
+          "const": false
+        },
+        "creates_lease": {
+          "const": false
+        },
+        "normalizes_billing": {
+          "const": false
+        },
+        "counts_usage": {
+          "const": false
+        },
+        "creates_receipt_truth": {
+          "const": false
+        },
+        "accepts_work": {
+          "const": false
+        },
+        "mutates_board_truth": {
+          "const": false
+        },
+        "mutates_policy_truth": {
+          "const": false
+        },
+        "calls_provider": {
+          "const": false
+        },
+        "changes_shared_components": {
+          "const": false
+        }
+      }
+    },
+    "clientOverlay": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/overlayDeclarationBase"
+        },
+        {
+          "properties": {
+            "overlay_class": {
+              "const": "client_adapter"
+            },
+            "mode": {
+              "const": "translate_only"
+            }
+          }
+        }
+      ]
+    },
+    "readModelOverlay": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/overlayDeclarationBase"
+        },
+        {
+          "properties": {
+            "overlay_class": {
+              "const": "read_model_projection"
+            },
+            "mode": {
+              "const": "project_only"
+            }
+          }
+        }
+      ]
+    },
+    "overlayPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_classes",
+        "forbidden_duplicate_authorities",
+        "declarations"
+      ],
+      "properties": {
+        "allowed_classes": {
+          "const": [
+            "client_adapter",
+            "read_model_projection"
+          ]
+        },
+        "forbidden_duplicate_authorities": {
+          "const": [
+            "capacity",
+            "assignment_authority",
+            "acceptance"
+          ]
+        },
+        "declarations": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/clientOverlay"
+            },
+            {
+              "$ref": "#/$defs/readModelOverlay"
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "divergenceEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "divergence_id",
+        "sequence",
+        "previous_entry_sha256",
+        "classification",
+        "overlay_class",
+        "applied",
+        "shared_component_changes",
+        "patch_sha256",
+        "compatibility_impact",
+        "upstream_return_status",
+        "entry_sha256"
+      ],
+      "properties": {
+        "divergence_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previous_entry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "classification": {
+          "const": "overlay_declaration"
+        },
+        "overlay_class": {
+          "enum": [
+            "client_adapter",
+            "read_model_projection"
+          ]
+        },
+        "applied": {
+          "const": false
+        },
+        "shared_component_changes": {
+          "const": []
+        },
+        "patch_sha256": {
+          "type": "null"
+        },
+        "compatibility_impact": {
+          "const": "none"
+        },
+        "upstream_return_status": {
+          "const": "not_applicable"
+        },
+        "entry_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "divergenceLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledger_id",
+        "previous_ledger_sha256",
+        "entry_count",
+        "entries",
+        "ledger_sha256"
+      ],
+      "properties": {
+        "ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "previous_ledger_sha256": {
+          "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "entry_count": {
+          "type": "integer",
+          "const": 2
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/divergenceEntry"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "ledger_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "componentVersions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime",
+        "event",
+        "receipt",
+        "adapter",
+        "route_identity",
+        "assignment_authority",
+        "delegation",
+        "task_journal",
+        "capacity_authority"
+      ],
+      "properties": {
+        "runtime": {
+          "type": "integer",
+          "const": 1
+        },
+        "event": {
+          "type": "integer",
+          "const": 1
+        },
+        "receipt": {
+          "type": "integer",
+          "const": 1
+        },
+        "adapter": {
+          "type": "integer",
+          "const": 1
+        },
+        "route_identity": {
+          "type": "integer",
+          "const": 1
+        },
+        "assignment_authority": {
+          "type": "integer",
+          "const": 1
+        },
+        "delegation": {
+          "type": "integer",
+          "const": 1
+        },
+        "task_journal": {
+          "type": "integer",
+          "const": 1
+        },
+        "capacity_authority": {
+          "type": "integer",
+          "const": 1
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_versions",
+        "unknown_versions_fail_closed",
+        "shared_component_changes_allowed",
+        "compatibility_status",
+        "shared_conformance"
+      ],
+      "properties": {
+        "component_versions": {
+          "$ref": "#/$defs/componentVersions"
+        },
+        "unknown_versions_fail_closed": {
+          "const": true
+        },
+        "shared_component_changes_allowed": {
+          "const": false
+        },
+        "compatibility_status": {
+          "const": "not_run"
+        },
+        "shared_conformance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "receipt_sha256",
+            "passed",
+            "proves_aol_admission"
+          ],
+          "properties": {
+            "status": {
+              "const": "not_run"
+            },
+            "receipt_sha256": {
+              "type": "null"
+            },
+            "passed": {
+              "const": false
+            },
+            "proves_aol_admission": {
+              "const": false
+            }
+          }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upgrade",
+        "backport",
+        "upstream_return",
+        "rollback"
+      ],
+      "properties": {
+        "upgrade": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "requires_new_identity",
+            "performed",
+            "authority_granted"
+          ],
+          "properties": {
+            "status": {
+              "const": "not_performed"
+            },
+            "requires_new_identity": {
+              "const": true
+            },
+            "performed": {
+              "const": false
+            },
+            "authority_granted": {
+              "const": false
+            }
+          }
+        },
+        "backport": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "patch_sha256",
+            "performed",
+            "authority_granted"
+          ],
+          "properties": {
+            "status": {
+              "const": "not_proposed"
+            },
+            "patch_sha256": {
+              "type": "null"
+            },
+            "performed": {
+              "const": false
+            },
+            "authority_granted": {
+              "const": false
+            }
+          }
+        },
+        "upstream_return": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "patch_sha256",
+            "submitted",
+            "merged",
+            "accepted"
+          ],
+          "properties": {
+            "status": {
+              "const": "proposed_unsubmitted"
+            },
+            "patch_sha256": {
+              "type": "null"
+            },
+            "submitted": {
+              "const": false
+            },
+            "merged": {
+              "const": false
+            },
+            "accepted": {
+              "const": false
+            }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "target",
+            "performed",
+            "authority_granted",
+            "history_rewritten"
+          ],
+          "properties": {
+            "status": {
+              "const": "not_performed"
+            },
+            "target": {
+              "const": "exact_upstream_anchor"
+            },
+            "performed": {
+              "const": false
+            },
+            "authority_granted": {
+              "const": false
+            },
+            "history_rewritten": {
+              "const": false
+            }
+          }
+        }
+      }
+    },
+    "mappingBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_artifact",
+        "external_semantic",
+        "external_owner",
+        "mapping_mode",
+        "mapping_status",
+        "implementation_included",
+        "truth_claimed",
+        "authority_granted",
+        "acceptance_claimed"
+      ],
+      "properties": {
+        "source_artifact": {
+          "type": "string"
+        },
+        "external_semantic": {
+          "type": "string"
+        },
+        "external_owner": {
+          "type": "string"
+        },
+        "mapping_mode": {
+          "const": "reference_only"
+        },
+        "mapping_status": {
+          "const": "external_owner_unimplemented"
+        },
+        "implementation_included": {
+          "const": false
+        },
+        "truth_claimed": {
+          "const": false
+        },
+        "authority_granted": {
+          "const": false
+        },
+        "acceptance_claimed": {
+          "const": false
+        }
+      }
+    },
+    "routeDecisionMapping": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/mappingBase"
+        },
+        {
+          "properties": {
+            "source_artifact": {
+              "const": "route_fabric_decision_v1"
+            },
+            "external_semantic": {
+              "const": "RouteDecision"
+            },
+            "external_owner": {
+              "const": "AOL Core"
+            }
+          }
+        }
+      ]
+    },
+    "assuranceMapping": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/mappingBase"
+        },
+        {
+          "properties": {
+            "source_artifact": {
+              "const": "runtime_quality_receipt_v1"
+            },
+            "external_semantic": {
+              "const": "Assurance"
+            },
+            "external_owner": {
+              "const": "AOL Core"
+            }
+          }
+        }
+      ]
+    },
+    "economicsMapping": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/mappingBase"
+        },
+        {
+          "properties": {
+            "source_artifact": {
+              "const": "correction_economics_v1"
+            },
+            "external_semantic": {
+              "const": "economics"
+            },
+            "external_owner": {
+              "const": "AOL Core"
+            }
+          }
+        }
+      ]
+    },
+    "homeNowMapping": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/mappingBase"
+        },
+        {
+          "properties": {
+            "source_artifact": {
+              "const": "execution_continuity_v1"
+            },
+            "external_semantic": {
+              "const": "Home/Now"
+            },
+            "external_owner": {
+              "const": "AOL Home/Now"
+            }
+          }
+        }
+      ]
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_label",
+        "status",
+        "sanitization",
+        "aol_admitted",
+        "c50_accepted",
+        "c60_accepted",
+        "joined_execution",
+        "product_accepted",
+        "assurance_claimed",
+        "economics_claimed",
+        "home_now_truth_claimed",
+        "broker_write_authority",
+        "goalbuddy_write_authority",
+        "provider_called",
+        "network_used",
+        "service_started",
+        "installed",
+        "published",
+        "proposal_sha256"
+      ],
+      "properties": {
+        "target_label": {
+          "const": "AOL"
+        },
+        "status": {
+          "const": "proposed_not_admitted"
+        },
+        "sanitization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "raw_prompts_excluded",
+            "raw_transcripts_excluded",
+            "raw_provider_output_excluded",
+            "credentials_excluded",
+            "auth_material_excluded",
+            "private_environment_excluded",
+            "secret_bearing_paths_excluded",
+            "broker_write_authority_excluded",
+            "goalbuddy_write_authority_excluded"
+          ],
+          "properties": {
+            "raw_prompts_excluded": {
+              "const": true
+            },
+            "raw_transcripts_excluded": {
+              "const": true
+            },
+            "raw_provider_output_excluded": {
+              "const": true
+            },
+            "credentials_excluded": {
+              "const": true
+            },
+            "auth_material_excluded": {
+              "const": true
+            },
+            "private_environment_excluded": {
+              "const": true
+            },
+            "secret_bearing_paths_excluded": {
+              "const": true
+            },
+            "broker_write_authority_excluded": {
+              "const": true
+            },
+            "goalbuddy_write_authority_excluded": {
+              "const": true
+            }
+          }
+        },
+        "aol_admitted": {
+          "const": false
+        },
+        "c50_accepted": {
+          "const": false
+        },
+        "c60_accepted": {
+          "const": false
+        },
+        "joined_execution": {
+          "const": false
+        },
+        "product_accepted": {
+          "const": false
+        },
+        "assurance_claimed": {
+          "const": false
+        },
+        "economics_claimed": {
+          "const": false
+        },
+        "home_now_truth_claimed": {
+          "const": false
+        },
+        "broker_write_authority": {
+          "const": false
+        },
+        "goalbuddy_write_authority": {
+          "const": false
+        },
+        "provider_called": {
+          "const": false
+        },
+        "network_used": {
+          "const": false
+        },
+        "service_started": {
+          "const": false
+        },
+        "installed": {
+          "const": false
+        },
+        "published": {
+          "const": false
+        },
+        "proposal_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest_algorithm",
+        "canonicalization",
+        "upstream_anchor_sha256",
+        "overlay_policy_sha256",
+        "divergence_ledger_sha256",
+        "compatibility_sha256",
+        "lifecycle_sha256",
+        "external_mappings_sha256",
+        "evidence_catalog_sha256",
+        "handoff_sha256",
+        "kit_sha256",
+        "signature_state",
+        "authenticity_claimed"
+      ],
+      "properties": {
+        "digest_algorithm": {
+          "const": "sha256"
+        },
+        "canonicalization": {
+          "const": "sorted_ascii_no_floats_v1"
+        },
+        "upstream_anchor_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "overlay_policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "divergence_ledger_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "compatibility_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "lifecycle_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "external_mappings_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "handoff_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "kit_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "signature_state": {
+          "enum": [
+            "not_configured",
+            "unknown"
+          ]
+        },
+        "authenticity_claimed": {
+          "const": false
+        },
+        "evidence_catalog_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "evidenceSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "path",
+        "sha256",
+        "proof_scope",
+        "grants_authority",
+        "affects_routing",
+        "proves_provider_qualification",
+        "proves_protected_production",
+        "proves_aol_admission"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "installed_journey",
+            "provider_dispatch",
+            "compact_telemetry",
+            "advisory_evaluation",
+            "real_work_dogfood",
+            "deferred_enterprise"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "proof_scope": {
+          "$ref": "#/$defs/identifier"
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "affects_routing": {
+          "const": false
+        },
+        "proves_provider_qualification": {
+          "const": false
+        },
+        "proves_protected_production": {
+          "const": false
+        },
+        "proves_aol_admission": {
+          "const": false
+        }
+      }
+    },
+    "evidenceCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "verification_required",
+        "source_count",
+        "sources",
+        "execution_authority",
+        "routing_authority",
+        "provider_qualification",
+        "protected_production",
+        "aol_admission"
+      ],
+      "properties": {
+        "status": {
+          "const": "hash_bound_reference_only"
+        },
+        "verification_required": {
+          "const": true
+        },
+        "source_count": {
+          "type": "integer",
+          "const": 6
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceSource"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "execution_authority": {
+          "const": false
+        },
+        "routing_authority": {
+          "const": false
+        },
+        "provider_qualification": {
+          "const": false
+        },
+        "protected_production": {
+          "const": false
+        },
+        "aol_admission": {
+          "const": false
+        }
+      }
+    }
+  }
+}

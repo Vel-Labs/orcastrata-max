@@ -1,0 +1,96 @@
+loop_schema_version: 1
+loop_id: example-ops-validation
+definition_version: 1
+owner_path: _ops
+lifecycle:
+  state: proposed
+  prior_state: null
+  changed_at: null
+  promotion_evidence: []
+loop_type: event
+contract_refs:
+  source_paths:
+    - root_id: workspace
+      path: AGENTS.md
+      sha256: unknown
+    - root_id: workspace
+      path: _ops/README.md
+      sha256: unknown
+  authority_board: null
+  authority_receipt: null
+trigger:
+  event_types:
+    - file.changed
+  source_adapters:
+    - fixture
+  path_match:
+    include:
+      - root_id: workspace
+        pattern: _ops/*.yaml
+    exclude: []
+  debounce_seconds: 2
+  dedupe_window_seconds: 60
+  freshness_seconds: 300
+  max_recursion_depth: 1
+scope:
+  allowed_reads:
+    - root_id: workspace
+      pattern: _ops/*.yaml
+    - root_id: workspace
+      pattern: 40_Code/scripts/workspace-maintenance/validate_ops_configs.rb
+  allowed_writes:
+    - root_id: workspace
+      pattern: _ops/reports/loop-runs/**
+  mutation_mode: advisory_report_only
+  forbidden_actions:
+    - arbitrary_command
+    - network
+    - credentials
+    - install
+    - delete
+    - move
+    - rename
+    - publish
+    - push
+    - scheduler_activation
+    - hook_installation
+    - goalbuddy_mutation
+    - authority_widening
+graph:
+  workgraph: null
+  goalbuddy_board: null
+action_profile_ids:
+  - ops-config-fast
+budget:
+  max_attempts: 1
+  no_improvement_window: 1
+  timeout_seconds: 120
+  max_output_bytes: 65536
+  max_concurrency: 1
+  token_forecast: null
+  explicit_token_cap: null
+  external_cash_authorized: false
+proof:
+  required_freshness_seconds: 300
+  receipt_sink_id: local_loop_receipts_v1
+  report_root:
+    root_id: workspace
+    path: _ops/reports
+  required_artifact_ids:
+    - loop-run-receipt
+notification:
+  mode: dashboard_only
+  intent_path: null
+stop_conditions:
+  - operator_stop
+  - scope_widening
+  - authority_missing
+  - source_unavailable
+  - stale_event
+  - duplicate_event
+  - recursive_event
+  - budget_exhausted
+  - no_improvement
+  - action_unavailable
+  - validation_failed
+  - unsafe_input

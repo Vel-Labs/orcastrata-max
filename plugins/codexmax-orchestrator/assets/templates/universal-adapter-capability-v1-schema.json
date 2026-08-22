@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/universal-adapter-capability-v1.json",
+  "title": "CodexmaxUniversalAdapterCapabilityV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "primitives", "lane_profiles", "adapter_capabilities", "qualifications", "catalog_sha256", "registry_sha256"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "codexmax_universal_adapter_capability_v1"},
+    "primitives": {
+      "const": ["local_read", "artifact_output", "tool_loop", "command_execution", "scoped_write", "browser_control", "web_search", "connector_access"]
+    },
+    "lane_profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read", "artifact", "scoped_write", "implementation", "tool_loop", "audit"],
+      "properties": {
+        "read": {"$ref": "#/$defs/laneProfile"},
+        "artifact": {"$ref": "#/$defs/laneProfile"},
+        "scoped_write": {"$ref": "#/$defs/laneProfile"},
+        "implementation": {"$ref": "#/$defs/laneProfile"},
+        "tool_loop": {"$ref": "#/$defs/laneProfile"},
+        "audit": {"$ref": "#/$defs/laneProfile"}
+      }
+    },
+    "adapter_capabilities": {
+      "type": "object",
+      "minProperties": 8,
+      "maxProperties": 8,
+      "additionalProperties": {"$ref": "#/$defs/adapterCapability"}
+    },
+    "qualifications": {
+      "type": "object",
+      "maxProperties": 128,
+      "propertyNames": {"pattern": "^qualification_[0-9a-f]{32}$"},
+      "additionalProperties": {"$ref": "#/$defs/qualification"}
+    },
+    "catalog_sha256": {"$ref": "#/$defs/digest"},
+    "registry_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@+~-]{0,127}$"},
+    "primitive": {"enum": ["local_read", "artifact_output", "tool_loop", "command_execution", "scoped_write", "browser_control", "web_search", "connector_access"]},
+    "laneProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_primitives", "mutation_mode"],
+      "properties": {
+        "required_primitives": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/primitive"}},
+        "mutation_mode": {"enum": ["read_only", "artifact_only", "scoped_write"]}
+      }
+    },
+    "adapterCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_type", "adapter_id", "adapter_version", "provider_transport", "supported_primitives", "authority_fields", "capability_sha256"],
+      "properties": {
+        "adapter_type": {"$ref": "#/$defs/identifier"},
+        "adapter_id": {"$ref": "#/$defs/identifier"},
+        "adapter_version": {"$ref": "#/$defs/identifier"},
+        "provider_transport": {"$ref": "#/$defs/identifier"},
+        "supported_primitives": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/primitive"}},
+        "authority_fields": {"const": []},
+        "capability_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "provider_transport", "exact_model", "adapter_id", "adapter_version"],
+      "properties": {
+        "provider": {"type": "string", "minLength": 1, "maxLength": 128},
+        "provider_transport": {"$ref": "#/$defs/identifier"},
+        "exact_model": {"type": "string", "minLength": 1, "maxLength": 128},
+        "adapter_id": {"$ref": "#/$defs/identifier"},
+        "adapter_version": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["qualification_id", "compatibility", "proved_primitives", "exact_tool_allowlist", "limits", "evidence_digests", "proof_boundary", "status", "issued_at", "expires_at", "recalled_at", "recall_sha256", "retry_allowed", "fallback_allowed", "qualification_sha256"],
+      "properties": {
+        "qualification_id": {"pattern": "^qualification_[0-9a-f]{32}$"},
+        "compatibility": {"$ref": "#/$defs/compatibility"},
+        "proved_primitives": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/primitive"}},
+        "exact_tool_allowlist": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+        "limits": {"type": "object", "additionalProperties": false, "required": ["max_concurrency"], "properties": {"max_concurrency": {"type": "integer", "minimum": 1}}},
+        "evidence_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "proof_boundary": {"const": "source_local"},
+        "status": {"enum": ["unknown", "qualified", "expired", "stale", "recalled", "revoked", "qualification_failed", "execution_unknown"]},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "recalled_at": {"type": ["string", "null"], "format": "date-time"},
+        "recall_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "retry_allowed": {"const": false},
+        "fallback_allowed": {"const": false},
+        "qualification_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "EVT-EXAMPLE-001",
+  "task_id": "T003",
+  "timestamp": "2026-07-14T12:00:00Z",
+  "event_kind": "progress",
+  "author_role": "Worker",
+  "identity": {
+    "agent_name": {"value": "unknown", "provenance": "unknown"},
+    "agent_id": {"value": "unknown", "provenance": "unknown"},
+    "provider": {"value": "unknown", "provenance": "unknown"},
+    "model": {"value": "unknown", "provenance": "unknown"},
+    "route_id": {"value": "unknown", "provenance": "unknown"},
+    "runtime": {"value": "unknown", "provenance": "unknown"}
+  },
+  "body": "The bounded implementation is in progress.",
+  "evidence": [],
+  "reply_to": null,
+  "correction_of": null,
+  "board_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "graph_id": "fixture-governed",
+  "evidence": [
+    {
+      "id": "EV-INPUT",
+      "kind": "source_reference",
+      "locator": "docs/goals/example/goal.md",
+      "digest": "unknown",
+      "state": "observed",
+      "claim_ids": ["WG-C001"],
+      "authority_effect": "none",
+      "acceptance_effect": "none"
+    },
+    {
+      "id": "EV-AUTH",
+      "kind": "receipt",
+      "locator": "reports/example/parent-assignment.md",
+      "digest": "unknown",
+      "state": "observed",
+      "claim_ids": ["WG-C002"],
+      "authority_effect": "none",
+      "acceptance_effect": "none"
+    },
+    {
+      "id": "EV-REPORT",
+      "kind": "artifact",
+      "locator": "reports/example/audit.md",
+      "digest": "unknown",
+      "state": "expected",
+      "claim_ids": [],
+      "authority_effect": "none",
+      "acceptance_effect": "none"
+    }
+  ],
+  "work_items": [
+    {
+      "id": "WI-GOVERNED",
+      "kind": "audit",
+      "objective": "Audit a governed checkpoint without granting acceptance.",
+      "status": "active",
+      "clarity_tier": "governed",
+      "scope": {"read": ["docs/goals/example/goal.md"], "write": ["reports/example/audit.md"]},
+      "done_condition": "The audit recommendation and evidence are ready for Parent review.",
+      "validation": [
+        {"id": "VAL-GOVERNED", "kind": "command", "instruction": "run governed fixture", "expected_result": "exit status 0"}
+      ],
+      "relationships": {
+        "parent_of": [],
+        "blocked_by": [],
+        "related_to": [],
+        "produces": ["EV-REPORT"],
+        "consumes": ["EV-INPUT", "EV-AUTH"]
+      },
+      "owner_role": "Auditor",
+      "expected_artifacts": ["EV-REPORT"],
+      "retry_policy": {"max_attempts": 2, "no_improvement_window": 2},
+      "stop_rule": "Return needs_revision when a bounded finding survives repair.",
+      "identity": {
+        "agent_name": {"value": "unknown", "provenance": "unknown"},
+        "agent_id": {"value": "unknown", "provenance": "unknown"},
+        "provider": {"value": "unknown", "provenance": "unknown"},
+        "model": {"value": "unknown", "provenance": "unknown"},
+        "route_id": {"value": "unknown", "provenance": "unknown"},
+        "runtime": {"value": "unknown", "provenance": "unknown"},
+        "billing": {"value": "unknown", "provenance": "unknown"},
+        "source_access": {"value": "unknown", "provenance": "unknown"},
+        "commands_executable": {"value": "unknown", "provenance": "unknown"},
+        "token_usage": {"value": "unknown", "provenance": "unknown"},
+        "cost": {"value": "unknown", "provenance": "unknown"},
+        "capabilities": {
+          "filesystem": {"value": "unknown", "provenance": "unknown"},
+          "browser": {"value": "unknown", "provenance": "unknown"},
+          "command": {"value": "unknown", "provenance": "unknown"},
+          "network": {"value": "unknown", "provenance": "unknown"},
+          "connector": {"value": "unknown", "provenance": "unknown"},
+          "billing": {"value": "unknown", "provenance": "unknown"}
+        }
+      },
+      "authority": {
+        "source": "parent:reports/example/parent-assignment.md",
+        "receipt_id": "EV-AUTH",
+        "provenance": "parent_issued",
+        "write_scope": ["reports/example/audit.md"],
+        "forbidden_actions": ["accept checkpoint", "mutate state.yaml"],
+        "may_accept": false,
+        "may_mutate_canonical_state": false
+      },
+      "provider_policy": {
+        "source_access": "unknown",
+        "input_delivery": "unknown",
+        "commands_executable": "unknown",
+        "billing": "unknown",
+        "token_limit": null,
+        "fallback": "none"
+      },
+      "independent_verification": {"required": true, "roles": ["Tester", "Auditor"]},
+      "receipts": ["EV-AUTH"],
+      "recovery": {
+        "preserve_failed_attempts": true,
+        "preserve_changed_files": true,
+        "on_failure": "revision",
+        "max_attempts": 2
+      },
+      "parent_acceptance": {"required": true, "authority": "Parent Codex", "status": "pending"}
+    }
+  ]
+}

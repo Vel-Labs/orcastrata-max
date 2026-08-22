@@ -1,0 +1,88 @@
+{
+  "assignment_id": "assignment-visible-provider-001",
+  "dispatch_id": "dispatch-visible-provider-001",
+  "goal_id": "example-goal",
+  "native_host": {
+    "model": "gpt-5.3-codex-spark",
+    "provider": "OpenAI",
+    "reasoning": "medium",
+    "role": "visible_bridge_host"
+  },
+  "objective": "Produce one bounded artifact for Parent Sol review.",
+  "requested_route": "worker_minimax_m3",
+  "route_packet": {
+    "allowed_billing": ["subscription"],
+    "attempt_results": {},
+    "authority_scope": [],
+    "consequence_floor": "medium",
+    "controls": {
+      "circuit_breaker_threshold": 1,
+      "max_attempts_per_checkpoint": 1,
+      "max_attempts_per_route": 1,
+      "no_improvement_window": 1
+    },
+    "independence_exclusions": [],
+    "independence_required": false,
+    "preflights": {},
+    "profile": "semantic_worker_artifact",
+    "provider_input": {},
+    "read_scope": [],
+    "requirements": {
+      "browser": false,
+      "commands": false,
+      "connector": false,
+      "local_files": false,
+      "web_search": false,
+      "write": false
+    },
+    "resolution_phase": "pre_dispatch",
+    "resolution_time": "2026-08-05T12:00:00Z",
+    "role": "worker",
+    "schema_version": 1,
+    "task_id": "T010-example",
+    "token_limit": null,
+    "write_scope": []
+  },
+  "schema_version": 1,
+  "semantic_role": "worker",
+  "standing_authority": {
+    "authority_id": "example-standing-authority",
+    "authority_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "automatic_dispatch": true,
+    "billing_allowed": ["subscription"],
+    "credential_action": "forbidden",
+    "duplicate_human_approval_inside_scope": "forbidden",
+    "external_write_access": "none",
+    "fresh_automatic_preflight": "required",
+    "goal_id": "example-goal",
+    "maximum_parallel_workers": 3,
+    "metered_fallback": "forbidden",
+    "route": {
+      "billing_basis": "subscription",
+      "exact_model": "MiniMax-M3",
+      "provider": "MiniMax",
+      "quota_observability": "unknown",
+      "reasoning": "provider_default",
+      "route_id": "standalone-minimax-m3",
+      "route_name": "worker_minimax_m3",
+      "runtime": "mmx 1.0.16"
+    },
+    "status": "approved"
+  },
+  "task_id": "T010-example",
+  "visible_task": {
+    "host_action_performed": false,
+    "host_action_requested": true,
+    "host_kind": "codex_desktop_task",
+    "presentation_exception_authorized": true,
+    "request_provenance": {
+      "assignment_id": "assignment-visible-provider-001",
+      "dispatch_id": "dispatch-visible-provider-001",
+      "request_id": "visible-request-001",
+      "requested_at": "2026-08-05T12:00:00Z",
+      "requested_by": "Parent Codex",
+      "semantic_role": "worker"
+    },
+    "title": "Spark bridge - MiniMax worker"
+  }
+}

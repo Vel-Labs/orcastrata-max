@@ -1,0 +1,26 @@
+{
+  "name": "codexmax-orchestrator",
+  "version": "1.0.0",
+  "description": "Orcastrata Max is the open agentic orchestration layer, native-first for Codex V1.",
+  "author": {
+    "name": "Vel Labs"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Orcastrata Max",
+    "shortDescription": "The open agentic orchestration layer",
+    "longDescription": "Orcastrata Max keeps one Parent task responsible for the outcome. V1 works with native Codex defaults after installation, offers a short optional-account setup on first use, grants read or write scope per task, and uses additional inference only when it adds material value. Discovery, planning, routing, supervision, verification, and closeout remain available for advanced composition.",
+    "developerName": "Vel Labs",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Orchestrate — Use $codexmax-orchestrator:codexmax-orchestrate for native-first work and optional account setup.",
+      "Discover — Use $codexmax-orchestrator:codexmax-discover for evidence-backed directions for this repository.",
+      "Audit — Use $codexmax-orchestrator:codexmax-verify to audit completed work against its evidence."
+    ]
+  }
+}

@@ -1,0 +1,133 @@
+schema_version: 1
+goal_id: "<goal-id>"
+checkpoint_id: "<checkpoint-id>"
+parent:
+  model: gpt-5.6-sol
+  reasoning: max
+  authority: final_acceptance
+supervisor:
+  preferred_model: none
+  reasoning: none
+  status: disabled_by_cost_guard
+budgets:
+  wall_time_minutes: null
+  outer_revision_cycles: null
+  max_concurrent_writers: 1
+  max_concurrent_readers: 4
+  claude_concurrency: 1
+  deepseek_concurrency: null
+  minimax_concurrency: 5
+  provider_quota_policy: preserve_high_reasoning_capacity
+  billing_policy: subscription_first_no_silent_metered_fallback
+  max_turns_safety_ceiling: 20
+  efficiency_checkpoint:
+    command_count: 10
+    command_output_chars: 131072
+    cumulative_input_tokens: 1000000
+    normal_command_output_chars: 16384
+    raw_excerpt_bytes: 8192
+  write_worker_no_progress:
+    command_count: 10
+    command_output_chars: 131072
+    wall_time_ms: 900000
+    read_only_exempt: true
+    require_progress_receipt: true
+    accepted_transition_kinds:
+      - authorized_file_change
+      - expected_artifact
+    required_transition_evidence:
+      authorized_file_change: verified_operation_and_path_bound_states
+      expected_artifact: verified_existing_regular_file
+    authorized_file_change_operations:
+      - create
+      - modify
+      - delete
+provider_defaults:
+  minimax:
+    preferred_model: MiniMax-M3
+    route_id: standalone-minimax-m3
+    require_explicit_model_flag: true
+    fallback_requires_parent_approval: true
+tasks:
+  - id: T001
+    objective: "<bounded outcome>"
+    role: worker
+    lane_mode: write_worker # write_worker | read_only
+    dependencies: []
+    parallel_group: implementation
+    read_first: []
+    provider_input:
+      required_source_access: []
+      # local_filesystem | embedded_only | connector_resource | mixed | none | unknown | unverified
+      source_access: unknown
+      # paths_only | embedded_fact_pack | connector_references | mixed | none | unknown | unverified
+      input_delivery: unknown
+      source_backed_claims_required: false
+      commands_required: false
+      # yes | no | unknown
+      commands_executable: unknown
+      # For mixed modes, every row also supplies a non-mixed access_mode and input_delivery.
+      named_source_categories: []
+      # When used: {schema_version: 1, pack_id: ..., facts: [...], omissions: [...]}
+      embedded_fact_pack: null
+      read_receipt_required: true # Mandatory; false, missing, or invalid fails dispatch.
+      compatibility_gate:
+        # compatible | incompatible | not_required | unknown
+        decision: unknown
+        # Must exactly match the validator-computed reason before dispatch.
+        reason: unknown
+    read_scope: []
+    write_scope: []
+    forbidden_actions: []
+    preferred_routes: []
+    fallback_routes: []
+    expected_artifacts: []
+    worker_progress:
+      receipt_path: null
+      policy_path: null # Parent/Supervisor packet projection; never Worker-authored.
+      evidence_root: null
+      transcript:
+        path: null
+        sha256: null
+      worker_identity:
+        process_id: null
+        session_id: null
+      supervisor_identity:
+        process_id: null
+        session_id: null
+      authorized_transition_paths: []
+      expected_artifacts_accepted_by_supervisor: []
+      # Each descriptor names receipt_id, path, and sha256; the receipt is Supervisor-owned.
+      # File-change receipts carry create/modify/delete plus path-bound before/after states.
+      # Create is absent-to-present, modify is unequal present-to-present, and delete is present-to-absent.
+      # Expected-artifact receipts carry a descriptor for the existing regular artifact.
+      supervisor_transition_receipts: []
+    raw_output_artifacts: []
+    self_test: []
+    independent_tester: null
+    correction_route: provider_diverse_worker
+    retry_cap: 2
+    wall_time_minutes: null
+    cost_policy: record_tokens_quota_cost_or_unknown
+    evidence_access_policy: receipts_first_bounded_raw
+    stop_if: []
+integration:
+  owner: parent_or_named_integrator
+  shared_files: []
+  merge_order: []
+  require_input_compatibility_gate: true
+  require_read_receipts: true
+verification:
+  require_worker_self_test: true
+  require_independent_tester: true
+  require_provider_diverse_auditor: true
+closeout:
+  template: assets/templates/supervisor-closeout.md
+  require_provider_neutral_result_shape: true
+  preserve_raw_transcripts: true
+  allowed_statuses:
+    - candidate_complete
+    - needs_revision
+    - needs_reassignment
+    - needs_parent_repair
+    - waiting_external

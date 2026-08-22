@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/protected-grok-service-capability-v1.json",
+  "title": "Pending Grok prepared-session receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status", "billing_basis", "clean_session_isolation_proved",
+    "oauth_subscription_proved", "spawn_eligible", "provider_called",
+    "retry_allowed", "protected_production", "t062_proved"
+  ],
+  "properties": {
+    "status": {"const": "pending_oauth_subscription_and_clean_session_evidence"},
+    "billing_basis": {"const": "unknown"},
+    "clean_session_isolation_proved": {"const": false},
+    "oauth_subscription_proved": {"const": false},
+    "spawn_eligible": {"const": false},
+    "provider_called": {"const": false},
+    "retry_allowed": {"const": false},
+    "protected_production": {"const": false},
+    "t062_proved": {"const": false}
+  }
+}

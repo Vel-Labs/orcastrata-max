@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-learning-observation-v1-schema.json",
+  "title": "Provider Learning Observation v1",
+  "$comment": "JSON Schema closes structure and feasible invariants. provider_learning_observation.py requires a separately retained expected Supervisor receipt digest plus the external ledger head, and validates cross-field derivation, source projection equality, repair target equality, and canonical digests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_type", "observation_id", "sequence",
+    "previous_observation_sha256", "recorded_at", "source_event", "observed",
+    "inferred", "dimensions", "measurements", "learner", "effects",
+    "observation_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "ProviderLearningObservationV1"},
+    "observation_id": {"$ref": "#/$defs/descriptor"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "previous_observation_sha256": {"$ref": "#/$defs/sha"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "source_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_type", "provider_stage", "terminal_state", "mutation_state",
+        "event_sha256", "raw_evidence_digest", "provider_facts_digest",
+        "binding_sha256", "supervisor_receipt_sha256", "timestamp", "binding_projection"
+      ],
+      "properties": {
+        "event_type": {"const": "attempt_terminal_observed"},
+        "provider_stage": {"$ref": "#/$defs/stage"},
+        "terminal_state": {"enum": ["succeeded", "rejected", "execution_unknown"]},
+        "mutation_state": {"enum": ["none", "possible", "confirmed", "reconciled", "unknown"]},
+        "event_sha256": {"$ref": "#/$defs/sha"},
+        "raw_evidence_digest": {"$ref": "#/$defs/sha"},
+        "provider_facts_digest": {"$ref": "#/$defs/sha"},
+        "binding_sha256": {"$ref": "#/$defs/sha"},
+        "supervisor_receipt_sha256": {"$ref": "#/$defs/sha"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "binding_projection": {"$ref": "#/$defs/bindingProjection"}
+      }
+    },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage", "symptom", "mutation_state", "retry_safety",
+        "evidence_status", "outcome"
+      ],
+      "properties": {
+        "stage": {"$ref": "#/$defs/stage"},
+        "symptom": {
+          "enum": [
+            "success_observed", "execution_unknown", "no_terminal_symptom",
+            "admission_failed", "authentication_failed", "transport_failed",
+            "response_failed", "tool_request_failed", "tool_execution_failed",
+            "artifact_validation_failed", "mutation_reconciliation_failed",
+            "receipt_finalization_failed"
+          ]
+        },
+        "mutation_state": {"enum": ["none", "possible", "confirmed", "reconciled", "unknown"]},
+        "retry_safety": {
+          "enum": [
+            "safe_pre_execution", "unsafe_possible_mutation",
+            "unsafe_execution_unknown", "unsafe_execution_started",
+            "not_applicable", "unknown"
+          ]
+        },
+        "evidence_status": {"enum": ["known", "unknown"]},
+        "outcome": {"enum": ["success", "failure", "unknown", "in_progress"]}
+      }
+    },
+    "inferred": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["probable_fault_domain", "confidence", "proposed_repair"],
+      "properties": {
+        "probable_fault_domain": {
+          "enum": [
+            "admission_policy", "authentication", "provider_transport",
+            "provider_response", "tool_request_contract", "tool_execution",
+            "artifact_validation", "mutation_reconciliation",
+            "receipt_finalization", "none", "unknown"
+          ]
+        },
+        "confidence": {"$ref": "#/$defs/measurement"},
+        "proposed_repair": {
+          "enum": [
+            "inspect_admission_evidence", "repair_authentication_configuration",
+            "repair_transport_adapter", "repair_response_contract",
+            "repair_tool_request_contract", "repair_tool_execution_adapter",
+            "repair_artifact_validator", "inspect_mutation_reconciliation",
+            "repair_receipt_finalizer", "none"
+          ]
+        }
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider", "exact_model", "transport", "adapter_id",
+        "adapter_version", "primitives", "task_class"
+      ],
+      "properties": {
+        "provider": {"$ref": "#/$defs/descriptor"},
+        "exact_model": {"$ref": "#/$defs/descriptor"},
+        "transport": {"$ref": "#/$defs/descriptor"},
+        "adapter_id": {"$ref": "#/$defs/descriptor"},
+        "adapter_version": {"$ref": "#/$defs/descriptor"},
+        "primitives": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/descriptor"}
+        },
+        "task_class": {"$ref": "#/$defs/descriptor"}
+      }
+    },
+    "measurements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quality_score", "turns", "latency_ms", "input_tokens",
+        "output_tokens", "total_tokens", "cost_usd"
+      ],
+      "properties": {
+        "quality_score": {"$ref": "#/$defs/measurement"},
+        "turns": {"$ref": "#/$defs/measurement"},
+        "latency_ms": {"$ref": "#/$defs/measurement"},
+        "input_tokens": {"$ref": "#/$defs/measurement"},
+        "output_tokens": {"$ref": "#/$defs/measurement"},
+        "total_tokens": {"$ref": "#/$defs/measurement"},
+        "cost_usd": {"$ref": "#/$defs/measurement"}
+      }
+    },
+    "learner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disposition", "reason_code", "conditional_repair"],
+      "properties": {
+        "disposition": {"enum": ["propose", "abstain", "reject"]},
+        "reason_code": {
+          "enum": [
+            "bounded_shadow_repair", "mutation_or_execution_uncertain",
+            "evidence_unknown", "no_safe_pre_execution_repair",
+            "invalid_or_unsafe_candidate"
+          ]
+        },
+        "conditional_repair": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "repair_type", "target_adapter_id", "target_adapter_version",
+                "same_provider_only", "new_parent_decision_required",
+                "retry_allowed", "provider_substitution"
+              ],
+              "properties": {
+                "repair_type": {"$ref": "#/$defs/descriptor"},
+                "target_adapter_id": {"$ref": "#/$defs/descriptor"},
+                "target_adapter_version": {"$ref": "#/$defs/descriptor"},
+                "same_provider_only": {"const": true},
+                "new_parent_decision_required": {"const": true},
+                "retry_allowed": {"const": false},
+                "provider_substitution": {"const": false}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "effects": {"$ref": "#/$defs/effects"},
+    "observation_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source_event": {"properties": {"terminal_state": {"const": "succeeded"}}}}},
+      "then": {"properties": {"observed": {"properties": {"outcome": {"const": "success"}, "symptom": {"const": "success_observed"}, "retry_safety": {"const": "not_applicable"}}}}}
+    },
+    {
+      "if": {"properties": {"source_event": {"properties": {"terminal_state": {"const": "execution_unknown"}}}}},
+      "then": {"properties": {"observed": {"properties": {"outcome": {"const": "unknown"}, "symptom": {"const": "execution_unknown"}}}}}
+    },
+    {
+      "if": {"properties": {"learner": {"properties": {"disposition": {"const": "propose"}}}}},
+      "then": {
+        "properties": {
+          "observed": {"properties": {"stage": {"enum": ["admission", "authentication", "transport"]}, "outcome": {"const": "failure"}, "mutation_state": {"const": "none"}, "retry_safety": {"const": "safe_pre_execution"}, "evidence_status": {"const": "known"}}},
+          "learner": {"properties": {"reason_code": {"const": "bounded_shadow_repair"}, "conditional_repair": {"type": "object"}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "admission"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "admission_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "admission_policy"}, "proposed_repair": {"const": "inspect_admission_evidence"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "authentication"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "authentication_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "authentication"}, "proposed_repair": {"const": "repair_authentication_configuration"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "transport"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "transport_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "provider_transport"}, "proposed_repair": {"const": "repair_transport_adapter"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "response"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "response_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "provider_response"}, "proposed_repair": {"const": "repair_response_contract"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "tool_request"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "tool_request_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "tool_request_contract"}, "proposed_repair": {"const": "repair_tool_request_contract"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "tool_execution"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "tool_execution_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "tool_execution"}, "proposed_repair": {"const": "repair_tool_execution_adapter"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "artifact_validation"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "artifact_validation_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "artifact_validation"}, "proposed_repair": {"const": "repair_artifact_validator"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "mutation_reconciliation"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "mutation_reconciliation_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "mutation_reconciliation"}, "proposed_repair": {"const": "inspect_mutation_reconciliation"}}}}}
+    },
+    {
+      "if": {"properties": {"observed": {"properties": {"stage": {"const": "receipt_finalization"}, "outcome": {"const": "failure"}}}}},
+      "then": {"properties": {"observed": {"properties": {"symptom": {"const": "receipt_finalization_failed"}}}, "inferred": {"properties": {"probable_fault_domain": {"const": "receipt_finalization"}, "proposed_repair": {"const": "repair_receipt_finalizer"}}}}}
+    }
+  ],
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "descriptor": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+~-]*$"
+    },
+    "stage": {
+      "enum": [
+        "admission", "authentication", "transport", "response",
+        "tool_request", "tool_execution", "artifact_validation",
+        "mutation_reconciliation", "receipt_finalization"
+      ]
+    },
+    "bindingProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route", "model", "transport", "adapter", "qualification",
+        "capability_card_sha256", "adapter_harness_sha256", "lane_profile",
+        "effective_primitives", "capability_sha256", "projection_sha256"
+      ],
+      "properties": {
+        "route": {
+          "type": "object", "additionalProperties": false,
+          "required": ["name", "provider"],
+          "properties": {"name": {"$ref": "#/$defs/descriptor"}, "provider": {"$ref": "#/$defs/descriptor"}}
+        },
+        "model": {
+          "type": "object", "additionalProperties": false,
+          "required": ["exact_model"],
+          "properties": {"exact_model": {"$ref": "#/$defs/descriptor"}}
+        },
+        "transport": {"$ref": "#/$defs/descriptor"},
+        "adapter": {
+          "type": "object", "additionalProperties": false,
+          "required": ["id", "version"],
+          "properties": {"id": {"$ref": "#/$defs/descriptor"}, "version": {"$ref": "#/$defs/descriptor"}}
+        },
+        "qualification": {
+          "type": "object", "additionalProperties": false,
+          "required": ["id", "sha256"],
+          "properties": {"id": {"$ref": "#/$defs/descriptor"}, "sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "capability_card_sha256": {"$ref": "#/$defs/sha"},
+        "adapter_harness_sha256": {"$ref": "#/$defs/sha"},
+        "lane_profile": {"$ref": "#/$defs/descriptor"},
+        "effective_primitives": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/descriptor"}
+        },
+        "capability_sha256": {"$ref": "#/$defs/sha"},
+        "projection_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "measurement": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "value", "reason"],
+          "properties": {
+            "status": {"const": "known"},
+            "value": {"type": "number", "minimum": 0},
+            "reason": {"type": "null"}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "value", "reason"],
+          "properties": {
+            "status": {"const": "unknown"},
+            "value": {"type": "null"},
+            "reason": {"enum": ["not_exposed", "not_reported", "not_applicable"]}
+          }
+        }
+      ]
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_action", "authority_expansion", "route_enablement",
+        "retry_requested", "acceptance", "fold", "board_mutation"
+      ],
+      "properties": {
+        "runtime_action": {"const": false},
+        "authority_expansion": {"const": false},
+        "route_enablement": {"const": false},
+        "retry_requested": {"const": false},
+        "acceptance": {"const": false},
+        "fold": {"const": false},
+        "board_mutation": {"const": false}
+      }
+    }
+  }
+}

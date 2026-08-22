@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-normalized-event-v1-schema.json",
+  "title": "Provider Normalized Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_type", "event_type", "stage", "terminal_state",
+    "mutation_state", "timestamp", "raw_evidence", "raw_evidence_digest",
+    "provider_facts", "binding", "binding_sha256", "retry_allowed",
+    "fallback_allowed", "hedging_allowed", "authority_granted",
+    "accepted_by_parent", "board_mutation_performed", "fold_performed", "event_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "ProviderNormalizedEventV1"},
+    "event_type": {
+      "enum": [
+        "admission_observed", "binding_observed", "spawn_observed",
+        "response_observed", "tool_request_observed", "tool_result_observed",
+        "artifact_validation_observed", "mutation_reconciliation_observed",
+        "receipt_finalization_observed", "attempt_terminal_observed"
+      ]
+    },
+    "stage": {"type": "string", "minLength": 1},
+    "terminal_state": {"type": ["string", "null"], "enum": ["succeeded", "rejected", "execution_unknown", null]},
+    "mutation_state": {"enum": ["none", "possible", "confirmed", "reconciled", "unknown"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "raw_evidence": {"type": "object"},
+    "raw_evidence_digest": {"$ref": "#/$defs/sha"},
+    "provider_facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "billing", "safety", "mutation"],
+      "properties": {
+        "identity": {"type": "object"},
+        "billing": {"type": "object"},
+        "safety": {"type": "object"},
+        "mutation": {"type": "object"}
+      }
+    },
+    "binding": {"$ref": "#/$defs/binding"},
+    "binding_sha256": {"$ref": "#/$defs/sha"},
+    "retry_allowed": {"const": false},
+    "fallback_allowed": {"const": false},
+    "hedging_allowed": {"const": false},
+    "authority_granted": {"const": false},
+    "accepted_by_parent": {"const": false},
+    "board_mutation_performed": {"const": false},
+    "fold_performed": {"const": false},
+    "event_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "stringList": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route", "model", "transport", "adapter", "qualification",
+        "capability_card_sha256", "adapter_harness_sha256", "lane", "grant", "lease",
+        "worktree", "evidence_root", "attempt", "expiry", "effective_capability"
+      ],
+      "properties": {
+        "route": {
+          "type": "object", "additionalProperties": false, "required": ["name", "provider"],
+          "properties": {"name": {"type": "string"}, "provider": {"type": "string"}}
+        },
+        "model": {
+          "type": "object", "additionalProperties": false, "required": ["exact_model"],
+          "properties": {"exact_model": {"type": "string"}}
+        },
+        "transport": {"type": "string"},
+        "adapter": {
+          "type": "object", "additionalProperties": false, "required": ["id", "version"],
+          "properties": {"id": {"type": "string"}, "version": {"type": "string"}}
+        },
+        "qualification": {
+          "type": "object", "additionalProperties": false, "required": ["id", "sha256"],
+          "properties": {"id": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "capability_card_sha256": {"$ref": "#/$defs/sha"},
+        "adapter_harness_sha256": {"$ref": "#/$defs/sha"},
+        "lane": {
+          "type": "object", "additionalProperties": false, "required": ["id", "profile", "mutation_mode"],
+          "properties": {
+            "id": {"type": "string"}, "profile": {"type": "string"},
+            "mutation_mode": {"enum": ["read_only", "artifact_only", "scoped_write"]}
+          }
+        },
+        "grant": {
+          "type": "object", "additionalProperties": false, "required": ["id", "sha256"],
+          "properties": {"id": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "lease": {
+          "type": "object", "additionalProperties": false, "required": ["id", "fencing_token", "sha256"],
+          "properties": {"id": {"type": "string"}, "fencing_token": {"type": "integer", "minimum": 1}, "sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "worktree": {
+          "type": "object", "additionalProperties": false, "required": ["path", "identity_sha256"],
+          "properties": {"path": {"type": "string"}, "identity_sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "evidence_root": {"type": "string"},
+        "attempt": {
+          "type": "object", "additionalProperties": false, "required": ["id", "index"],
+          "properties": {"id": {"type": "string"}, "index": {"type": "integer", "minimum": 1}}
+        },
+        "expiry": {
+          "type": "object", "additionalProperties": false,
+          "required": ["capability", "qualification", "grant", "execution_binding", "effective"],
+          "properties": {
+            "capability": {"type": "string", "format": "date-time"},
+            "qualification": {"type": "string", "format": "date-time"},
+            "grant": {"type": "string", "format": "date-time"},
+            "execution_binding": {"type": "string", "format": "date-time"},
+            "effective": {"type": "string", "format": "date-time"}
+          }
+        },
+        "effective_capability": {
+          "type": "object", "additionalProperties": false,
+          "required": [
+            "required_primitives", "adapter_supported_primitives", "qualified_primitives",
+            "granted_primitives", "effective_primitives", "exact_tool_allowlist", "capability_sha256"
+          ],
+          "properties": {
+            "required_primitives": {"$ref": "#/$defs/stringList"},
+            "adapter_supported_primitives": {"$ref": "#/$defs/stringList"},
+            "qualified_primitives": {"$ref": "#/$defs/stringList"},
+            "granted_primitives": {"$ref": "#/$defs/stringList"},
+            "effective_primitives": {"$ref": "#/$defs/stringList"},
+            "exact_tool_allowlist": {"$ref": "#/$defs/stringList"},
+            "capability_sha256": {"$ref": "#/$defs/sha"}
+          }
+        }
+      }
+    }
+  }
+}

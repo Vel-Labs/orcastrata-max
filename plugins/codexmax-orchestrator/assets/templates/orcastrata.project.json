@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "manifest_type": "orcastrata_project_v1",
+  "project_id": "replace-with-stable-project-id",
+  "display_name": "Replace with project name",
+  "context": {
+    "files": [],
+    "max_files": 20,
+    "max_bytes": 262144
+  },
+  "skills": [],
+  "scope": {
+    "root": ".",
+    "exclusions": [".orcastrata", ".codexmax"]
+  },
+  "usage": {
+    "ledger": ".orcastrata/usage/dispatch.jsonl",
+    "privacy": "metadata_only"
+  }
+}

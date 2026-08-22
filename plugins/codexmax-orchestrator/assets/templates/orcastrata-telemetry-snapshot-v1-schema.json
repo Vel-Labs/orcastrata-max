@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orcastrata.local/schemas/orcastrata-telemetry-snapshot-v1.json",
+  "title": "OrcastrataTelemetrySnapshotV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "project", "ledger", "managed_dispatches", "accounting_coverage", "loop_runs", "proof_boundary", "privacy", "unknowns", "snapshot_sha256"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "OrcastrataTelemetrySnapshotV1"},
+    "project": {
+      "type": "object", "additionalProperties": false,
+      "required": ["project_id", "configured"],
+      "properties": {"project_id": {"type": "string", "minLength": 1}, "configured": {"type": "boolean"}}
+    },
+    "ledger": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verified", "after_cursor", "cursor"],
+      "properties": {
+        "verified": {"const": true},
+        "after_cursor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/cursor"}]},
+        "cursor": {
+          "$ref": "#/$defs/cursor"
+        }
+      }
+    },
+    "managed_dispatches": {
+      "type": "object", "additionalProperties": false,
+      "required": ["projection", "rows"],
+      "properties": {
+        "projection": {"const": "verified_dispatch_ledger_managed_only"},
+        "rows": {"type": "array", "maxItems": 10000, "items": {"$ref": "#/$defs/managedRow"}}
+      }
+    },
+    "accounting_coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scope", "admitted_executions", "accounted_executions", "unaccounted_executions", "unknown_executions", "complete"],
+      "properties": {
+        "scope": {"const": "orcastrata_admitted_executions"},
+        "admitted_executions": {"type": "integer", "minimum": 0},
+        "accounted_executions": {"type": "integer", "minimum": 0},
+        "unaccounted_executions": {"type": "integer", "minimum": 0},
+        "unknown_executions": {"type": "integer", "minimum": 0},
+        "complete": {"type": "boolean"}
+      }
+    },
+    "loop_runs": {"type": "array", "maxItems": 1000, "items": {"$ref": "#/$defs/traceProjection"}},
+    "proof_boundary": {"const": "local_read_only_stdout_metadata_only"},
+    "privacy": {"const": "metadata_only"},
+    "unknowns": {"type": "array", "uniqueItems": true, "minItems": 3, "maxItems": 3, "items": {"enum": ["host_native_parent_usage_unless_imported", "host_native_collaboration_usage_unaccounted", "provider_payloads_and_transcripts"]}},
+    "snapshot_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "managedRow": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "event_id", "event_hash", "previous_event_hash", "event_type", "timestamp", "goal_id", "checkpoint_id", "task_id", "assignment_id", "route", "accounting", "evidence"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1}, "event_id": {"type": "string"},
+        "event_hash": {"type": "string"}, "previous_event_hash": {"type": "string"},
+        "event_type": {"type": "string"}, "timestamp": {"type": "string"},
+        "goal_id": {"type": "string"}, "checkpoint_id": {"type": "string"},
+        "task_id": {"type": "string"}, "assignment_id": {"type": "string"},
+        "route": {"$ref": "#/$defs/route"},
+        "accounting": {"$ref": "#/$defs/accounting"},
+        "evidence": {"$ref": "#/$defs/evidence"}
+      }
+    },
+    "cursor": {"type": "object", "additionalProperties": false, "required": ["sequence", "event_hash"], "properties": {"sequence": {"type": "integer", "minimum": 0}, "event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "route": {"type": "object", "additionalProperties": false, "properties": {"route_name": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "route_id": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "provider": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "model": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "runtime": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "billing": {"enum": ["subscription", "metered", "local", "none", "unknown"]}, "reasoning": {"enum": ["low", "medium", "high", "xhigh", "max", "unknown"]}, "tool": {"enum": ["OpenCode", "Command Code", "Codex", "Orcastrata Max", "unknown"]}}},
+    "measurement": {"type": "object", "additionalProperties": false, "required": ["value", "reason", "provenance"], "properties": {"value": {"oneOf": [{"type": "number", "minimum": 0}, {"const": "unknown"}]}, "reason": {"type": "string"}, "provenance": {"enum": ["observed", "derived", "unknown"]}, "method": {"type": "string"}}},
+    "accounting": {"type": "object", "additionalProperties": false, "required": ["project_id", "observed_tokens", "observed_cost", "token_usage", "usage_source", "accounting_status", "accounting_scope", "accounting_method"], "properties": {"project_id": {"type": "string"}, "observed_tokens": {"oneOf": [{"type": "number", "minimum": 0}, {"const": "unknown"}]}, "observed_cost": {"oneOf": [{"$ref": "#/$defs/measurement"}, {"const": "unknown"}]}, "token_usage": {"type": "object", "additionalProperties": false, "required": ["input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens", "total_tokens"], "properties": {"input_tokens": {"$ref": "#/$defs/measurement"}, "cached_input_tokens": {"$ref": "#/$defs/measurement"}, "output_tokens": {"$ref": "#/$defs/measurement"}, "reasoning_output_tokens": {"$ref": "#/$defs/measurement"}, "total_tokens": {"$ref": "#/$defs/measurement"}}}, "usage_source": {"type": "string"}, "accounting_status": {"enum": ["accounted", "unaccounted", "unknown"]}, "accounting_scope": {"const": "orcastrata_admitted_executions"}, "accounting_method": {"enum": ["managed_ledger_append", "bounded_native_import", "unknown"]}}},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["project_id", "dispatch_status", "work_status", "execution_owner", "external_call_performed", "manifest_sha256"], "properties": {"project_id": {"type": "string"}, "dispatch_status": {"type": "string"}, "work_status": {"type": "string"}, "execution_owner": {"const": "orcastrata_managed"}, "external_call_performed": {"oneOf": [{"type": "boolean"}, {"const": "unknown"}]}, "manifest_sha256": {"type": "string"}}},
+    "origin": {"type": "object", "additionalProperties": false, "required": ["run_id", "loop_id", "depth", "ancestry"], "properties": {"run_id": {"type": ["string", "null"]}, "loop_id": {"type": ["string", "null"]}, "depth": {"type": "integer"}, "ancestry": {"type": "array", "items": {"type": "string"}}}},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "traceProjection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trace_id", "run_id", "parent_run_id", "loop", "ancestry", "relation", "receipt", "event", "execution", "output", "binding_sha256"],
+      "properties": {
+        "trace_id": {"type": "string"}, "run_id": {"type": "string"},
+        "parent_run_id": {"type": ["string", "null"]},
+        "loop": {"type": "object", "additionalProperties": false, "required": ["loop_id", "definition_version"], "properties": {"loop_id": {"type": "string"}, "definition_version": {"type": "integer", "minimum": 1}}},
+        "relation": {"type": "object", "additionalProperties": false, "required": ["kind", "root_run_id", "parent_run_id"], "properties": {"kind": {"type": "string"}, "root_run_id": {"type": ["string", "null"]}, "parent_run_id": {"type": ["string", "null"]}}},
+        "ancestry": {"$ref": "#/$defs/origin"},
+        "receipt": {"type": "object", "additionalProperties": false, "required": ["receipt_id", "sha256"], "properties": {"receipt_id": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}},
+        "event": {"type": "object", "additionalProperties": false, "required": ["event_id", "event_type", "dedupe_key", "source", "origin", "sha256"], "properties": {"event_id": {"type": "string"}, "event_type": {"type": "string"}, "dedupe_key": {"type": "string"}, "source": {"$ref": "#/$defs/source"}, "origin": {"$ref": "#/$defs/origin"}, "sha256": {"$ref": "#/$defs/digest"}}},
+        "execution": {"type": "object", "additionalProperties": false, "required": ["status", "result", "attempt", "started_at", "finished_at", "duration_ms"], "properties": {"status": {"type": "string"}, "result": {"type": "string"}, "attempt": {"type": "integer"}, "started_at": {"type": ["string", "null"]}, "finished_at": {"type": ["string", "null"]}, "duration_ms": {"type": ["integer", "string"]}}},
+        "output": {"type": "object", "additionalProperties": false, "required": ["sha256", "captured_chars", "truncated"], "properties": {"sha256": {"type": "string"}, "captured_chars": {"type": "integer"}, "truncated": {"type": "boolean"}}}
+        ,"binding_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "source": {"type": "object", "additionalProperties": false, "required": ["adapter_id", "source_event_id", "trust"], "properties": {"adapter_id": {"type": "string"}, "source_event_id": {"type": "string"}, "trust": {"type": "string"}}}
+  }
+}

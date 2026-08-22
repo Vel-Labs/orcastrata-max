@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-supervisor-harness-v1-schema.json",
+  "title": "Provider Supervisor Harness v1",
+  "$comment": "JSON Schema closes feasible structure. provider_supervisor_harness.py validate_supervisor_receipt requires a separately retained expected_receipt_sha256 for provenance and validates digest, event sequence, terminal, aggregate, binding, controller, and authority semantics.",
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/receipt"}
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "artifact_type", "harness_id", "evaluated_at", "plan",
+        "registry", "lane_requirements", "transport_events"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "artifact_type": {"const": "ProviderSupervisorHarnessRequestV1"},
+        "harness_id": {"type": "string", "minLength": 1},
+        "evaluated_at": {"type": "string", "format": "date-time"},
+        "plan": {"type": "object"},
+        "registry": {"type": "object"},
+        "lane_requirements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["qualification_id", "lane_profile", "exact_tool_allowlist"],
+            "properties": {
+              "qualification_id": {"type": "string"},
+              "lane_profile": {"enum": ["read", "artifact", "scoped_write", "implementation", "tool_loop", "audit"]},
+              "exact_tool_allowlist": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+            }
+          }
+        },
+        "transport_events": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["lane_id", "event"],
+            "properties": {"lane_id": {"type": "string"}, "event": {"type": "object"}}
+          }
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "artifact_type", "harness_id", "status", "failure",
+        "aggregate", "normalized_events", "effective_capability_bindings",
+        "controller_owner", "controller_invocations", "retry_requested_by_supervisor",
+        "fallback_requested", "hedging_requested", "accepted_by_parent",
+        "board_mutation_performed", "fold_performed", "application_performed", "receipt_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "artifact_type": {"const": "ProviderSupervisorHarnessReceiptV1"},
+        "harness_id": {"type": "string"},
+        "status": {"enum": ["succeeded", "rejected", "execution_unknown"]},
+        "failure": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["type", "digest"],
+              "properties": {
+                "type": {"type": "string", "minLength": 1},
+                "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+              }
+            }
+          ]
+        },
+        "aggregate": {"type": ["object", "null"]},
+        "normalized_events": {"type": "array", "items": {"type": "object"}},
+        "effective_capability_bindings": {"type": "object"},
+        "controller_owner": {"const": "T170"},
+        "controller_invocations": {"const": 1},
+        "retry_requested_by_supervisor": {"const": false},
+        "fallback_requested": {"const": false},
+        "hedging_requested": {"const": false},
+        "accepted_by_parent": {"const": false},
+        "board_mutation_performed": {"const": false},
+        "fold_performed": {"const": false},
+        "application_performed": {"const": false},
+        "receipt_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

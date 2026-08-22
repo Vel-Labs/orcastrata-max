@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "cursor_sequence": 1,
+  "goal_id": "goal-slug",
+  "checkpoint_id": "T005",
+  "reader_role": "parent",
+  "last_event_sequence": 0,
+  "last_event_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "delta_count": 0,
+  "timestamp": "2026-07-14T00:00:00Z",
+  "previous_cursor_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "cursor_hash": "computed-over-all-other-fields"
+}

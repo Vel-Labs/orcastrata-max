@@ -1,0 +1,10 @@
+{
+  "event_id": "<stable event id>",
+  "event_type": "assignment_created",
+  "lane_id": "<internal lane id>",
+  "payload": {
+    "assignment": {}
+  },
+  "schema_version": 1,
+  "timestamp": "<YYYY-MM-DDTHH:MM:SSZ>"
+}

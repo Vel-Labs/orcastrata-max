@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "row_id": "ROW-EXAMPLE-001",
+  "update_id": "UPD-EXAMPLE-001",
+  "timestamp": "2026-07-14T12:00:00Z",
+  "target_task": "T003",
+  "update_kind": "task_transition",
+  "transition": "proposed",
+  "proposed_patch": [
+    {"op": "replace", "path": "/tasks/T003/status", "value": "ready_for_review"}
+  ],
+  "proposer_identity": {
+    "role": "Worker",
+    "agent_name": {"value": "unknown", "provenance": "unknown"},
+    "agent_id": {"value": "unknown", "provenance": "unknown"},
+    "provider": {"value": "unknown", "provenance": "unknown"},
+    "model": {"value": "unknown", "provenance": "unknown"},
+    "route_id": {"value": "unknown", "provenance": "unknown"},
+    "runtime": {"value": "unknown", "provenance": "unknown"}
+  },
+  "expected_board_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "authority_reference": {
+    "source": "parent:reports/example/assignment.md",
+    "receipt_id": "AUTH-EXAMPLE-001",
+    "provenance": "parent_issued",
+    "allowed_patch_paths": ["/tasks/T003/status"],
+    "may_accept": false,
+    "may_mutate_canonical_state": false
+  },
+  "review_status": "pending",
+  "reviewer_identity": null,
+  "parent_decision": null,
+  "applied_state_sha256": null,
+  "superseded_by_update_id": null,
+  "reconciliation": null
+}

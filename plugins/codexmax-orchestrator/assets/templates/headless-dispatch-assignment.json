@@ -1,0 +1,85 @@
+{
+  "authority": {
+    "billing_authorized": false,
+    "credential_mechanism_authorized": false,
+    "network_authorized": false,
+    "provider_call_authorized": false,
+    "retention_authorized": true,
+    "scope_authorized": true
+  },
+  "dispatch_id": "dispatch-example-001",
+  "dispatch_output_scope": [
+    "reports/headless-dispatch/**"
+  ],
+  "evidence_directory": "reports/headless-dispatch/dispatch-example-001",
+  "expected_artifact": "reports/headless-dispatch/worker-result.md",
+  "prompt": "Complete the bounded assignment and return only the requested artifact content.",
+  "proof_mode": "simulated",
+  "semantic_role": "worker",
+  "supervisor_assignment_id": "assignment-example-001",
+  "supervisor_lane_id": "worker-example-001",
+  "route_packet": {
+    "allowed_billing": [
+      "local_compute",
+      "native_included",
+      "subscription"
+    ],
+    "attempt_results": {},
+    "authority_scope": [
+      "repository_local_write"
+    ],
+    "consequence_floor": "medium",
+    "controls": {
+      "circuit_breaker_threshold": 1,
+      "max_attempts_per_checkpoint": 3,
+      "max_attempts_per_route": 1,
+      "no_improvement_window": 1
+    },
+    "independence_exclusions": [],
+    "independence_required": false,
+    "preflights": {},
+    "provider_input": {
+      "commands_executable": "yes",
+      "commands_required": true,
+      "compatibility_gate": {
+        "decision": "compatible",
+        "reason": "compatible"
+      },
+      "input_delivery": "paths_only",
+      "named_source_categories": [
+        {
+          "category_id": "repository",
+          "required": true,
+          "source_label": "Repository paths"
+        }
+      ],
+      "read_receipt_required": true,
+      "required_source_access": [
+        "local_filesystem"
+      ],
+      "source_access": "local_filesystem",
+      "source_backed_claims_required": true
+    },
+    "read_scope": [
+      "plugins/codexmax-orchestrator/**"
+    ],
+    "requirements": {
+      "browser": false,
+      "commands": true,
+      "connector": false,
+      "local_files": true,
+      "web_search": false,
+      "write": true
+    },
+    "resolution_time": "2026-07-27T12:00:00Z",
+    "role": "worker",
+    "schema_version": 1,
+    "task_id": "T002-example",
+    "token_limit": null,
+    "write_scope": [
+      "reports/headless-dispatch/**"
+    ]
+  },
+  "schema_version": 1,
+  "working_directory": "."
+}

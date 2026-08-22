@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/standalone-operator-source-manifest-v1.json",
+  "title": "Standalone Operator Source Manifest v1",
+  "description": "Closed package-owned allowlist of source-local synthetic/no-effect operator source bundles. Semantic validation and the non-authority boundary are specified by the companion contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "scope", "canonicalization", "bundles"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "standalone_operator_source_manifest_v1"},
+    "scope": {"const": "package_source_local_synthetic_no_effect"},
+    "canonicalization": {"const": "standalone_runtime_cli_canonical_json_v1"},
+    "bundles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/bundle"}
+    }
+  },
+  "x-codexmax-semantic-validation": {
+    "manifest_discovery_is_one_source_relative_constant": true,
+    "manifest_must_be_regular_non_symlink_file": true,
+    "manifest_raw_sha256_is_pinned_outside_manifest": true,
+    "manifest_contains_no_path_or_self_digest": true,
+    "bundle_ids_unique_strictly_ascii_ordered": true,
+    "bundle_arrays_unique_strictly_ascii_ordered": true,
+    "request_memberships_cover_every_binding_slot_exactly": true,
+    "request_and_receipt_digests_use_accepted_cli_canonical_json": true,
+    "role_request_memberships_equal_role_ids": true,
+    "route_memberships_equal_every_displayed_route_identity": true,
+    "adapter_identity_sha256_uses_runtime_adapter_domain_wrapped_digest": true,
+    "identity_memberships_equal_exact_consumed_evidence_sets": true,
+    "source_evaluation_times_must_be_within_bundle_window": true,
+    "recall_state_must_match_source_evidence": true,
+    "all_effects_and_authority_claims_are_false": true,
+    "membership_does_not_grant_capability_or_authority": true
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digestOrNone": {"type": "string", "pattern": "^(none|sha256:[0-9a-f]{64})$"},
+    "timestamp": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"},
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cli", "binding", "runtime_manifest", "planner", "adapter_snapshot", "runtime_evidence", "policy_proposal"],
+      "properties": {
+        "cli": {"type": "integer", "minimum": 1},
+        "binding": {"type": "integer", "minimum": 1},
+        "runtime_manifest": {"type": "integer", "minimum": 1},
+        "planner": {"type": "integer", "minimum": 1},
+        "adapter_snapshot": {"type": "integer", "minimum": 1},
+        "runtime_evidence": {"type": "integer", "minimum": 1},
+        "policy_proposal": {"type": "integer", "minimum": 1}
+      }
+    },
+    "validity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluated_not_before", "evaluated_not_after"],
+      "properties": {
+        "evaluated_not_before": {"$ref": "#/$defs/timestamp"},
+        "evaluated_not_after": {"$ref": "#/$defs/timestamp"}
+      }
+    },
+    "recall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "recall_evidence_sha256s", "recalled_artifact_ids"],
+      "properties": {
+        "status": {"enum": ["not_recalled", "recalled"]},
+        "recall_evidence_sha256s": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digestOrNone"}},
+        "recalled_artifact_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}}
+      }
+    },
+    "sourceMemberships": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accepted_cli_sha256", "runtime_id", "runtime_version", "api_version", "runtime_source_sha256", "runtime_candidate_sha256", "workspace_root_sha256", "evidence_source_sha256", "policy_sha256"],
+      "properties": {
+        "accepted_cli_sha256": {"$ref": "#/$defs/digest"},
+        "runtime_id": {"$ref": "#/$defs/identifier"},
+        "runtime_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "api_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "runtime_source_sha256": {"$ref": "#/$defs/digest"},
+        "runtime_candidate_sha256": {"$ref": "#/$defs/digest"},
+        "workspace_root_sha256": {"$ref": "#/$defs/digest"},
+        "evidence_source_sha256": {"$ref": "#/$defs/digest"},
+        "policy_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "requestMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_id", "command", "role_id", "request_sha256", "receipt_sha256"],
+      "properties": {
+        "slot_id": {"$ref": "#/$defs/identifier"},
+        "command": {"enum": ["status", "routes", "plan", "run", "delegate", "lineage", "journal", "policy-propose"]},
+        "role_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "request_sha256": {"$ref": "#/$defs/digest"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "routeIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_id", "adapter_version", "adapter_sha256", "route_id", "provider_id", "exact_model", "runtime_id", "runtime_version", "host_id", "transport_id", "service_reference_class", "billing_basis", "billing_provenance", "independence_group", "input_delivery_profile"],
+      "properties": {
+        "adapter_id": {"$ref": "#/$defs/identifier"},
+        "adapter_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "adapter_sha256": {"$ref": "#/$defs/digest"},
+        "route_id": {"$ref": "#/$defs/identifier"},
+        "provider_id": {"$ref": "#/$defs/identifier"},
+        "exact_model": {"type": "string", "minLength": 1, "maxLength": 128},
+        "runtime_id": {"$ref": "#/$defs/identifier"},
+        "runtime_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "host_id": {"$ref": "#/$defs/identifier"},
+        "transport_id": {"$ref": "#/$defs/identifier"},
+        "service_reference_class": {"$ref": "#/$defs/identifier"},
+        "billing_basis": {"$ref": "#/$defs/identifier"},
+        "billing_provenance": {"$ref": "#/$defs/identifier"},
+        "independence_group": {"$ref": "#/$defs/identifier"},
+        "input_delivery_profile": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "routeMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route_id", "adapter_identity_sha256", "identity"],
+      "properties": {
+        "route_id": {"$ref": "#/$defs/identifier"},
+        "adapter_identity_sha256": {"$ref": "#/$defs/digest", "description": "Exactly runtime_adapter.adapter_identity_digest(identity), including its fixed domain wrapper; never the direct digest of identity alone."},
+        "identity": {"$ref": "#/$defs/routeIdentity"}
+      }
+    },
+    "identityMemberships": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry_sha256s", "capability_card_sha256s", "conformance_certificate_sha256s", "evaluation_manifest_sha256s", "task_profile_sha256s", "evidence_sha256s"],
+      "properties": {
+        "registry_sha256s": {"$ref": "#/$defs/digestSet"},
+        "capability_card_sha256s": {"$ref": "#/$defs/digestSet"},
+        "conformance_certificate_sha256s": {"$ref": "#/$defs/digestSet"},
+        "evaluation_manifest_sha256s": {"$ref": "#/$defs/digestSet"},
+        "task_profile_sha256s": {"$ref": "#/$defs/digestSet"},
+        "evidence_sha256s": {"$ref": "#/$defs/digestSet", "description": "Exact ordered set of consumed capability, health, billing, and usage evidence digests; semantic validation jointly requires exact conformance, evaluation-manifest, task-profile, and source-evidence membership in their dedicated fields."}
+      }
+    },
+    "digestSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service_started", "network_used", "provider_called", "lease_created", "dispatch_started", "run_mutated", "journal_written", "policy_persisted", "policy_activated", "authority_granted", "acceptance_granted", "installed", "released", "published", "aol_admitted"],
+      "properties": {
+        "service_started": {"const": false}, "network_used": {"const": false}, "provider_called": {"const": false},
+        "lease_created": {"const": false}, "dispatch_started": {"const": false}, "run_mutated": {"const": false},
+        "journal_written": {"const": false}, "policy_persisted": {"const": false}, "policy_activated": {"const": false},
+        "authority_granted": {"const": false}, "acceptance_granted": {"const": false}, "installed": {"const": false},
+        "released": {"const": false}, "published": {"const": false}, "aol_admitted": {"const": false}
+      }
+    },
+    "bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "workspace_id", "proof_boundary", "role_ids", "supported_versions", "validity", "recall", "source_memberships", "request_memberships", "route_memberships", "identity_memberships", "effect_guarantees"],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/identifier"},
+        "workspace_id": {"$ref": "#/$defs/identifier"},
+        "proof_boundary": {"const": "synthetic_local"},
+        "role_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+        "supported_versions": {"$ref": "#/$defs/versions"},
+        "validity": {"$ref": "#/$defs/validity"},
+        "recall": {"$ref": "#/$defs/recall"},
+        "source_memberships": {"$ref": "#/$defs/sourceMemberships"},
+        "request_memberships": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/requestMembership"}},
+        "route_memberships": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/routeMembership"}},
+        "identity_memberships": {"$ref": "#/$defs/identityMemberships"},
+        "effect_guarantees": {"$ref": "#/$defs/effects"}
+      }
+    }
+  }
+}

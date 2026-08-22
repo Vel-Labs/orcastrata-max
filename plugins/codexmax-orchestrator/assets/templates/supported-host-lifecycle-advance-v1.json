@@ -1,0 +1,15 @@
+{
+  "artifact_type": "codexmax_supported_host_lifecycle_advance_v1",
+  "candidate_generation": 1,
+  "descriptor_inventory_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "expected_revision": 0,
+  "expected_state": null,
+  "independent_anchor_receipt_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "nonce": "replace-with-generation-nonce",
+  "opaque_credential_agent_ref": "replace-with-opaque-agent-reference",
+  "protected_writer_receipt_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "provisioning_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "receiver_observation_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "target_state": "PRECHECKED"
+}

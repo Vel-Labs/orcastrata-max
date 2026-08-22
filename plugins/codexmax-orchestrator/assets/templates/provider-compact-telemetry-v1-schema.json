@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-compact-telemetry-v1.json",
+  "title": "ProviderCompactTelemetryV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_type", "dispatch_id", "recorded_at", "expires_at",
+    "task_family", "requested_identity", "observed_identity", "terminal",
+    "measurements", "evidence", "advisory", "unknowns", "telemetry_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "ProviderCompactTelemetryV1"},
+    "dispatch_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "task_family": {"type": "string", "minLength": 1, "maxLength": 256},
+    "requested_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route_name", "provider", "model", "route_id", "runtime", "billing_basis"],
+      "properties": {
+        "route_name": {"type": "string", "minLength": 1},
+        "provider": {"type": "string", "minLength": 1},
+        "model": {"type": "string", "minLength": 1},
+        "route_id": {"type": "string", "minLength": 1},
+        "runtime": {"type": "string", "minLength": 1},
+        "billing_basis": {"type": "string", "minLength": 1}
+      }
+    },
+    "observed_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "route_id", "runtime"],
+      "properties": {
+        "provider": {"$ref": "#/$defs/unknownIdentity"},
+        "model": {"$ref": "#/$defs/unknownIdentity"},
+        "route_id": {"$ref": "#/$defs/unknownIdentity"},
+        "runtime": {"$ref": "#/$defs/unknownIdentity"}
+      }
+    },
+    "terminal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "outcome", "process_started", "external_call_performed",
+        "provider_network_performed", "timed_out", "output_limit_stream",
+        "retry_count", "fallback_used", "hedge_used", "model_substitution_used"
+      ],
+      "properties": {
+        "status": {"type": "string", "minLength": 1},
+        "outcome": {"type": "string", "minLength": 1},
+        "process_started": {"type": "boolean"},
+        "external_call_performed": {"type": "boolean"},
+        "provider_network_performed": {"enum": [true, false, "unknown"]},
+        "timed_out": {"type": "boolean"},
+        "output_limit_stream": {"enum": [null, "stdout", "stderr"]},
+        "retry_count": {"const": 0},
+        "fallback_used": {"const": false},
+        "hedge_used": {"const": false},
+        "model_substitution_used": {"const": false}
+      }
+    },
+    "measurements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tokens", "cost_usd", "latency_ms", "turns", "quality_score"],
+      "properties": {
+        "tokens": {"$ref": "#/$defs/measurement"},
+        "cost_usd": {"$ref": "#/$defs/measurement"},
+        "latency_ms": {"$ref": "#/$defs/measurement"},
+        "turns": {"$ref": "#/$defs/measurement"},
+        "quality_score": {"$ref": "#/$defs/measurement"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["return_manifest", "stdout", "stderr", "artifact"],
+      "properties": {
+        "return_manifest": {"$ref": "#/$defs/descriptor"},
+        "stdout": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/descriptor"}]},
+        "stderr": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/descriptor"}]},
+        "artifact": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/descriptor"}]}
+      }
+    },
+    "advisory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "disposition", "affects_ranking", "execution_authority", "route_selection",
+        "retry_allowed", "fallback_allowed", "compiler_started_provider_call",
+        "board_mutated", "accepted_by_parent"
+      ],
+      "properties": {
+        "disposition": {"const": "observe_only"},
+        "affects_ranking": {"const": false},
+        "execution_authority": {"const": false},
+        "route_selection": {"const": false},
+        "retry_allowed": {"const": false},
+        "fallback_allowed": {"const": false},
+        "compiler_started_provider_call": {"const": false},
+        "board_mutated": {"const": false},
+        "accepted_by_parent": {"const": false}
+      }
+    },
+    "unknowns": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "telemetry_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "unknownIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "value", "reason"],
+      "properties": {
+        "state": {"const": "unknown"},
+        "value": {"type": "null"},
+        "reason": {"const": "not_emitted"}
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "value", "reason"],
+      "oneOf": [
+        {
+          "properties": {
+            "state": {"const": "observed"},
+            "value": {"type": "number", "minimum": 0},
+            "reason": {"type": "null"}
+          }
+        },
+        {
+          "properties": {
+            "state": {"const": "unknown"},
+            "value": {"type": "null"},
+            "reason": {"enum": ["not_emitted", "not_reported", "no_provider_attempt", "not_applicable"]}
+          }
+        }
+      ]
+    },
+    "descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

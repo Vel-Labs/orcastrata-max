@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "git-diff-sanity",
+  "command_identity": "codexmax.git-diff-sanity.v1",
+  "argv": ["/usr/bin/git", "diff", "--check"],
+  "cwd": {"root_id": "codexmax_repo", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 120,
+  "max_output_bytes": 65536,
+  "validation_ids": ["git-diff-sanity"],
+  "parameters": []
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "goal": "goal-id",
+    "task": "task-id",
+    "attempt": "attempt-id"
+  },
+  "state": "integrated",
+  "worker": {
+    "provider": "unknown",
+    "model": "unknown",
+    "route": "unknown",
+    "role": "worker",
+    "runtime": "unknown"
+  },
+  "usage": {
+    "input_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "output_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "total_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "cost_usd": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    }
+  },
+  "summary": "Bounded worker result for Parent review.",
+  "claims": [],
+  "changed_files": [],
+  "evidence": {},
+  "raw_snapshot_binding": {
+    "tree_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "file_count": 0,
+    "directory_count": 0,
+    "total_bytes": 0
+  },
+  "raw_evidence_policy": "retrieve_only_for_named_disputed_claim",
+  "acceptance_authority": "parent_sol_only"
+}

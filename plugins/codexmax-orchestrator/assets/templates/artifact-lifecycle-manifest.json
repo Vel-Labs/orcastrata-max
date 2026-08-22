@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "goal": "goal-id",
+    "task": "task-id",
+    "attempt": "attempt-id"
+  },
+  "state": "staged",
+  "worker": {
+    "provider": "unknown",
+    "model": "unknown",
+    "route": "unknown",
+    "role": "worker",
+    "runtime": "unknown"
+  },
+  "usage": {
+    "input_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "output_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "total_tokens": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    },
+    "cost_usd": {
+      "status": "unknown",
+      "value": null,
+      "unknown_reason": "telemetry_not_reported"
+    }
+  },
+  "caps": {
+    "max_files": 256,
+    "max_directories": 256,
+    "max_entries": 1024,
+    "max_bytes": 67108864,
+    "handoff_max_bytes": 16384
+  },
+  "evidence": {},
+  "raw_snapshot": null,
+  "cleanup": {
+    "plan": null,
+    "executed": false
+  }
+}

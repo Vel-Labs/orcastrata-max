@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "artifact_type": "RoleLifecyclePacket",
+  "stage": "tester",
+  "created_at": "1970-01-01T00:00:00Z",
+  "target": {
+    "lane_id": "lane-example",
+    "assignment_id": "assignment-example",
+    "task_id": "T001",
+    "lane_mode": "artifact_only",
+    "work_kind": "worker",
+    "phase_before": "self_tested"
+  },
+  "dispatch_identity": {
+    "goal_id": "example-goal",
+    "checkpoint_id": "T001",
+    "task_id": "T001",
+    "assignment_id": "assignment-tester"
+  },
+  "bindings": {
+    "goal_sha256": "sha256:unknown",
+    "board_sha256": "sha256:unknown",
+    "supervisor_state_sha256": "sha256:unknown",
+    "supervisor_event_sequence": 0,
+    "supervisor_event_hash": "unknown"
+  },
+  "inputs": {
+    "schedule_manifest": {
+      "path": "reports/example/tester-schedule.json",
+      "sha256": "sha256:unknown",
+      "size_bytes": 0,
+      "artifact_kind": "DispatchScheduleManifest"
+    },
+    "task_envelope": {
+      "path": "reports/example/tester-envelope.json",
+      "sha256": "sha256:unknown",
+      "size_bytes": 0,
+      "artifact_kind": "DispatchTaskEnvelope"
+    },
+    "assignment": {
+      "path": "reports/example/tester-assignment.json",
+      "sha256": "sha256:unknown",
+      "size_bytes": 0,
+      "artifact_kind": "HeadlessDispatchAssignment"
+    },
+    "trusted_command_receipt": {
+      "path": "reports/example/trusted-test-receipt.json",
+      "sha256": "sha256:unknown",
+      "size_bytes": 0,
+      "artifact_kind": "TrustedCommandReceipt"
+    },
+    "closeout_artifact": null
+  },
+  "source_artifacts": [
+    {
+      "path": "reports/example/tester-result.md",
+      "sha256": "sha256:unknown",
+      "size_bytes": 0,
+      "artifact_kind": "ProviderRoleArtifact"
+    }
+  ],
+  "events": [
+    {
+      "schema_version": 1,
+      "event_id": "lifecycle-example",
+      "timestamp": "1970-01-01T00:00:00Z",
+      "event_type": "independent_test",
+      "lane_id": "lane-example",
+      "payload": {
+        "route_packet": {},
+        "artifact": "reports/example/tester-result.md",
+        "result": "pass",
+        "trusted_commands": [
+          {
+            "command": "python3 -m unittest tests.test_example",
+            "execution_status": "completed",
+            "result": "pass"
+          }
+        ]
+      }
+    }
+  ],
+  "applied_to_supervisor": false,
+  "applied_to_goalbuddy": false,
+  "accepted": false,
+  "acceptance_authority": "Parent Codex",
+  "packet_sha256": "sha256:unknown"
+}

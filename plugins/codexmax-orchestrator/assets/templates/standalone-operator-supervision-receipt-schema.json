@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://codexmax.local/schemas/standalone-operator-supervision-receipt-v1.json",
+  "type":"object","additionalProperties":false,
+  "required":["schema_version","artifact_type","receipt_id","workspace_id","source_sha256","candidate_sha256","service_instance_id","admission_id","binding_state_version","binding_state_sha256","runtime_thread_id","runtime_thread_generation","selection_sha256","native","topology","continuity","recovery","snapshot_sequence","previous_snapshot_sha256","issued_at","expires_at","snapshot_sha256","receipt_sha256","seal"],
+  "properties":{
+    "schema_version":{"const":1},"artifact_type":{"const":"standalone_operator_supervision_receipt_v1"},
+    "receipt_id":{"$ref":"#/$defs/id"},"workspace_id":{"$ref":"#/$defs/id"},"source_sha256":{"$ref":"#/$defs/sha"},"candidate_sha256":{"$ref":"#/$defs/sha"},"service_instance_id":{"$ref":"#/$defs/id"},"admission_id":{"$ref":"#/$defs/id"},
+    "binding_state_version":{"type":"integer","minimum":0},"binding_state_sha256":{"$ref":"#/$defs/sha"},"runtime_thread_id":{"$ref":"#/$defs/id"},"runtime_thread_generation":{"type":"integer","minimum":1},"selection_sha256":{"$ref":"#/$defs/sha"},
+    "native":{"$ref":"#/$defs/native"},"topology":{"$ref":"#/$defs/topology"},"continuity":{"$ref":"#/$defs/continuity"},"recovery":{"$ref":"#/$defs/recovery"},
+    "snapshot_sequence":{"type":"integer","minimum":1},"previous_snapshot_sha256":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/sha"}]},"issued_at":{"type":"string"},"expires_at":{"type":"string"},"snapshot_sha256":{"$ref":"#/$defs/sha"},"receipt_sha256":{"$ref":"#/$defs/sha"},"seal":{"$ref":"#/$defs/sha"}
+  },
+  "$defs":{
+    "id":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"},"sha":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+    "native":{"type":"object","additionalProperties":false,"required":["live_host","native_available","corroborated","native_proved","identity_receipt_sha256","chain_tip_sha256","event_sequence","locator_kind","parent_locator","supervisor_locator","model","reasoning_effort","route"],"properties":{"live_host":{"const":true},"native_available":{"const":true},"corroborated":{"const":true},"native_proved":{"const":true},"identity_receipt_sha256":{"$ref":"#/$defs/sha"},"chain_tip_sha256":{"$ref":"#/$defs/sha"},"event_sequence":{"type":"integer","minimum":1},"locator_kind":{"const":"desktop_thread_id"},"parent_locator":{"$ref":"#/$defs/id"},"supervisor_locator":{"$ref":"#/$defs/id"},"model":{"const":"unknown"},"reasoning_effort":{"const":"unknown"},"route":{"const":"unknown"}}},
+    "topology":{"type":"object","additionalProperties":false,"required":["inventory_event_sha256","inventory_cursor","presentation","parent_count","active_supervisor_count","supervisor_checkpoint_sha256","supervisor_checkpoint_count","top_level_worker_count","internal_worker_count","activity_cursor"],"properties":{"inventory_event_sha256":{"$ref":"#/$defs/sha"},"inventory_cursor":{"$ref":"#/$defs/id"},"presentation":{"const":"approved_containment"},"parent_count":{"const":1},"active_supervisor_count":{"const":1},"supervisor_checkpoint_sha256":{"$ref":"#/$defs/sha"},"supervisor_checkpoint_count":{"type":"integer","minimum":0,"maximum":10000},"top_level_worker_count":{"const":0},"internal_worker_count":{"type":"integer","minimum":0,"maximum":10000},"activity_cursor":{"$ref":"#/$defs/id"}}},
+    "continuity":{"type":"object","additionalProperties":false,"required":["host_read_event_sha256","read_cursor","subscription_state","current_cursor_sequence"],"properties":{"host_read_event_sha256":{"$ref":"#/$defs/sha"},"read_cursor":{"$ref":"#/$defs/id"},"subscription_state":{"const":"current"},"current_cursor_sequence":{"type":"integer","minimum":1}}},
+    "recovery":{"type":"object","additionalProperties":false,"required":["recovery_epoch","reconciliation_receipt_sha256","status"],"properties":{"recovery_epoch":{"type":"integer","minimum":0},"reconciliation_receipt_sha256":{"$ref":"#/$defs/sha"},"status":{"enum":["current","reconciled"]}}}
+  }
+}

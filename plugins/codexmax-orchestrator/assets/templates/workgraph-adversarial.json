@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "fixture_set": "workgraph-adversarial-v1",
+  "cases": [
+    {"case_id": "unsupported-version", "fixture": "workgraph-direct.json", "operation": "set", "path": ["schema_version"], "value": 2, "expected_error": "document.schema_version:unsupported:2"},
+    {"case_id": "unknown-field", "fixture": "workgraph-direct.json", "operation": "set", "path": ["work_items", 0, "scope", "authority"], "value": "self", "expected_error": "work_items[0].scope:unknown_field:authority"},
+    {"case_id": "duplicate-id", "fixture": "workgraph-bounded.json", "operation": "set", "path": ["work_items", 1, "id"], "value": "WI-SETUP", "expected_error": "document.work_items:duplicate_id:WI-SETUP"},
+    {"case_id": "tier-field-missing", "fixture": "workgraph-bounded.json", "operation": "delete", "path": ["work_items", 0, "retry_policy"], "expected_error": "work_items[0]:tier_missing_field:bounded:retry_policy"},
+    {"case_id": "self-dependency", "fixture": "workgraph-bounded.json", "operation": "append", "path": ["work_items", 0, "relationships", "blocked_by"], "value": "WI-SETUP", "expected_error": "relationship:WI-SETUP:blocked_by:self_reference"},
+    {"case_id": "missing-dependency", "fixture": "workgraph-bounded.json", "operation": "append", "path": ["work_items", 0, "relationships", "blocked_by"], "value": "WI-MISSING", "expected_error": "relationship:WI-SETUP:blocked_by:missing_target:WI-MISSING"},
+    {"case_id": "artifact-direction-conflict", "fixture": "workgraph-bounded.json", "operation": "append", "path": ["work_items", 1, "relationships", "produces"], "value": "EV-SETUP", "expected_error": "relationship:WI-BUILD:artifact_direction_conflict:EV-SETUP"},
+    {"case_id": "evidence-grants-authority", "fixture": "workgraph-bounded.json", "operation": "set", "path": ["evidence", 0, "authority_effect"], "value": "grant", "expected_error": "evidence[0].authority_effect:must_be_none"},
+    {"case_id": "self-granted-authority", "fixture": "workgraph-governed.json", "operation": "set", "path": ["work_items", 0, "authority", "provenance"], "value": "declared", "expected_error": "work_items[0].authority.provenance:unsupported_value:declared"},
+    {"case_id": "identity-implies-capability", "fixture": "workgraph-governed.json", "operation": "set", "path": ["work_items", 0, "identity", "capabilities", "browser"], "value": {"value": "yes", "provenance": "declared"}, "expected_error": "work_items[0].identity.capabilities.browser.provenance:unsupported_value:declared"},
+    {"case_id": "accepted-status-forbidden", "fixture": "workgraph-direct.json", "operation": "set", "path": ["work_items", 0, "status"], "value": "accepted", "expected_error": "work_items[0].status:unsupported_value:accepted"},
+    {"case_id": "parent-acceptance-self-promoted", "fixture": "workgraph-governed.json", "operation": "set", "path": ["work_items", 0, "parent_acceptance", "status"], "value": "accepted", "expected_error": "work_items[0].parent_acceptance.status:must_be_pending"},
+    {"case_id": "known-identity-with-unknown-provenance", "fixture": "workgraph-governed.json", "operation": "set", "path": ["work_items", 0, "identity", "provider", "value"], "value": "ExampleProvider", "expected_error": "work_items[0].identity.provider:known_value_requires_known_provenance"}
+  ]
+}

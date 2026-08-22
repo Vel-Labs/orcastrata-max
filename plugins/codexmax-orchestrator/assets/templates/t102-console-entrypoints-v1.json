@@ -1,0 +1,23 @@
+{
+  "artifact_type": "codexmax_t102_console_entrypoint_manifest_preparation_v1",
+  "build_authorized": true,
+  "entrypoints": [
+    {
+      "command": "codexmax-provider-qualification-status-v1",
+      "companion_module": "codexmax_package_host.provider_qualification_status_entry_v1:main",
+      "path": "scripts/provider_subscription_qualification_v1.py",
+      "positive_authority": false,
+      "result": "pending_receiver_owned_qualification"
+    },
+    {
+      "command": "codexmax-supported-host-lifecycle-executor-v1",
+      "companion_module": "codexmax_package_host.supported_host_lifecycle_executor_entry_v1:main",
+      "path": "scripts/supported_host_lifecycle_executor_v1.py",
+      "positive_authority": false,
+      "result": "local_harness_or_external_backend_required"
+    }
+  ],
+  "package_manifest_mutated": true,
+  "schema_version": 1,
+  "stage_authorized": true
+}

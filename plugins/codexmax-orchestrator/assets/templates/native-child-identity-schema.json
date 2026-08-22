@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/native-child-identity-v1.json",
+  "title": "NativeChildIdentityV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "receipt_id", "captured_at", "proof_boundary", "capability_state", "proof_state", "claim_status", "unproved_reason", "candidate", "intent", "host_returned_identity", "binding", "lifecycle", "raw_evidence", "evidence_chain"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "NativeChildIdentity"},
+    "receipt_id": {"$ref": "#/$defs/identifier"},
+    "captured_at": {"$ref": "#/$defs/timestamp"},
+    "proof_boundary": {"enum": ["source_contract", "synthetic", "live_host"]},
+    "capability_state": {"enum": ["native_available", "native_unavailable"]},
+    "proof_state": {"enum": ["intent_recorded", "created_unverified", "corroborated"]},
+    "claim_status": {"enum": ["native_proved", "not_proved"]},
+    "unproved_reason": {"type": ["string", "null"], "maxLength": 256},
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "manifest"],
+      "properties": {"candidate_id": {"$ref": "#/$defs/identifier"}, "manifest": {"$ref": "#/$defs/descriptor"}}
+    },
+    "intent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["intent_id", "intent_nonce", "intent_sha256", "created_at", "packet", "candidate_manifest_sha256", "requested_identity"],
+      "properties": {
+        "intent_id": {"$ref": "#/$defs/identifier"},
+        "intent_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+        "intent_sha256": {"$ref": "#/$defs/digest"},
+        "created_at": {"$ref": "#/$defs/timestamp"},
+        "packet": {"$ref": "#/$defs/descriptor"},
+        "candidate_manifest_sha256": {"$ref": "#/$defs/digest"},
+        "requested_identity": {"$ref": "#/$defs/requestedIdentity"}
+      }
+    },
+    "host_returned_identity": {"$ref": "#/$defs/hostIdentity"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "lifecycle": {"$ref": "#/$defs/lifecycle"},
+    "raw_evidence": {
+      "description": "Closed create/list/read descriptors. The external capture files must all use one admitted action ABI. For codex_collaboration_filtered_parent_action_v1, list.request is the exact closed child path_prefix request, list.response captures the exact one-row completed terminal result, and response captured_at values order create then read/final then list/terminal.",
+      "type": "object", "additionalProperties": false,
+      "required": ["create", "list", "read"],
+      "properties": {
+        "create": {"$ref": "#/$defs/exchange"},
+        "list": {"$ref": "#/$defs/exchange"},
+        "read": {"$ref": "#/$defs/exchange"}
+      }
+    },
+    "evidence_chain": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_sequence", "previous_receipt_sha256", "receipt_sha256"],
+      "properties": {
+        "event_sequence": {"type": "integer", "minimum": 1},
+        "previous_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+~-]*$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "descriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "mime_type", "size_bytes", "sha256", "captured_at", "write_once"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"},
+        "mime_type": {"type": "string", "minLength": 1, "maxLength": 128},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "captured_at": {"$ref": "#/$defs/timestamp"},
+        "write_once": {"const": true}
+      }
+    },
+    "knownUnknown": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["state", "value", "reason", "source"], "properties": {"state": {"const": "known"}, "value": {"type": "string", "minLength": 1, "maxLength": 256}, "reason": {"type": "null"}, "source": {"const": "parsed_host_evidence"}}},
+        {"type": "object", "additionalProperties": false, "required": ["state", "value", "reason", "source"], "properties": {"state": {"const": "unknown"}, "value": {"type": "null"}, "reason": {"type": "string", "minLength": 1, "maxLength": 256}, "source": {"const": "host_unobserved"}}}
+      ]
+    },
+    "agentPath": {"type": "string", "pattern": "^/[A-Za-z0-9][A-Za-z0-9._~-]*(?:/[A-Za-z0-9][A-Za-z0-9._~-]*)*$"},
+    "requestedIdentity": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["parent_thread_id", "semantic_role", "requested_model", "requested_reasoning", "requested_route_id", "requested_agent_path"],
+          "properties": {
+            "parent_thread_id": {"$ref": "#/$defs/identifier"}, "semantic_role": {"type": "string", "minLength": 1, "maxLength": 128},
+            "requested_model": {"type": ["string", "null"], "maxLength": 256}, "requested_reasoning": {"type": ["string", "null"], "maxLength": 64},
+            "requested_route_id": {"type": ["string", "null"], "maxLength": 256}, "requested_agent_path": {"type": ["string", "null"], "maxLength": 256}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["locator_kind", "parent_agent_path", "semantic_role", "requested_model", "requested_reasoning", "requested_route_id", "requested_agent_path"],
+          "properties": {
+            "locator_kind": {"const": "collaboration_agent_path"}, "parent_agent_path": {"$ref": "#/$defs/agentPath"},
+            "semantic_role": {"type": "string", "minLength": 1, "maxLength": 128},
+            "requested_model": {"type": ["string", "null"], "maxLength": 256}, "requested_reasoning": {"type": ["string", "null"], "maxLength": 64},
+            "requested_route_id": {"type": ["string", "null"], "maxLength": 256}, "requested_agent_path": {"type": ["string", "null"], "maxLength": 256}
+          }
+        }
+      ]
+    },
+    "desktopHostIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["host_id", "parent_thread_id", "child_thread_id", "agent_path", "actual_model", "actual_reasoning", "actual_route_id"],
+      "properties": {
+        "host_id": {"$ref": "#/$defs/identifier"}, "parent_thread_id": {"$ref": "#/$defs/identifier"}, "child_thread_id": {"$ref": "#/$defs/identifier"},
+        "agent_path": {"$ref": "#/$defs/knownUnknown"}, "actual_model": {"$ref": "#/$defs/knownUnknown"}, "actual_reasoning": {"$ref": "#/$defs/knownUnknown"}, "actual_route_id": {"$ref": "#/$defs/knownUnknown"}
+      }
+    },
+    "collaborationHostIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["locator_kind", "host_instance", "parent_agent_path", "child_agent_path", "agent_path", "actual_model", "actual_reasoning", "actual_route_id"],
+      "properties": {
+        "locator_kind": {"const": "collaboration_agent_path"}, "host_instance": {"$ref": "#/$defs/knownUnknown"},
+        "parent_agent_path": {"$ref": "#/$defs/agentPath"}, "child_agent_path": {"$ref": "#/$defs/agentPath"},
+        "agent_path": {"$ref": "#/$defs/knownUnknown"}, "actual_model": {"$ref": "#/$defs/knownUnknown"},
+        "actual_reasoning": {"$ref": "#/$defs/knownUnknown"}, "actual_route_id": {"$ref": "#/$defs/knownUnknown"}
+      }
+    },
+    "hostIdentity": {"oneOf": [{"$ref": "#/$defs/desktopHostIdentity"}, {"$ref": "#/$defs/collaborationHostIdentity"}]},
+    "binding": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["host_binding_echo", "relationship_kind", "create_parent_child_match", "list_parent_child_match", "read_parent_child_match"],
+          "properties": {
+            "host_binding_echo": {"type": "string", "minLength": 1, "maxLength": 512},
+            "relationship_kind": {"enum": ["host_create_parent_child", "host_read_delegation_source"]},
+            "create_parent_child_match": {"type": "boolean"}, "list_parent_child_match": {"type": "boolean"}, "read_parent_child_match": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["relationship_kind"],
+          "properties": {"relationship_kind": {"const": "host_collaboration_direct_child"}}
+        }
+      ]
+    },
+    "lifecycle": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["create_host_event_id", "create_host_timestamp", "read_host_event_id", "read_host_timestamp", "read_cursor", "observed_status"],
+          "properties": {
+            "create_host_event_id": {"$ref": "#/$defs/identifier"}, "create_host_timestamp": {"$ref": "#/$defs/timestamp"},
+            "read_host_event_id": {"$ref": "#/$defs/identifier"}, "read_host_timestamp": {"$ref": "#/$defs/timestamp"},
+            "read_cursor": {"$ref": "#/$defs/cursor"}, "observed_status": {"type": "string", "minLength": 1, "maxLength": 64}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "description": "Collaboration lifecycle. list_observed_status completed is required by the filtered-terminal action ABI; the validator binds action IDs and derives capture order from raw_evidence response descriptors.",
+          "required": ["create_action_receipt_id", "list_action_receipt_id", "read_action_receipt_id", "list_observed_status", "read_message_type"],
+          "properties": {
+            "create_action_receipt_id": {"$ref": "#/$defs/identifier"}, "list_action_receipt_id": {"$ref": "#/$defs/identifier"},
+            "read_action_receipt_id": {"$ref": "#/$defs/identifier"}, "list_observed_status": {"enum": ["running", "idle", "completed"]},
+            "read_message_type": {"const": "FINAL_ANSWER"}
+          }
+        }
+      ]
+    },
+    "cursor": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "value", "direction"],
+      "properties": {"kind": {"enum": ["host_event_cursor", "host_turn_cursor"]}, "value": {"$ref": "#/$defs/identifier"}, "direction": {"enum": ["forward", "snapshot"]}}
+    },
+    "exchange": {
+      "type": "object", "additionalProperties": false, "required": ["request", "response"],
+      "properties": {"request": {"$ref": "#/$defs/descriptor"}, "response": {"$ref": "#/$defs/descriptor"}}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"proof_boundary": {"enum": ["source_contract", "synthetic"]}}},
+      "then": {"properties": {"claim_status": {"const": "not_proved"}}}
+    },
+    {
+      "if": {"properties": {"claim_status": {"const": "native_proved"}}},
+      "then": {
+        "properties": {
+          "proof_boundary": {"const": "live_host"},
+          "capability_state": {"const": "native_available"},
+          "proof_state": {"const": "corroborated"},
+          "unproved_reason": {"type": "null"}
+        }
+      }
+    }
+  ]
+}

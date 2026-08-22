@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_id": "stable-event-id",
+  "timestamp": "2026-07-14T00:00:00Z",
+  "source_role": "supervisor",
+  "actor_id": "locked-supervisor-id",
+  "event_type": "milestone",
+  "payload": {
+    "summary": "Bounded structured delta; not a transcript."
+  }
+}
+

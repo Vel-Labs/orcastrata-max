@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "artifact_type": "standalone_adapter_conformance_bundle_v1",
+  "bundle_id": "static-adapter-example",
+  "adapter_identity_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "runtime_primitives": [
+    "runtime_adapter",
+    "runtime_planner",
+    "runtime_evidence",
+    "standalone_runtime_cli"
+  ],
+  "provider_code": false,
+  "delegation": {
+    "status": "unsupported",
+    "child_materialized": false,
+    "child_usage_included": false,
+    "child_artifacts_included": false,
+    "child_journal_included": false,
+    "child_lifecycle_included": false
+  },
+  "journal": {
+    "scope": "current_workgraph_subtree",
+    "ttl_seconds": 1800,
+    "redacted": true,
+    "executable": false,
+    "authoritative": false,
+    "global": false,
+    "mutable": false,
+    "persistence_claimed": false
+  },
+  "capability_claims": [
+    {"state": "declared", "usable": false},
+    {"state": "unknown", "usable": false},
+    {"state": "stale", "usable": false},
+    {"state": "contradictory", "usable": false},
+    {"state": "recalled", "usable": false},
+    {"state": "foreign", "usable": false}
+  ],
+  "authority_claims": [
+    {"source": "role", "grants_authority": false},
+    {"source": "route", "grants_authority": false},
+    {"source": "model", "grants_authority": false},
+    {"source": "conformance", "grants_authority": false},
+    {"source": "provider_identity", "grants_authority": false}
+  ],
+  "billing_claims": [
+    {"state": "unknown", "usable": false},
+    {"state": "foreign", "usable": false}
+  ],
+  "usage_claims": [
+    {"state": "unknown", "anti_double_counting_id": "usage-unknown", "counted": false},
+    {"state": "foreign", "anti_double_counting_id": "usage-foreign", "counted": false}
+  ],
+  "effects": {
+    "execution_started": false,
+    "provider_called": false,
+    "network_used": false,
+    "filesystem_mutated": false,
+    "child_dispatched": false,
+    "lease_created": false,
+    "run_mutated": false,
+    "journal_written": false,
+    "policy_persisted": false,
+    "capability_granted": false,
+    "authority_granted": false,
+    "eligibility_granted": false,
+    "acceptance_granted": false,
+    "persistence_granted": false
+  },
+  "side_channels": {
+    "provider_headers": false,
+    "provider_urls": false,
+    "provider_endpoints": false,
+    "environment": false,
+    "credentials": false,
+    "raw_io": false,
+    "hidden_options": false,
+    "unknown_extensions": false
+  },
+  "acceptance_claimed": false
+}

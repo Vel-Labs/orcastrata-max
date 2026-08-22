@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orcastrata.local/schemas/loop-run-trace-v1.json",
+  "title": "LoopRunTraceV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "trace_id", "run_id", "parent_run_id", "loop", "ancestry", "relation", "receipt", "event", "execution", "output", "privacy", "binding_sha256"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "LoopRunTraceV1"},
+    "trace_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "parent_run_id": {"type": ["string", "null"]},
+    "loop": {"$ref": "#/$defs/loop"},
+    "ancestry": {"$ref": "#/$defs/origin"},
+    "relation": {"$ref": "#/$defs/relation"},
+    "receipt": {"$ref": "#/$defs/receipt"},
+    "event": {"$ref": "#/$defs/event"},
+    "execution": {"$ref": "#/$defs/execution"},
+    "output": {"$ref": "#/$defs/output"},
+    "privacy": {"const": "metadata_only"},
+    "binding_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "loop": {"type": "object", "additionalProperties": false, "required": ["loop_id", "definition_version"], "properties": {"loop_id": {"type": "string"}, "definition_version": {"type": "integer", "minimum": 1}}},
+    "origin": {"type": "object", "additionalProperties": false, "required": ["run_id", "loop_id", "depth", "ancestry"], "properties": {"run_id": {"type": ["string", "null"]}, "loop_id": {"type": ["string", "null"]}, "depth": {"type": "integer", "minimum": 0, "maximum": 8}, "ancestry": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}},
+    "relation": {"type": "object", "additionalProperties": false, "required": ["kind", "root_run_id", "parent_run_id"], "properties": {"kind": {"enum": ["root", "nested"]}, "root_run_id": {"type": ["string", "null"]}, "parent_run_id": {"type": ["string", "null"]}}},
+    "receipt": {"type": "object", "additionalProperties": false, "required": ["receipt_id"], "properties": {"receipt_id": {"type": "string"}}},
+    "source": {"type": "object", "additionalProperties": false, "required": ["adapter_id", "source_event_id", "trust"], "properties": {"adapter_id": {"type": "string"}, "source_event_id": {"type": "string"}, "trust": {"enum": ["local_adapter", "fixture", "generic_stdin"]}}},
+    "event": {"type": "object", "additionalProperties": false, "required": ["event_id", "event_type", "dedupe_key", "source", "origin", "sha256"], "properties": {"event_id": {"type": "string"}, "event_type": {"type": "string"}, "dedupe_key": {"type": "string"}, "source": {"$ref": "#/$defs/source"}, "origin": {"$ref": "#/$defs/origin"}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "execution": {"type": "object", "additionalProperties": false, "required": ["status", "result", "attempt", "started_at", "finished_at", "duration_ms"], "properties": {"status": {"type": "string"}, "result": {"type": "string"}, "attempt": {"type": "integer", "minimum": 0}, "started_at": {"type": ["string", "null"]}, "finished_at": {"type": ["string", "null"]}, "duration_ms": {"type": ["integer", "string"]}}},
+    "output": {"type": "object", "additionalProperties": false, "required": ["sha256", "captured_chars", "truncated"], "properties": {"sha256": {"oneOf": [{"$ref": "#/$defs/digest"}, {"const": "unknown"}]}, "captured_chars": {"type": "integer", "minimum": 0}, "truncated": {"type": "boolean"}}
+    }
+  }
+}

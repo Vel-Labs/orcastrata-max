@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/protected-claude-guarded-session-v1.json",
+  "title": "Protected Claude guarded session request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "task_id", "route_name", "route_id", "model",
+    "runtime", "billing_basis", "mode", "prompt", "task_grant_sha256",
+    "attempt_id", "session_id", "worktree_path", "settings_sha256",
+    "mcp_sha256", "assignment_sha256", "scoped_write_grant",
+    "subscription_receipt_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "task_id": {"$ref": "#/$defs/id"},
+    "route_name": {"const": "worker_claude_code_sonnet_5"},
+    "route_id": {"const": "claude-code-subscription-sonnet-5"},
+    "model": {"const": "claude-sonnet-5"},
+    "runtime": {"const": "Claude Code 2.1.232"},
+    "billing_basis": {"const": "unknown"},
+    "mode": {"enum": ["read_only", "scoped_write"]},
+    "prompt": {"type": "string", "minLength": 1},
+    "task_grant_sha256": {"$ref": "#/$defs/sha256"},
+    "attempt_id": {"$ref": "#/$defs/id"},
+    "session_id": {"$ref": "#/$defs/id"},
+    "worktree_path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"},
+    "settings_sha256": {"$ref": "#/$defs/sha256"},
+    "mcp_sha256": {"$ref": "#/$defs/sha256"},
+    "assignment_sha256": {"$ref": "#/$defs/sha256"},
+    "scoped_write_grant": {"type": ["object", "null"]},
+    "subscription_receipt_sha256": {"type": "null"}
+  },
+  "allOf": [{
+    "if": {"properties": {"mode": {"const": "read_only"}}},
+    "then": {"properties": {"scoped_write_grant": {"type": "null"}}},
+    "else": {"properties": {"scoped_write_grant": {"type": "object"}}}
+  }],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:@+-]{1,127}$"},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

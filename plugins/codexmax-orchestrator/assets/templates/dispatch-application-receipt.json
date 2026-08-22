@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "artifact_type": "DispatchApplicationReceipt",
+  "schedule_manifest": {
+    "path": "reports/example/dispatch-schedule-manifest.json",
+    "sha256": "sha256:unknown",
+    "manifest_sha256": "sha256:unknown"
+  },
+  "identity": {
+    "goal_id": "unknown",
+    "checkpoint_id": "unknown",
+    "task_id": "unknown",
+    "assignment_id": "unknown"
+  },
+  "lease": {
+    "lease_id": "unknown",
+    "fencing_token": 1,
+    "released": true
+  },
+  "quality_receipt_sha256": "unknown",
+  "dispatch_ledger": {
+    "dispatch_finished_sequence": 0,
+    "quality_accepted_sequence": 0,
+    "schedule_closed_sequence": 0,
+    "head_after_release": "unknown"
+  },
+  "supervisor": {
+    "event_ids": [],
+    "sequence_before": 0,
+    "sequence_after": 0,
+    "head_after": "unknown"
+  },
+  "transport_succeeded": true,
+  "quality_accepted": true,
+  "supervisor_applied": true,
+  "goalbuddy_applied": false,
+  "accepted": false,
+  "acceptance_authority": "Parent Codex",
+  "receipt_sha256": "sha256:unknown"
+}

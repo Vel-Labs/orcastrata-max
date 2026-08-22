@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "artifact_type": "DispatchApplicationRecovery",
+  "application_id": "sha256:unknown",
+  "status": "prepared",
+  "started_at": "1970-01-01T00:00:00Z",
+  "bindings": {
+    "manifest_path": "reports/example/dispatch-schedule-manifest.json",
+    "manifest_file_sha256": "sha256:unknown",
+    "manifest_sha256": "sha256:unknown",
+    "envelope_sha256": "sha256:unknown",
+    "lease_id": "unknown",
+    "fencing_token": 1,
+    "goal_path": "docs/goals/example/goal.md",
+    "board_path": "docs/goals/example/state.yaml",
+    "state_path": "reports/example/supervisor-state.json",
+    "event_log_path": "reports/example/supervisor-events.jsonl",
+    "receipt_path": "reports/example/dispatch-application-receipt.json",
+    "board_sha256": "sha256:unknown",
+    "supervisor_initial_sha256": "sha256:unknown",
+    "event_bundle_sha256": "sha256:unknown",
+    "quality_receipt_sha256": "sha256:unknown"
+  },
+  "supervisor": {
+    "sequence_before": 0,
+    "head_before": "0000000000000000000000000000000000000000000000000000000000000000",
+    "expected_records": [],
+    "state_snapshots": []
+  },
+  "stages": {
+    "supervisor_event_count": 0,
+    "dispatch_finished_sequence": null,
+    "quality_accepted_sequence": null,
+    "schedule_closed_sequence": null,
+    "lease_released_sequence": null,
+    "receipt_created": false
+  },
+  "recovery_sha256": "sha256:unknown"
+}

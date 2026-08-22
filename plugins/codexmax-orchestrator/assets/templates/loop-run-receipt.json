@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "artifact_type": "LoopRunReceipt",
+  "receipt_id": "receipt-example-001",
+  "recorded_at": "2026-07-27T12:00:02Z",
+  "event": {
+    "event_id": "event-example-001",
+    "event_type": "file.changed",
+    "dedupe_key": "ops-services-config-example-001",
+    "event_sha256": "unknown"
+  },
+  "registry": {
+    "registry_id": "workspace-loop-registry",
+    "registry_sha256": "unknown",
+    "loop_id": "example-ops-validation",
+    "definition_version": 1,
+    "lifecycle": "proposed"
+  },
+  "admission": {
+    "decision": "matched",
+    "preflight_status": "not_run",
+    "rejection_codes": [],
+    "authority_receipt": null,
+    "authority_sha256": "unknown",
+    "scope_decision": "contained"
+  },
+  "action": {
+    "action_profile_id": "ops-config-fast",
+    "profile_schema_version": null,
+    "profile_sha256": "unknown",
+    "command_identity": null,
+    "capability_decision": "unknown"
+  },
+  "execution": {
+    "status": "not_run",
+    "result": "not_run",
+    "attempt": 0,
+    "started_at": null,
+    "finished_at": null,
+    "duration_ms": "unknown",
+    "output": {
+      "captured_chars": 0,
+      "truncated": false,
+      "sha256": "unknown",
+      "artifact_path": null
+    },
+    "failure_code": null
+  },
+  "validation": [
+    {
+      "validation_id": "ops-config-fast",
+      "execution_status": "not_run",
+      "result": "not_run",
+      "evidence_path": null,
+      "evidence_sha256": "unknown"
+    }
+  ],
+  "budget": {
+    "max_attempts": 1,
+    "timeout_seconds": 120,
+    "max_output_bytes": 65536,
+    "explicit_token_cap": null,
+    "external_cash_authorized": false,
+    "observed_tokens": "unknown",
+    "observed_external_cash_usd": "unknown",
+    "evidence_status": "unknown"
+  },
+  "artifacts": [
+    {
+      "artifact_id": "loop-run-receipt",
+      "path": null,
+      "sha256": "unknown",
+      "state": "expected"
+    }
+  ],
+  "notification_intents": [],
+  "proof_boundary": {
+    "state": "not_run",
+    "local_source": true,
+    "installed": false,
+    "live_hook": false,
+    "scheduler_active": false,
+    "external_connector": false,
+    "published": false,
+    "summary": "T040 source template preview only; the profile remains unbound and the action was not run."
+  },
+  "acceptance": {
+    "state": "not_requested",
+    "authority": "none"
+  }
+}

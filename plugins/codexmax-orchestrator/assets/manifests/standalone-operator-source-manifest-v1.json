@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "artifact_type": "standalone_operator_source_manifest_v1",
+  "scope": "package_source_local_synthetic_no_effect",
+  "canonicalization": "standalone_runtime_cli_canonical_json_v1",
+  "bundles": [
+    {
+      "bundle_id": "source-local-fixture-20260806",
+      "workspace_id": "workspace-a",
+      "proof_boundary": "synthetic_local",
+      "role_ids": ["auditor", "worker"],
+      "supported_versions": {
+        "cli": 1,
+        "binding": 2,
+        "runtime_manifest": 1,
+        "planner": 1,
+        "adapter_snapshot": 1,
+        "runtime_evidence": 1,
+        "policy_proposal": 1
+      },
+      "validity": {
+        "evaluated_not_before": "2026-08-06T11:00:00Z",
+        "evaluated_not_after": "2026-08-06T18:03:00Z"
+      },
+      "recall": {
+        "status": "not_recalled",
+        "recall_evidence_sha256s": ["none"],
+        "recalled_artifact_ids": []
+      },
+      "source_memberships": {
+        "accepted_cli_sha256": "sha256:d280030dec49dee42c11f01bc244f96e2f63e40750a21b35e4eb5a8caf3cc8cf",
+        "runtime_id": "runtime-a",
+        "runtime_version": "1",
+        "api_version": "1",
+        "runtime_source_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "runtime_candidate_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "workspace_root_sha256": "sha256:c287c89c61a7cd92107310c952720adeb78838c93dd90cd1f99de88e5702206c",
+        "evidence_source_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "policy_sha256": "sha256:6eabda8db4fd8f10ed6f64f31070137454dab3c192834f52291f3ac2b3afe02f"
+      },
+      "request_memberships": [
+        {"slot_id": "delegate", "command": "delegate", "role_id": null, "request_sha256": "sha256:7b85bfb1955a03b00e0ffa0a76574bf08c256413907fed9e343c68726a03898c", "receipt_sha256": "sha256:316358378c242c1da9f5ad734dff7df1d6cdaf461a00999bcbb2c93d54baf71a"},
+        {"slot_id": "journal", "command": "journal", "role_id": null, "request_sha256": "sha256:ee673cb68e445c87d74a015a5940682a890910b5203773c3efd6e741509caff0", "receipt_sha256": "sha256:990ff58a599575bd9834727a4a997d7c2087bb95403ff78430f1acb012d6680e"},
+        {"slot_id": "lineage", "command": "lineage", "role_id": null, "request_sha256": "sha256:331a99ee1cf514c5cde1d70b135099e52393e80d60333e395351b77a400d57d3", "receipt_sha256": "sha256:f5afb26e286623d8582ba60dd32659cfe4a5419cfaa538f327edd3ee850d7705"},
+        {"slot_id": "plan", "command": "plan", "role_id": null, "request_sha256": "sha256:6be6cedeacda7b6580c1991566f227506f1f1c023b7c8cf725eda38106cf5865", "receipt_sha256": "sha256:cee8582aed968f575258398bd5b6296090596756563c265c176166a9903036b3"},
+        {"slot_id": "policy-proposal", "command": "policy-propose", "role_id": null, "request_sha256": "sha256:4ae604803119d81b7430ca958c6ff46b78c06330f43686aa270dc383ec311a8a", "receipt_sha256": "sha256:0f69dfeed4d7f2a3945e7c8d0e72cebe2fbba8e89ebcef2917d60d12770c10f2"},
+        {"slot_id": "routes-auditor", "command": "routes", "role_id": "auditor", "request_sha256": "sha256:f9a55cbd6d15065c59ca90f5e16eb54e6d6714d62cfb45eb0f36ba7d0e38772d", "receipt_sha256": "sha256:322f362982e87f4a0e483273d1d2b6baab7f1262879309c19731e5f3caa50a28"},
+        {"slot_id": "routes-worker", "command": "routes", "role_id": "worker", "request_sha256": "sha256:f85b9a76a597ff55dafbf479823697c9d8b626b784a8840b541b2d9218240d93", "receipt_sha256": "sha256:f53d04eb6f1b933984570115dcf0e3666d8e738f2ced8549feacbfa8a4a3d438"},
+        {"slot_id": "run", "command": "run", "role_id": null, "request_sha256": "sha256:f5a58e06cf966a1401528c54805b26c0330f4cd7cca8a1c7c17ca0691a2e6c7a", "receipt_sha256": "sha256:b6d98188be59e55deed052ded19562cbefc699005f607a92a1e9fc27ee93c844"},
+        {"slot_id": "status", "command": "status", "role_id": null, "request_sha256": "sha256:14a8d3d87a2aa16de62f7c5fcfb7ffef4f74d9d766c3a860221b731ce2f5baf1", "receipt_sha256": "sha256:48354950bc6aa01d968de5380e0879bf956960ff09f807b08f2d1754f4d4dc6d"}
+      ],
+      "route_memberships": [
+        {
+          "route_id": "fake-route-a",
+          "adapter_identity_sha256": "sha256:d5377d7791ff08898c43ff985ff57d45e783858bc9d8f6d48781c19ad7fdb863",
+          "identity": {"adapter_id": "adapter-a", "adapter_version": "1.0.0", "adapter_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "route_id": "fake-route-a", "provider_id": "fake-provider", "exact_model": "fake-model-v1", "runtime_id": "fixture-runtime", "runtime_version": "1.0.0", "host_id": "fixture-host", "transport_id": "in_process", "service_reference_class": "fixture", "billing_basis": "subscription", "billing_provenance": "declared", "independence_group": "fixture-provider-a", "input_delivery_profile": "embedded_fact_pack"}
+        },
+        {
+          "route_id": "fake-route-b",
+          "adapter_identity_sha256": "sha256:5939d817c1625da7eedacd8292d7bcb0ffc78ab2e4ac84337da9ddc0c82efb0c",
+          "identity": {"adapter_id": "adapter-b", "adapter_version": "1.0.0", "adapter_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "route_id": "fake-route-b", "provider_id": "fake-provider", "exact_model": "fake-model-v1", "runtime_id": "fixture-runtime", "runtime_version": "1.0.0", "host_id": "fixture-host", "transport_id": "local_cli", "service_reference_class": "fixture", "billing_basis": "unknown", "billing_provenance": "unknown", "independence_group": "fixture-provider-b", "input_delivery_profile": "paths_only"}
+        }
+      ],
+      "identity_memberships": {
+        "registry_sha256s": [],
+        "capability_card_sha256s": [],
+        "conformance_certificate_sha256s": [],
+        "evaluation_manifest_sha256s": ["sha256:4444444444444444444444444444444444444444444444444444444444444444", "sha256:6666666666666666666666666666666666666666666666666666666666666666"],
+        "task_profile_sha256s": ["sha256:3333333333333333333333333333333333333333333333333333333333333333", "sha256:5555555555555555555555555555555555555555555555555555555555555555"],
+        "evidence_sha256s": ["sha256:1111111111111111111111111111111111111111111111111111111111111111", "sha256:2222222222222222222222222222222222222222222222222222222222222222", "sha256:7777777777777777777777777777777777777777777777777777777777777777", "sha256:8888888888888888888888888888888888888888888888888888888888888888", "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"]
+      },
+      "effect_guarantees": {
+        "service_started": false, "network_used": false, "provider_called": false, "lease_created": false, "dispatch_started": false,
+        "run_mutated": false, "journal_written": false, "policy_persisted": false, "policy_activated": false, "authority_granted": false,
+        "acceptance_granted": false, "installed": false, "released": false, "published": false, "aol_admitted": false
+      }
+    }
+  ]
+}

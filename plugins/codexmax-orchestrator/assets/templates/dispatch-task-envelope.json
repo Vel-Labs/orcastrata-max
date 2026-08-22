@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "envelope_id": "envelope-T010-worker-001",
+  "goal_id": "codexmax-dispatch-scheduler-v1",
+  "checkpoint_id": "T010",
+  "task_id": "T020",
+  "assignment_id": "assignment-T020-worker-001",
+  "bindings": {
+    "board_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "config_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "authority_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "workgraph_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "supervisor_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "semantic_role": "worker",
+  "task_class": "semantic_worker_artifact",
+  "mutation_mode": "artifact_only",
+  "source": {
+    "source_mode": "local_filesystem",
+    "input_mode": "paths_only",
+    "inputs": [
+      {
+        "source_id": "goal",
+        "path": "docs/goals/example/goal.md",
+        "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "purpose": "Bound task authority"
+      }
+    ]
+  },
+  "scope": {
+    "requested_read": ["docs/goals/example/goal.md"],
+    "requested_write": ["reports/example/worker-result.md"],
+    "authority_read": ["docs/goals/example/goal.md"],
+    "authority_write": ["reports/example/worker-result.md"]
+  },
+  "commands": [],
+  "consequence": "medium",
+  "independence": {
+    "required": false,
+    "group": "worker-primary",
+    "exclusions": []
+  },
+  "execution": {
+    "idempotent": true,
+    "cancellable": true,
+    "hedge_requested": false
+  },
+  "queue": {
+    "enqueued_at": "2026-07-27T11:59:00Z",
+    "deadline": "2026-07-27T12:20:00Z",
+    "max_queue_age_seconds": 300,
+    "priority": 50
+  },
+  "budget": {
+    "token_limit": null,
+    "allowance_class": "subscription",
+    "external_cash_authorized": false,
+    "accounting": {
+      "tokens": {"value": "unknown", "reason": "not_reported_before_execution"},
+      "cost": {"value": "unknown", "reason": "not_reported_before_execution"}
+    }
+  },
+  "quality_policy": {
+    "policy_id": "provider_neutral_result_v1",
+    "artifact_format": "markdown",
+    "min_bytes": 32,
+    "max_bytes": 1048576,
+    "required_sections": ["Summary", "Validation"]
+  },
+  "context": {
+    "context_pack_id": "context-T010-worker-001",
+    "context_pack_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "route_binding": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "reasoning": "provider_default"
+  }
+}

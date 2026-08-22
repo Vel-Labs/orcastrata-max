@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "artifact_type": "RoleLifecycleApplicationReceipt",
+  "lifecycle_packet": {
+    "path": "reports/example/role-lifecycle-packet.json",
+    "sha256": "sha256:unknown",
+    "packet_sha256": "sha256:unknown"
+  },
+  "stage": "tester",
+  "target": {
+    "lane_id": "lane-example",
+    "assignment_id": "assignment-example",
+    "task_id": "T001",
+    "lane_mode": "artifact_only",
+    "work_kind": "worker",
+    "phase_before": "self_tested"
+  },
+  "dispatch_identity": {
+    "goal_id": "example-goal",
+    "checkpoint_id": "T001",
+    "task_id": "T001",
+    "assignment_id": "assignment-tester"
+  },
+  "supervisor": {
+    "event_ids": [
+      "lifecycle-example"
+    ],
+    "sequence_before": 0,
+    "sequence_after": 1,
+    "head_after": "unknown"
+  },
+  "dispatch_ledger": {
+    "dispatch_finished_sequence": 0,
+    "quality_accepted_sequence": 0,
+    "schedule_closed_sequence": 0,
+    "head_after_release": "unknown"
+  },
+  "started_at": "1970-01-01T00:00:00Z",
+  "supervisor_applied": true,
+  "goalbuddy_applied": false,
+  "accepted": false,
+  "acceptance_authority": "Parent Codex",
+  "receipt_sha256": "sha256:unknown"
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "actor": {
+    "role": "worker"
+  },
+  "change": {
+    "class": "source",
+    "source_revision": "<64 lowercase hex>"
+  },
+  "evidence": {
+    "acceptance_matrix_ready": false,
+    "durable_receipt_ready": false
+  },
+  "focused_validation": {
+    "status": "not_run",
+    "source_revision": null
+  },
+  "parent_review": {
+    "status": "not_run",
+    "source_revision": null
+  },
+  "source_freeze": {
+    "frozen": false,
+    "source_revision": null
+  },
+  "full_validation": {
+    "status": "not_run",
+    "source_revision": null,
+    "run_count_for_revision": 0,
+    "executed_by_role": null
+  },
+  "artifact_validation": {
+    "status": "not_run"
+  },
+  "external_advisory": {
+    "requested": false,
+    "gate_class": "none",
+    "authority_recorded": false
+  }
+}

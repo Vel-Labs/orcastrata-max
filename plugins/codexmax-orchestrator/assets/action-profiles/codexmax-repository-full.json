@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "codexmax-repository-full",
+  "command_identity": "codexmax.repository-full.v1",
+  "argv": ["/usr/bin/python3", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"],
+  "cwd": {"root_id": "codexmax_repo", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 1800,
+  "max_output_bytes": 1048576,
+  "validation_ids": ["codexmax-repository-full"],
+  "parameters": []
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-fanout-v1.json",
+  "title": "ProviderFanoutPlan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "fanout_id",
+    "parent_task_id",
+    "created_at",
+    "expires_at",
+    "concurrency_limit",
+    "bindings",
+    "binding_descriptors",
+    "lanes",
+    "retry_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"enum": ["ProviderFanoutPlanDraft", "ProviderFanoutPlan"]},
+    "fanout_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "parent_task_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "created_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "concurrency_limit": {"type": "integer", "minimum": 1, "maximum": 8},
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_sha256", "board_sha256", "config_sha256", "parent_authority_sha256"],
+      "properties": {
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "board_sha256": {"$ref": "#/$defs/sha256"},
+        "config_sha256": {"$ref": "#/$defs/sha256"},
+        "parent_authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "binding_descriptors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate", "board", "config", "parent_authority"],
+      "properties": {
+        "candidate": {"$ref": "#/$defs/descriptor"},
+        "board": {"$ref": "#/$defs/descriptor"},
+        "config": {"$ref": "#/$defs/descriptor"},
+        "parent_authority": {"$ref": "#/$defs/descriptor"}
+      }
+    },
+    "lanes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lane_id", "task_id", "route_name", "provider", "model", "harness_sha256", "mutation_mode", "independence_group", "worktree_path", "worktree_identity_sha256", "base_tree_sha256", "evidence_directory", "evidence_root_identity_sha256", "capability_card_sha256", "preflight_sha256", "lease_sha256", "fence_token_sha256", "execution_binding_sha256", "grant_sha256", "scope_sha256", "read_scope", "write_scope", "max_attempts", "task_state_descriptor", "capability_card_descriptor", "task_grant_descriptor", "execution_binding_descriptor"],
+        "properties": {
+          "lane_id": {"type": "string", "minLength": 1},
+          "task_id": {"type": "string", "minLength": 1},
+          "route_name": {"type": "string", "minLength": 1},
+          "provider": {"type": "string", "minLength": 1},
+          "model": {"type": "string", "minLength": 1},
+          "harness_sha256": {"$ref": "#/$defs/sha256"},
+          "mutation_mode": {"enum": ["read_only", "artifact_only", "scoped_write"]},
+          "independence_group": {"type": "string", "minLength": 1},
+          "worktree_path": {"$ref": "#/$defs/relativePath"},
+          "worktree_identity_sha256": {"$ref": "#/$defs/sha256"},
+          "base_tree_sha256": {"$ref": "#/$defs/sha256"},
+          "evidence_directory": {"$ref": "#/$defs/relativePath"},
+          "evidence_root_identity_sha256": {"$ref": "#/$defs/sha256"},
+          "capability_card_sha256": {"$ref": "#/$defs/sha256"},
+          "preflight_sha256": {"$ref": "#/$defs/sha256"},
+          "lease_sha256": {"$ref": "#/$defs/sha256"},
+          "fence_token_sha256": {"$ref": "#/$defs/sha256"},
+          "execution_binding_sha256": {"$ref": "#/$defs/sha256"},
+          "grant_sha256": {"$ref": "#/$defs/sha256"},
+          "scope_sha256": {"$ref": "#/$defs/sha256"},
+          "read_scope": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}},
+          "write_scope": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}},
+          "max_attempts": {"type": "integer", "minimum": 1, "maximum": 3}
+          ,"task_state_descriptor": {"$ref": "#/$defs/descriptor"}
+          ,"capability_card_descriptor": {"$ref": "#/$defs/descriptor"}
+          ,"task_grant_descriptor": {"$ref": "#/$defs/descriptor"}
+          ,"execution_binding_descriptor": {"$ref": "#/$defs/descriptor"}
+        }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "maximum_attempts", "allowed_failure_classes", "route_fallback_allowed", "hedging_allowed"],
+      "properties": {
+        "policy_id": {"const": "scheduler_pre_provider_retry_v1"},
+        "maximum_attempts": {"const": 3},
+        "allowed_failure_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {"enum": ["lease_expired_before_spawn", "preflight_expired_before_spawn", "protected_capability_expired_before_spawn", "evidence_collision_before_claim"]}
+        },
+        "route_fallback_allowed": {"const": false},
+        "hedging_allowed": {"const": false}
+      }
+    },
+    "execution_waves": {"type": "array"},
+    "initial_attempts": {"type": "array"},
+    "plan_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "relativePath": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$", "not": {"pattern": "(^/|(^|/)\\.\\.(/|$)|^\\./|//|\\\\)"}},
+    "descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"$ref": "#/$defs/relativePath"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"artifact_type": {"const": "ProviderFanoutPlan"}}},
+      "then": {"required": ["execution_waves", "initial_attempts", "plan_sha256"]}
+    }
+  ]
+}

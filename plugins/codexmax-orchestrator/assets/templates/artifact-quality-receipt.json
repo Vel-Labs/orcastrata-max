@@ -1,0 +1,20 @@
+{
+  "accepted": false,
+  "arbitrary_commands_executed": false,
+  "artifact": {
+    "path": "reports/example/result.md",
+    "sha256": "unknown",
+    "size_bytes": "unknown"
+  },
+  "checks_executed": false,
+  "expected_descriptor": null,
+  "findings": [
+    "template_not_executed"
+  ],
+  "max_bytes": 1048576,
+  "model_judgment_used": false,
+  "policy_id": "provider_neutral_result_v1",
+  "receipt_sha256": "unknown",
+  "schema_version": 1
+}
+

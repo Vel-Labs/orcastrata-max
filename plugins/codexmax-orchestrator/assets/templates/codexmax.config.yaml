@@ -1,0 +1,1460 @@
+adapter_registry:
+  adapters:
+    claude_cli:
+      adapter_id: "builtin.claude_cli.v1"
+      adapter_sha256: "sha256:76762d369881f14a483de8c505045f1317ee70c53c65e5cc2e9f7850927efa0c"
+      adapter_type: "claude_cli"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    commandcode:
+      adapter_id: "builtin.commandcode.v1"
+      adapter_sha256: "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879"
+      adapter_type: "commandcode"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    grok_cli:
+      adapter_id: "builtin.grok_cli.v1"
+      adapter_sha256: "sha256:21b810e169e17e2a5d882603ab20aba22de6ef8b605d3eb716c2ef595073d7a2"
+      adapter_type: "grok_cli"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    minimax_mmx:
+      adapter_id: "builtin.minimax_mmx.v1"
+      adapter_sha256: "sha256:df0e8d5db51c9a1ebc1a5c5aef659d2f2b00fea07827b19db38125412efc4121"
+      adapter_type: "minimax_mmx"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    minimax_mmx_tool_loop:
+      adapter_id: "builtin.minimax_mmx_tool_loop.v1"
+      adapter_sha256: "sha256:a89459fe30d5b827e13d2aea01a7cc75e18afc4462befd764a238ec5d1e18908"
+      adapter_type: "minimax_mmx_tool_loop"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: false
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    native_codex:
+      adapter_id: "builtin.native_codex.v1"
+      adapter_sha256: "sha256:8f1d3939633fcf66b05ada45adc88a43eebb58fd5637a5a8cbbdc99fde592518"
+      adapter_type: "native_codex"
+      credential_reference_kinds:
+        external_profile: false
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    opencode_qwopus:
+      adapter_id: "builtin.opencode_qwopus.v1"
+      adapter_sha256: "sha256:997ddb9f3da4a283acfd6ed9d392e7ca65659e6026ff88257f3c50b19f3c794d"
+      adapter_type: "opencode_qwopus"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: true
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+    opencode_tool_loop:
+      adapter_id: "builtin.opencode_tool_loop.v1"
+      adapter_sha256: "sha256:e4c90d6f666fc532827bb8a529071003414fd065f9ef9f5a49012cabc5df878a"
+      adapter_type: "opencode_tool_loop"
+      credential_reference_kinds:
+        external_profile: true
+        host_managed: true
+        none: false
+      static_execution_policy:
+        arbitrary_argv: false
+        arbitrary_environment: false
+        arbitrary_module: false
+        arbitrary_url: false
+        shell: false
+      supported_route_kind: "worker"
+  artifact_type: "codexmax_adapter_registry_v1"
+  bindings:
+    example_commandcode_deepseek:
+      adapter_binding_sha256: "sha256:6a3967499b092d332e403cf8f68a54bf3b08b12748f90dd20b59a49a45bfc91b"
+      adapter_id: "builtin.commandcode.v1"
+      adapter_registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+      adapter_sha256: "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879"
+      adapter_type: "commandcode"
+      billing_observation: "unknown"
+      binding_id: "example_commandcode_deepseek"
+      concurrency_cap: 1
+      cost_observation: "unknown"
+      credential_reference:
+        kind: "host_managed"
+        opaque_id: "commandcode-default"
+        reference_sha256: "sha256:d0d3efa673338cd432c0a6ba0b6d1a5e0334da062a09fdd515018be6704f253f"
+      enabled: false
+      provider_input_sha256: "sha256:5fdc23f00d6e97c40ff9e57134681f628df334b49f89dbc80892ced3c0f69213"
+      qualification:
+        bound_adapter_binding_sha256: null
+        capability_sha256: null
+        certificate_sha256: null
+        evaluation_sha256: null
+        expires_at: null
+        fallback_allowed: false
+        issued_at: null
+        preflight_sha256: null
+        recall_sha256: null
+        recalled_at: null
+        retry_allowed: false
+        status: "configured"
+        ttl_seconds: null
+      route:
+        billing_basis: "subscription"
+        exact_model: "deepseek/deepseek-v4-pro"
+        independence_group: "commandcode_gateway"
+        provider: "Command Code"
+        reasoning: "provider_default"
+        route_id: "commandcode-subscription-deepseek-v4-pro"
+        route_name: "worker_deepseek_v4_pro"
+        runtime: "Command Code"
+      task_profile_sha256: "sha256:4240e13df91f448841567f570a81499daf799556ad21e6251abe08f60a8f033b"
+      token_cap: 12000
+      usage_observation: "unknown"
+    example_minimax_mmx_tool_loop:
+      adapter_binding_sha256: "sha256:fadbaac0a6f341703a74e3b2d89a4d5854658311ebadb7d49349a139e20693a3"
+      adapter_id: "builtin.minimax_mmx_tool_loop.v1"
+      adapter_registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+      adapter_sha256: "sha256:a89459fe30d5b827e13d2aea01a7cc75e18afc4462befd764a238ec5d1e18908"
+      adapter_type: "minimax_mmx_tool_loop"
+      billing_observation: "unknown"
+      binding_id: "example_minimax_mmx_tool_loop"
+      concurrency_cap: 5
+      cost_observation: "unknown"
+      credential_reference:
+        kind: "external_profile"
+        opaque_id: "minimax-tool-loop-default"
+        reference_sha256: "sha256:f231061fd1c8cf4ea26536021f91a4ca5528a551921e6b3e4dd8af1cfaa0cd68"
+      enabled: false
+      provider_input_sha256: "sha256:9a1234925853657a8efb6a4ba8b29f534ca483f31135ab4aef2e831351c24faa"
+      qualification:
+        bound_adapter_binding_sha256: null
+        capability_sha256: null
+        certificate_sha256: null
+        evaluation_sha256: null
+        expires_at: null
+        fallback_allowed: false
+        issued_at: null
+        preflight_sha256: null
+        recall_sha256: null
+        recalled_at: null
+        retry_allowed: false
+        status: "configured"
+        ttl_seconds: null
+      route:
+        billing_basis: "subscription"
+        exact_model: "MiniMax-M3"
+        independence_group: "minimax"
+        provider: "MiniMax"
+        reasoning: "provider_default"
+        route_id: "minimax-subscription-m3-tool-loop"
+        route_name: "worker_minimax_m3_tool_loop"
+        runtime: "mmx 1.0.16"
+      task_profile_sha256: "sha256:4240e13df91f448841567f570a81499daf799556ad21e6251abe08f60a8f033b"
+      token_cap: 12000
+      usage_observation: "unknown"
+    example_minimax_opencode:
+      adapter_binding_sha256: "sha256:154bd2de8674c849b95f00c78368f2cd6ed659eb4f2e1d5f0152f75eaf7b3254"
+      adapter_id: "builtin.opencode_tool_loop.v1"
+      adapter_registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+      adapter_sha256: "sha256:e4c90d6f666fc532827bb8a529071003414fd065f9ef9f5a49012cabc5df878a"
+      adapter_type: "opencode_tool_loop"
+      billing_observation: "unknown"
+      binding_id: "example_minimax_opencode"
+      concurrency_cap: 1
+      cost_observation: "unknown"
+      credential_reference:
+        kind: "external_profile"
+        opaque_id: "minimax-opencode-default"
+        reference_sha256: "sha256:797173f3291defced29dc6510978418bc9ed000a1ee66efa20914788772c8007"
+      enabled: false
+      provider_input_sha256: "sha256:debf9c56d00158bfcf657043743d051e0abbfdea4ec85b87a4150a3a9aab64b8"
+      qualification:
+        bound_adapter_binding_sha256: null
+        capability_sha256: null
+        certificate_sha256: null
+        evaluation_sha256: null
+        expires_at: null
+        fallback_allowed: false
+        issued_at: null
+        preflight_sha256: null
+        recall_sha256: null
+        recalled_at: null
+        retry_allowed: false
+        status: "configured"
+        ttl_seconds: null
+      route:
+        billing_basis: "subscription"
+        exact_model: "MiniMax-M3"
+        independence_group: "minimax"
+        provider: "MiniMax"
+        reasoning: "provider_default"
+        route_id: "minimax-subscription-m3-opencode"
+        route_name: "worker_minimax_m3_opencode"
+        runtime: "OpenCode with MiniMax provider-managed subscription"
+      task_profile_sha256: "sha256:4240e13df91f448841567f570a81499daf799556ad21e6251abe08f60a8f033b"
+      token_cap: 12000
+      usage_observation: "unknown"
+    example_standalone_minimax:
+      adapter_binding_sha256: "sha256:e6d999cfe65db803f3d89d1e8aeb209218972257b4a469934bf4f92939aea167"
+      adapter_id: "builtin.minimax_mmx.v1"
+      adapter_registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+      adapter_sha256: "sha256:df0e8d5db51c9a1ebc1a5c5aef659d2f2b00fea07827b19db38125412efc4121"
+      adapter_type: "minimax_mmx"
+      billing_observation: "unknown"
+      binding_id: "example_standalone_minimax"
+      concurrency_cap: 1
+      cost_observation: "unknown"
+      credential_reference:
+        kind: "external_profile"
+        opaque_id: "minimax-default"
+        reference_sha256: "sha256:ac82cb6f8e53d0339654250e36d2a238fcfd6de7c9e0e8124bef81d1f6ec2441"
+      enabled: false
+      provider_input_sha256: "sha256:01beceebdb3273da844d69633b35524a0175c8e5776daea3f64dc57c3ae51076"
+      qualification:
+        bound_adapter_binding_sha256: null
+        capability_sha256: null
+        certificate_sha256: null
+        evaluation_sha256: null
+        expires_at: null
+        fallback_allowed: false
+        issued_at: null
+        preflight_sha256: null
+        recall_sha256: null
+        recalled_at: null
+        retry_allowed: false
+        status: "configured"
+        ttl_seconds: null
+      route:
+        billing_basis: "subscription"
+        exact_model: "MiniMax-M3"
+        independence_group: "minimax"
+        provider: "MiniMax"
+        reasoning: "provider_default"
+        route_id: "minimax-subscription-m3"
+        route_name: "worker_minimax_m3"
+        runtime: "mmx 1.0.16"
+      task_profile_sha256: "sha256:4240e13df91f448841567f570a81499daf799556ad21e6251abe08f60a8f033b"
+      token_cap: 12000
+      usage_observation: "unknown"
+  registry_revision: "builtin-v1"
+  registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+  schema_version: 1
+authority:
+  destructive_changes: "ask"
+  external_model_calls: "ask_unless_goal_authorized"
+  installs: "ask"
+  network: "ask"
+  publish: "ask"
+  push: "ask"
+budgets:
+  hard_spend_limit_usd: null
+  record_usage_when_exposed: true
+  token_limit: null
+  unknown_usage_policy: "preserve_unknown"
+capability_model:
+  adapter_maximums:
+    native_codex:
+      adapter_type: "native_codex"
+      authority_mode: "task_lease_required"
+      maximum_lanes:
+        artifact: true
+        audit: true
+        implementation: true
+        read: true
+        scoped_write: true
+        tool_loop: true
+      maximum_primitives:
+        artifact_output: true
+        browser_control: true
+        command_execution: true
+        connector_access: true
+        local_read: true
+        scoped_write: true
+        tool_loop: true
+        web_search: true
+  reasoning:
+    fresh_preflight_required: true
+    permission_source: "task_authority"
+    quality_floor_source: "task_consequence_floor"
+    reasoning_efforts:
+      gpt_5_6_luna:
+        high: true
+        low: true
+        max: true
+        medium: true
+        xhigh: true
+      gpt_5_6_sol:
+        high: true
+        max: true
+        medium: true
+        ultra: true
+        xhigh: true
+      gpt_5_6_terra:
+        high: true
+        low: true
+        max: true
+        medium: true
+        ultra: true
+        xhigh: true
+    schema_version: 1
+    selection: "compositional"
+  schema_version: 1
+  task_authority:
+    access_modes:
+      read_only: true
+      scoped_write: true
+    intersection: "adapter_maximum_and_task_lease"
+    source: "task_lease"
+    write_requires:
+      active_lease: true
+      local_read: true
+      non_empty_write_scope: true
+      scoped_write: true
+capability_preferences:
+  lanes:
+    artifact:
+      lane_profile: "artifact"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_flash"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3"
+      route_04: "worker_codex_spark"
+      route_05: "worker_claude_code_sonnet_5"
+      route_06: "worker_grok_4_6"
+      user_concurrency_limit: 5
+    audit:
+      lane_profile: "audit"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_claude_code_sonnet_5"
+      route_04: "worker_grok_4_6"
+      route_05: "worker_codex_spark"
+      route_06: "none"
+      user_concurrency_limit: 5
+    implementation:
+      lane_profile: "implementation"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_claude_code_sonnet_5"
+      route_04: "worker_grok_4_6"
+      route_05: "worker_codex_spark"
+      route_06: "none"
+      user_concurrency_limit: 5
+    read:
+      lane_profile: "read"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_flash"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_codex_spark"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "none"
+      user_concurrency_limit: 5
+    scoped_write:
+      lane_profile: "scoped_write"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3_tool_loop"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "worker_codex_spark"
+      user_concurrency_limit: 5
+    tool_loop:
+      lane_profile: "tool_loop"
+      lane_schema_version: 1
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3_tool_loop"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "worker_codex_spark"
+      user_concurrency_limit: 5
+  schema_version: 1
+execution:
+  default_active_workers: 5
+  max_attempts_per_checkpoint: 3
+  max_turns_safety_ceiling: 20
+  max_write_workers: 1
+  no_improvement_window: 2
+headless_dispatch:
+  role_priorities:
+    architect:
+      role_schema_version: 2
+      route_01: "worker_luna_xhigh"
+      route_02: "worker_sol_high"
+      route_03: "worker_deepseek_v4_pro"
+      route_04: "worker_minimax_m3"
+      route_05: "worker_claude_code_sonnet_5"
+      route_06: "worker_terra_high"
+      task_profile: "sol_plan_architecture"
+    auditor:
+      role_schema_version: 2
+      route_01: "worker_luna_xhigh"
+      route_02: "worker_deepseek_v4_pro"
+      route_03: "worker_minimax_m3"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "worker_terra_high"
+      task_profile: "semantic_embedded_audit"
+    documenter:
+      role_schema_version: 2
+      route_01: "worker_deepseek_v4_flash"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3"
+      route_04: "worker_codex_spark"
+      route_05: "worker_claude_code_sonnet_5"
+      route_06: "worker_grok_4_6"
+      task_profile: "fast_read_only"
+    planner:
+      role_schema_version: 2
+      route_01: "worker_luna_xhigh"
+      route_02: "worker_sol_high"
+      route_03: "worker_deepseek_v4_pro"
+      route_04: "worker_minimax_m3"
+      route_05: "worker_claude_code_sonnet_5"
+      route_06: "worker_terra_high"
+      task_profile: "sol_plan_architecture"
+    tester:
+      role_schema_version: 2
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "worker_codex_spark"
+      task_profile: "semantic_independent_test"
+    worker:
+      role_schema_version: 2
+      route_01: "worker_deepseek_v4_pro"
+      route_02: "worker_luna_xhigh"
+      route_03: "worker_minimax_m3_tool_loop"
+      route_04: "worker_claude_code_sonnet_5"
+      route_05: "worker_grok_4_6"
+      route_06: "worker_codex_spark"
+      task_profile: "semantic_worker_implementation"
+  schema_version: 2
+journey:
+  mode: "guided"
+  progressive_disclosure: true
+  question_batch_max: 3
+  resume_existing: "prompt"
+  simple_task_fast_path: true
+route_registry:
+  fresh_preflight_required: true
+  model_identity_implies_tools: false
+  registry_version: 1
+  routes:
+    parent_sol:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Parent Codex"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "highest"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "gpt-5.6-sol"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "unknown"
+      local_file_access: "unknown"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "unknown"
+      recommended_role: "parent_only"
+      route_id: "native-codex-parent"
+      route_kind: "control"
+      route_schema_version: 1
+      runtime: "Codex Desktop"
+      source_access: "unknown"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unknown"
+    supervisor_terra_high:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Goal-lifetime Supervisor"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "high"
+      enabled: false
+      escalation_policy: "explicit_only"
+      exact_model: "gpt-5.6-terra"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "high"
+      recommended_role: "supervisor_only"
+      route_id: "native-codex-terra"
+      route_kind: "control"
+      route_schema_version: 1
+      runtime: "Codex Desktop"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "scoped"
+    worker_claude_code_sonnet_5:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Claude Code Sonnet 5"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "claude-sonnet-5"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "anthropic"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Anthropic"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "claude-code-subscription-sonnet-5"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Claude Code 2.1.232"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_claude_sonnet_5:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "unknown"
+      browser_access: "unknown"
+      candidate_label: "Claude Sonnet 5"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "unknown"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "unknown"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unknown"
+      independence_group: "anthropic"
+      input_delivery: "unknown"
+      local_file_access: "unknown"
+      provider: "Anthropic"
+      quota_observability: "unknown"
+      reasoning: "unknown"
+      recommended_role: "implementation_candidate"
+      route_id: "unknown"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "unknown"
+      source_access: "unknown"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unknown"
+    worker_codex_spark:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Codex Spark"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "low"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "gpt-5.3-codex-spark"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_only"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "low"
+      recommended_role: "fast_read_only"
+      route_id: "codex-spark"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex CLI"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unverified"
+    worker_commandcode_claude_sonnet_5:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Command Code Claude Sonnet 5"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "claude-sonnet-5"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "commandcode_gateway"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Command Code"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "commandcode-subscription-claude-sonnet-5"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Command Code"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_commandcode_grok_4_5:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Command Code Grok 4.5"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "xai/grok-4.5"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "commandcode_gateway"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Command Code"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "commandcode-subscription-grok-4-5"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Command Code"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_commandcode_minimax_m3:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Command Code MiniMax M3"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "minimaxai/minimax-m3"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "commandcode_gateway"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Command Code"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "commandcode-subscription-minimax-m3"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Command Code"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_deepseek_v4_flash:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "CommandCode DeepSeek V4 Flash"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "low"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "deepseek/deepseek-v4-flash"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "commandcode_gateway"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Command Code"
+      quota_observability: "unsupported"
+      reasoning: "provider_default"
+      recommended_role: "fast_structured"
+      route_id: "commandcode-subscription-deepseek-v4-flash"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Command Code"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_deepseek_v4_pro:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "CommandCode DeepSeek V4 Pro"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "deepseek/deepseek-v4-pro"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "commandcode_gateway"
+      input_delivery: "paths_only"
+      local_file_access: "read_only"
+      provider: "Command Code"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "bounded_implementation"
+      route_id: "commandcode-subscription-deepseek-v4-pro"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Command Code"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unverified"
+    worker_grok_4_5:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Grok subscription 4.5"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "unknown"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "grok-4.5"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "grok"
+      input_delivery: "unknown"
+      local_file_access: "unknown"
+      provider: "Grok"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "grok-subscription-4-5"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Grok CLI 1.0.3"
+      source_access: "unknown"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unknown"
+    worker_grok_4_6:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "Grok subscription 4.6"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "grok-4.6"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "grok"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "Grok"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "grok-subscription-4-6"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Grok CLI 1.0.4"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_luna_xhigh:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Luna xhigh"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "high"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "gpt-5.6-luna"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "task_selected"
+      recommended_role: "general_worker"
+      route_id: "codex-luna"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex CLI"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "scoped"
+    worker_minimax_m3:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "MiniMax subscription M3"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 5
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "MiniMax-M3"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "minimax"
+      input_delivery: "embedded_fact_pack"
+      local_file_access: "none"
+      provider: "MiniMax"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "embedded_review"
+      route_id: "minimax-subscription-m3"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "mmx 1.0.16"
+      source_access: "embedded_only"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_minimax_m3_opencode:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "MiniMax M3 through OpenCode"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "unknown"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "MiniMax-M3"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "minimax"
+      input_delivery: "unknown"
+      local_file_access: "unknown"
+      provider: "MiniMax"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "implementation_candidate"
+      route_id: "minimax-subscription-m3-opencode"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "OpenCode with MiniMax provider-managed subscription"
+      source_access: "unknown"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unknown"
+    worker_minimax_m3_tool_loop:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "subscription"
+      browser_access: "unknown"
+      candidate_label: "MiniMax M3 Codexmax JSON text file-tool loop; task-scoped read/write observed"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "no"
+      concurrency_limit: 5
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "MiniMax-M3"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "minimax"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "MiniMax"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "read_only_worker"
+      route_id: "minimax-subscription-m3-tool-loop"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "mmx 1.0.16"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unverified"
+    worker_qwopus_opencode:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "local_compute"
+      browser_access: "unknown"
+      candidate_label: "Local Qwopus through OpenCode"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "unknown"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "ordinary"
+      exact_model: "qwopus36-35b-a3b-coder-mtp-q5_k_m"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "local_qwopus"
+      input_delivery: "unknown"
+      local_file_access: "unknown"
+      provider: "local-llm"
+      quota_observability: "unknown"
+      reasoning: "provider_default"
+      recommended_role: "independent_test_or_audit"
+      route_id: "qwopus-opencode-local"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "llama.cpp llama-server + OpenCode"
+      source_access: "unknown"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "unknown"
+    worker_sol_high:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Sol high planning"
+      capability_evidence: "unknown"
+      capability_status: "unverified"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "highest"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "gpt-5.6-sol"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_only"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "task_selected"
+      recommended_role: "planner_or_architect"
+      route_id: "codex-sol-high"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex CLI"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "none"
+    worker_sol_medium:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Sol medium worker"
+      capability_evidence: "unknown"
+      capability_status: "unverified"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "high"
+      enabled: true
+      escalation_policy: "ordinary"
+      exact_model: "gpt-5.6-sol"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "task_selected"
+      recommended_role: "general_worker"
+      route_id: "codex-sol-medium"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex CLI"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "scoped"
+    worker_terra_high:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Terra high worker"
+      capability_evidence: "unknown"
+      capability_status: "unverified"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "high"
+      enabled: false
+      escalation_policy: "explicit_only"
+      exact_model: "gpt-5.6-terra"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "high"
+      recommended_role: "general_worker"
+      route_id: "codex-terra-high"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex CLI"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "scoped"
+    worker_terra_medium:
+      authentication: "unverified"
+      availability: "unknown"
+      billing_basis: "native_included"
+      browser_access: "unknown"
+      candidate_label: "Terra medium"
+      capability_evidence: "unknown"
+      capability_status: "unknown"
+      commands_executable: "yes"
+      concurrency_limit: 1
+      connector_access: "unknown"
+      consequence_floor: "medium"
+      enabled: false
+      escalation_policy: "explicit_only"
+      exact_model: "gpt-5.6-terra"
+      health: "unknown"
+      identity_evidence: "unknown"
+      identity_status: "unverified"
+      independence_group: "openai_native"
+      input_delivery: "paths_only"
+      local_file_access: "read_write"
+      provider: "OpenAI"
+      quota_observability: "unknown"
+      reasoning: "medium"
+      recommended_role: "general_worker"
+      route_id: "unknown"
+      route_kind: "worker"
+      route_schema_version: 1
+      runtime: "Codex"
+      source_access: "local_filesystem"
+      token_limit: null
+      web_search_access: "unknown"
+      write_access: "scoped"
+  selection_policy: "capability_first"
+  task_profiles:
+    bounded_implementation:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: true
+      connector_required: false
+      consequence_floor: "medium"
+      independence_required: false
+      primary_route: "worker_deepseek_v4_pro"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_claude_code_sonnet_5"
+      secondary_03: "worker_minimax_m3_tool_loop"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: true
+    deep_review:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "high"
+      independence_required: false
+      primary_route: "worker_luna_xhigh"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_sol_high"
+      secondary_02: "worker_deepseek_v4_pro"
+      secondary_03: "worker_minimax_m3"
+      secondary_04: "worker_claude_code_sonnet_5"
+      secondary_05: "worker_terra_high"
+      web_search_required: false
+      write_required: false
+    embedded_audit:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "medium"
+      independence_required: true
+      primary_route: "worker_deepseek_v4_flash"
+      profile_schema_version: 2
+      required_source_access: "embedded_only"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: false
+    fast_read_only:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "low"
+      independence_required: false
+      primary_route: "worker_deepseek_v4_flash"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_codex_spark"
+      secondary_04: "worker_claude_code_sonnet_5"
+      secondary_05: "worker_grok_4_6"
+      web_search_required: false
+      write_required: false
+    independent_test:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: true
+      connector_required: false
+      consequence_floor: "high"
+      independence_required: true
+      primary_route: "worker_deepseek_v4_pro"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: false
+    semantic_document_artifact:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "low"
+      independence_required: false
+      primary_route: "worker_deepseek_v4_flash"
+      profile_schema_version: 2
+      required_source_access: "embedded_only"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_codex_spark"
+      secondary_04: "worker_claude_code_sonnet_5"
+      secondary_05: "worker_grok_4_6"
+      web_search_required: false
+      write_required: false
+    semantic_embedded_audit:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "medium"
+      independence_required: true
+      primary_route: "worker_luna_xhigh"
+      profile_schema_version: 2
+      required_source_access: "embedded_only"
+      secondary_01: "worker_deepseek_v4_pro"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_terra_high"
+      web_search_required: false
+      write_required: false
+    semantic_independent_artifact:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "high"
+      independence_required: true
+      primary_route: "worker_deepseek_v4_pro"
+      profile_schema_version: 2
+      required_source_access: "embedded_only"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: false
+    semantic_independent_test:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: true
+      connector_required: false
+      consequence_floor: "high"
+      independence_required: true
+      primary_route: "worker_deepseek_v4_pro"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: false
+    semantic_worker_artifact:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "medium"
+      independence_required: false
+      primary_route: "worker_deepseek_v4_flash"
+      profile_schema_version: 2
+      required_source_access: "embedded_only"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3"
+      secondary_03: "worker_codex_spark"
+      secondary_04: "worker_claude_code_sonnet_5"
+      secondary_05: "worker_grok_4_6"
+      web_search_required: false
+      write_required: false
+    semantic_worker_implementation:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: true
+      connector_required: false
+      consequence_floor: "medium"
+      independence_required: false
+      primary_route: "worker_deepseek_v4_pro"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_luna_xhigh"
+      secondary_02: "worker_minimax_m3_tool_loop"
+      secondary_03: "worker_claude_code_sonnet_5"
+      secondary_04: "worker_grok_4_6"
+      secondary_05: "worker_codex_spark"
+      web_search_required: false
+      write_required: true
+    sol_plan_architecture:
+      billing_ceiling: "non_metered"
+      browser_required: false
+      commands_required: false
+      connector_required: false
+      consequence_floor: "high"
+      independence_required: false
+      primary_route: "worker_luna_xhigh"
+      profile_schema_version: 2
+      required_source_access: "local_filesystem"
+      secondary_01: "worker_sol_high"
+      secondary_02: "worker_deepseek_v4_pro"
+      secondary_03: "worker_minimax_m3"
+      secondary_04: "worker_claude_code_sonnet_5"
+      secondary_05: "worker_terra_high"
+      web_search_required: false
+      write_required: false
+routing:
+  auxiliary:
+    commandcode_deepseek:
+      billing_policy: "subscription_first"
+      enabled: true
+      token_limit: null
+    qwopus:
+      enabled: false
+      token_limit: null
+    spark:
+      enabled: true
+      token_limit: null
+    standalone_minimax:
+      billing_policy: "subscription_only"
+      enabled: true
+      model: "MiniMax-M3"
+      route_id: "standalone-minimax-m3"
+      token_limit: null
+  silent_metered_fallback: false
+scheduler:
+  activation: "explicit_only"
+  artifact_quality_policy: "provider_neutral_result_v1"
+  default_preflight_ttl_seconds: 60
+  direct_repository_writes_enabled: false
+  diversity_min_quality_observations: 5
+  hedging_enabled: false
+  lease_ttl_seconds: 900
+  maximum_preflight_ttl_seconds: 300
+  maximum_queue_age_seconds: 900
+  mutation_task_profiles:
+    worker_scoped_write: "semantic_worker_implementation"
+  provider_concurrency_default: 1
+  provider_concurrency_limits:
+    anthropic: 1
+    command_code: 2
+    grok: 1
+    minimax: 5
+    openai: 2
+  role_rank_displacement:
+    architect: 0
+    auditor: 1
+    documenter: 1
+    planner: 0
+    tester: 1
+    worker: 1
+  runtime_host_concurrency_default: 1
+  runtime_host_concurrency_limits:
+    mmx_1_0_16: 5
+  schema_version: 1
+  task_class_profiles:
+    architect: "sol_plan_architecture"
+    auditor: "semantic_embedded_audit"
+    documenter: "semantic_document_artifact"
+    planner: "sol_plan_architecture"
+    tester: "semantic_independent_artifact"
+    worker: "semantic_worker_artifact"
+  unknown_cost_policy: "preserve_unknown_and_reject_cash"
+schema_version: 3

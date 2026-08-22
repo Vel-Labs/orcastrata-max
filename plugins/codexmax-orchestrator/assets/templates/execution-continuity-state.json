@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "goal_id": "<GoalBuddy goal id>",
+  "checkpoint_id": "<active task id>",
+  "board_sha256": "<64 lowercase hex>",
+  "authority_receipt": "<repository-relative path>",
+  "oracle": {
+    "total": 0,
+    "satisfied": 0,
+    "previously_satisfied": 0,
+    "disputed": 0
+  },
+  "progress": {
+    "accepted_artifacts": [],
+    "newly_accepted_artifacts": [],
+    "consecutive_no_improvement_attempts": 0,
+    "no_improvement_window": 2
+  },
+  "usage": {
+    "observed_tokens": "unknown",
+    "token_forecast": "unknown",
+    "explicit_token_cap": null,
+    "external_cost_observed": "unknown",
+    "external_cost_authority": "unknown"
+  },
+  "continuity": {
+    "context_pressure": false,
+    "failed_attempt": false,
+    "validation_failed": false,
+    "candidate_ready": false,
+    "useful_local_work_exhausted": false,
+    "optimization_options": {
+      "revise_packet": true,
+      "split_work": true,
+      "reroute": true,
+      "repair": true
+    },
+    "selected_action": "continue_current",
+    "operator_decision_required": false,
+    "reason_codes": []
+  },
+  "decision_context": {
+    "decision_owner": "pm",
+    "escalation_class": "none",
+    "safe_successor": "continue_current",
+    "human_fact_required": false,
+    "material_product_decision_required": false,
+    "external_action_required": false,
+    "credential_action_required": false,
+    "material_oracle_change_required": false,
+    "authority_expansion_required": false,
+    "terminal_platform_error": false,
+    "architecture_path_exhausted": false,
+    "redesign_exhausted": false,
+    "task_split_exhausted": false,
+    "repair_budget_exhausted": false
+  },
+  "pm_status": {
+    "outcome_state": "active",
+    "candidate": "none",
+    "current_gate": "execution",
+    "exact_blocker": "none",
+    "pm_decision": "continue",
+    "next_automatic_action": "continue_current",
+    "human_action": "none"
+  },
+  "rollover": {
+    "required": false,
+    "pack_path": null,
+    "pack_sha256": null,
+    "next_action": null
+  },
+  "projection": {
+    "producer": "Codexmax",
+    "board_truth_owner": "GoalBuddy",
+    "assurance_owner": "AOL Core",
+    "intended_client": "Orcastrata/AOL",
+    "integration_proven": false
+  }
+}

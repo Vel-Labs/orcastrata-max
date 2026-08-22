@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/adapter-registry-v1.json",
+  "title": "CodexmaxAdapterRegistryV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "registry_revision", "adapters", "bindings", "registry_sha256"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "codexmax_adapter_registry_v1"},
+    "registry_revision": {"const": "builtin-v1"},
+    "adapters": {
+      "type": "object", "minProperties": 8, "maxProperties": 8,
+      "propertyNames": {"$ref": "#/$defs/adapterType"},
+      "additionalProperties": {"$ref": "#/$defs/adapter"}
+    },
+    "bindings": {
+      "type": "object", "maxProperties": 64,
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/binding"}
+    },
+    "registry_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+~-]*$"},
+    "label": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\u0000\\r\\n]+$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "adapterType": {"enum": ["native_codex", "claude_cli", "commandcode", "minimax_mmx", "minimax_mmx_tool_loop", "opencode_tool_loop", "grok_cli", "opencode_qwopus"]},
+    "adapter": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adapter_type", "adapter_id", "supported_route_kind", "credential_reference_kinds", "static_execution_policy", "adapter_sha256"],
+      "properties": {
+        "adapter_type": {"$ref": "#/$defs/adapterType"},
+        "adapter_id": {"$ref": "#/$defs/id"},
+        "supported_route_kind": {"const": "worker"},
+        "credential_reference_kinds": {
+          "type": "object", "additionalProperties": false,
+          "required": ["none", "host_managed", "external_profile"],
+          "properties": {"none": {"type": "boolean"}, "host_managed": {"type": "boolean"}, "external_profile": {"type": "boolean"}}
+        },
+        "static_execution_policy": {
+          "type": "object", "additionalProperties": false,
+          "required": ["shell", "arbitrary_argv", "arbitrary_url", "arbitrary_module", "arbitrary_environment"],
+          "properties": {"shell": {"const": false}, "arbitrary_argv": {"const": false}, "arbitrary_url": {"const": false}, "arbitrary_module": {"const": false}, "arbitrary_environment": {"const": false}}
+        },
+        "adapter_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "credentialReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "opaque_id", "reference_sha256"],
+      "properties": {"kind": {"enum": ["none", "host_managed", "external_profile"]}, "opaque_id": {"$ref": "#/$defs/id"}, "reference_sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "routeIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["route_name", "provider", "exact_model", "route_id", "runtime", "reasoning", "billing_basis", "independence_group"],
+      "properties": {
+        "route_name": {"$ref": "#/$defs/id"}, "provider": {"$ref": "#/$defs/label"}, "exact_model": {"$ref": "#/$defs/label"},
+        "route_id": {"$ref": "#/$defs/label"}, "runtime": {"$ref": "#/$defs/label"}, "reasoning": {"$ref": "#/$defs/label"},
+        "billing_basis": {"$ref": "#/$defs/label"}, "independence_group": {"$ref": "#/$defs/label"}
+      }
+    },
+    "qualification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "certificate_sha256", "preflight_sha256", "capability_sha256", "evaluation_sha256", "bound_adapter_binding_sha256", "issued_at", "expires_at", "ttl_seconds", "recall_sha256", "recalled_at", "retry_allowed", "fallback_allowed"],
+      "properties": {
+        "status": {"enum": ["unconfigured", "configured", "qualification_required", "qualified", "expired", "stale", "recalled", "revoked", "unavailable", "qualification_failed", "execution_unknown"]},
+        "certificate_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "preflight_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "capability_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "evaluation_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "bound_adapter_binding_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "issued_at": {"anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]},
+        "expires_at": {"anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]},
+        "ttl_seconds": {"type": ["integer", "null"], "minimum": 1, "maximum": 300},
+        "recall_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "recalled_at": {"anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]},
+        "retry_allowed": {"const": false}, "fallback_allowed": {"const": false}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["binding_id", "enabled", "adapter_type", "adapter_id", "adapter_sha256", "route", "credential_reference", "concurrency_cap", "token_cap", "task_profile_sha256", "provider_input_sha256", "adapter_registry_sha256", "adapter_binding_sha256", "qualification", "billing_observation", "usage_observation", "cost_observation"],
+      "properties": {
+        "binding_id": {"$ref": "#/$defs/id"}, "enabled": {"type": "boolean"}, "adapter_type": {"$ref": "#/$defs/adapterType"},
+        "adapter_id": {"$ref": "#/$defs/id"}, "adapter_sha256": {"$ref": "#/$defs/digest"}, "route": {"$ref": "#/$defs/routeIdentity"},
+        "credential_reference": {"$ref": "#/$defs/credentialReference"}, "concurrency_cap": {"type": ["integer", "null"], "minimum": 1},
+        "token_cap": {"type": "integer", "minimum": 1}, "task_profile_sha256": {"$ref": "#/$defs/digest"},
+        "provider_input_sha256": {"$ref": "#/$defs/digest"}, "adapter_registry_sha256": {"$ref": "#/$defs/digest"},
+        "adapter_binding_sha256": {"$ref": "#/$defs/digest"}, "qualification": {"$ref": "#/$defs/qualification"},
+        "billing_observation": {"const": "unknown"}, "usage_observation": {"const": "unknown"}, "cost_observation": {"const": "unknown"}
+      }
+    }
+  }
+}

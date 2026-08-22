@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openai.local/codexmax/workgraph/v1",
+  "title": "Codexmax WorkGraph v1 exchange schema",
+  "description": "Strict declarative exchange schema. workgraph.py additionally enforces graph-wide identity, cycle, direction, and authority invariants.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "graph_id", "evidence", "work_items"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "graph_id": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "work_items": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/work_item"}
+    }
+  },
+  "$defs": {
+    "nonempty_string": {"type": "string", "minLength": 1},
+    "string_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonempty_string"}
+    },
+    "nonempty_string_array": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonempty_string"}
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "locator", "digest", "state", "claim_ids", "authority_effect", "acceptance_effect"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonempty_string"},
+        "kind": {"enum": ["artifact", "command_result", "receipt", "source_reference"]},
+        "locator": {"$ref": "#/$defs/nonempty_string"},
+        "digest": {
+          "anyOf": [
+            {"const": "unknown"},
+            {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+          ]
+        },
+        "state": {"enum": ["expected", "observed", "validated", "rejected"]},
+        "claim_ids": {"$ref": "#/$defs/string_array"},
+        "authority_effect": {"const": "none"},
+        "acceptance_effect": {"const": "none"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"const": "validated"}}, "required": ["state"]},
+          "then": {"properties": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read", "write"],
+      "properties": {
+        "read": {"$ref": "#/$defs/string_array"},
+        "write": {"$ref": "#/$defs/string_array"}
+      }
+    },
+    "validation_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "instruction", "expected_result"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonempty_string"},
+        "kind": {"$ref": "#/$defs/nonempty_string"},
+        "instruction": {"$ref": "#/$defs/nonempty_string"},
+        "expected_result": {"$ref": "#/$defs/nonempty_string"}
+      }
+    },
+    "validation": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/validation_row"}
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_of", "blocked_by", "related_to", "produces", "consumes"],
+      "properties": {
+        "parent_of": {"$ref": "#/$defs/string_array"},
+        "blocked_by": {"$ref": "#/$defs/string_array"},
+        "related_to": {"$ref": "#/$defs/string_array"},
+        "produces": {"$ref": "#/$defs/string_array"},
+        "consumes": {"$ref": "#/$defs/string_array"}
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_attempts", "no_improvement_window"],
+      "properties": {
+        "max_attempts": {"type": "integer", "minimum": 1},
+        "no_improvement_window": {"type": "integer", "minimum": 1}
+      }
+    },
+    "identity_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "provenance"],
+      "oneOf": [
+        {
+          "properties": {
+            "value": {"const": "unknown"},
+            "provenance": {"const": "unknown"}
+          }
+        },
+        {
+          "properties": {
+            "value": {"type": "string", "minLength": 1, "not": {"const": "unknown"}},
+            "provenance": {"enum": ["declared", "parent_assigned", "runtime_observed", "receipt_backed"]}
+          }
+        }
+      ]
+    },
+    "observed_text_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "provenance"],
+      "oneOf": [
+        {
+          "properties": {
+            "value": {"const": "unknown"},
+            "provenance": {"const": "unknown"}
+          }
+        },
+        {
+          "properties": {
+            "value": {"type": "string", "minLength": 1, "not": {"const": "unknown"}},
+            "provenance": {"enum": ["runtime_observed", "receipt_backed"]}
+          }
+        }
+      ]
+    },
+    "measurement_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "provenance"],
+      "oneOf": [
+        {
+          "properties": {
+            "value": {"const": "unknown"},
+            "provenance": {"const": "unknown"}
+          }
+        },
+        {
+          "properties": {
+            "value": {"type": "number", "minimum": 0},
+            "provenance": {"enum": ["runtime_observed", "receipt_backed"]}
+          }
+        }
+      ]
+    },
+    "capability_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "provenance"],
+      "oneOf": [
+        {
+          "properties": {
+            "value": {"const": "unknown"},
+            "provenance": {"const": "unknown"}
+          }
+        },
+        {
+          "properties": {
+            "value": {"enum": ["yes", "no"]},
+            "provenance": {"enum": ["runtime_observed", "receipt_backed"]}
+          }
+        }
+      ]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem", "browser", "command", "network", "connector", "billing"],
+      "properties": {
+        "filesystem": {"$ref": "#/$defs/capability_fact"},
+        "browser": {"$ref": "#/$defs/capability_fact"},
+        "command": {"$ref": "#/$defs/capability_fact"},
+        "network": {"$ref": "#/$defs/capability_fact"},
+        "connector": {"$ref": "#/$defs/capability_fact"},
+        "billing": {"$ref": "#/$defs/capability_fact"}
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_name", "agent_id", "provider", "model", "route_id", "runtime", "billing", "source_access", "commands_executable", "token_usage", "cost", "capabilities"],
+      "properties": {
+        "agent_name": {"$ref": "#/$defs/identity_fact"},
+        "agent_id": {"$ref": "#/$defs/identity_fact"},
+        "provider": {"$ref": "#/$defs/identity_fact"},
+        "model": {"$ref": "#/$defs/identity_fact"},
+        "route_id": {"$ref": "#/$defs/identity_fact"},
+        "runtime": {"$ref": "#/$defs/observed_text_fact"},
+        "billing": {"$ref": "#/$defs/observed_text_fact"},
+        "source_access": {"$ref": "#/$defs/observed_text_fact"},
+        "commands_executable": {"$ref": "#/$defs/observed_text_fact"},
+        "token_usage": {"$ref": "#/$defs/measurement_fact"},
+        "cost": {"$ref": "#/$defs/measurement_fact"},
+        "capabilities": {"$ref": "#/$defs/capabilities"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "receipt_id", "provenance", "write_scope", "forbidden_actions", "may_accept", "may_mutate_canonical_state"],
+      "properties": {
+        "source": {"$ref": "#/$defs/nonempty_string"},
+        "receipt_id": {"$ref": "#/$defs/nonempty_string"},
+        "provenance": {"enum": ["operator_issued", "parent_issued"]},
+        "write_scope": {"$ref": "#/$defs/string_array"},
+        "forbidden_actions": {"$ref": "#/$defs/nonempty_string_array"},
+        "may_accept": {"const": false},
+        "may_mutate_canonical_state": {"const": false}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"provenance": {"const": "operator_issued"}}, "required": ["provenance"]},
+          "then": {"properties": {"source": {"type": "string", "pattern": "^operator:.+"}}}
+        },
+        {
+          "if": {"properties": {"provenance": {"const": "parent_issued"}}, "required": ["provenance"]},
+          "then": {"properties": {"source": {"type": "string", "pattern": "^parent:.+"}}}
+        }
+      ]
+    },
+    "provider_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_access", "input_delivery", "commands_executable", "billing", "token_limit", "fallback"],
+      "properties": {
+        "source_access": {"enum": ["local_filesystem", "embedded_only", "connector_resource", "mixed", "none", "unknown", "unverified"]},
+        "input_delivery": {"enum": ["paths_only", "embedded_fact_pack", "connector_references", "mixed", "none", "unknown", "unverified"]},
+        "commands_executable": {"enum": ["yes", "no", "unknown"]},
+        "billing": {"enum": ["unknown", "local", "non_metered", "subscription", "metered"]},
+        "token_limit": {
+          "anyOf": [
+            {"type": "null"},
+            {"type": "integer", "minimum": 1}
+          ]
+        },
+        "fallback": {"$ref": "#/$defs/nonempty_string"}
+      }
+    },
+    "independent_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "roles"],
+      "properties": {
+        "required": {"const": true},
+        "roles": {
+          "allOf": [
+            {"$ref": "#/$defs/nonempty_string_array"},
+            {"contains": {"enum": ["Tester", "Auditor"]}}
+          ]
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preserve_failed_attempts", "preserve_changed_files", "on_failure", "max_attempts"],
+      "properties": {
+        "preserve_failed_attempts": {"const": true},
+        "preserve_changed_files": {"const": true},
+        "on_failure": {"enum": ["revision", "reassignment", "parent_repair"]},
+        "max_attempts": {"type": "integer", "minimum": 1}
+      }
+    },
+    "parent_acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "authority", "status"],
+      "properties": {
+        "required": {"const": true},
+        "authority": {"const": "Parent Codex"},
+        "status": {"const": "pending"}
+      }
+    },
+    "work_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "objective", "status", "clarity_tier", "scope", "done_condition", "validation"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonempty_string"},
+        "kind": {"enum": ["goal", "checkpoint", "ticket", "task", "subtask", "test", "audit", "decision"]},
+        "objective": {"$ref": "#/$defs/nonempty_string"},
+        "status": {"enum": ["queued", "active", "blocked", "ready_for_review", "candidate_complete", "needs_revision", "needs_reassignment", "needs_parent_repair", "waiting_external"]},
+        "clarity_tier": {"enum": ["direct", "bounded", "governed"]},
+        "scope": {"$ref": "#/$defs/scope"},
+        "done_condition": {"$ref": "#/$defs/nonempty_string"},
+        "validation": {"$ref": "#/$defs/validation"},
+        "relationships": {"$ref": "#/$defs/relationships"},
+        "owner_role": {"$ref": "#/$defs/nonempty_string"},
+        "expected_artifacts": {"$ref": "#/$defs/string_array"},
+        "retry_policy": {"$ref": "#/$defs/retry_policy"},
+        "stop_rule": {"$ref": "#/$defs/nonempty_string"},
+        "identity": {"$ref": "#/$defs/identity"},
+        "authority": {"$ref": "#/$defs/authority"},
+        "provider_policy": {"$ref": "#/$defs/provider_policy"},
+        "independent_verification": {"$ref": "#/$defs/independent_verification"},
+        "receipts": {"$ref": "#/$defs/string_array"},
+        "recovery": {"$ref": "#/$defs/recovery"},
+        "parent_acceptance": {"$ref": "#/$defs/parent_acceptance"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"clarity_tier": {"enum": ["bounded", "governed"]}},
+            "required": ["clarity_tier"]
+          },
+          "then": {
+            "required": ["relationships", "owner_role", "expected_artifacts", "retry_policy", "stop_rule"],
+            "properties": {"expected_artifacts": {"$ref": "#/$defs/nonempty_string_array"}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"clarity_tier": {"const": "governed"}},
+            "required": ["clarity_tier"]
+          },
+          "then": {
+            "required": ["identity", "authority", "provider_policy", "independent_verification", "receipts", "recovery", "parent_acceptance"],
+            "properties": {"receipts": {"$ref": "#/$defs/nonempty_string_array"}}
+          }
+        }
+      ]
+    }
+  }
+}

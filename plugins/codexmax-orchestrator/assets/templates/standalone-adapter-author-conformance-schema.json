@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codexmax:standalone-adapter-author-conformance:v1",
+  "title": "Standalone adapter-author conformance bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "bundle_id",
+    "adapter_identity_sha256",
+    "runtime_primitives",
+    "provider_code",
+    "delegation",
+    "journal",
+    "capability_claims",
+    "authority_claims",
+    "billing_claims",
+    "usage_claims",
+    "effects",
+    "side_channels",
+    "acceptance_claimed"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "standalone_adapter_conformance_bundle_v1"},
+    "bundle_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+    "adapter_identity_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "runtime_primitives": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "runtime_adapter"},
+        {"const": "runtime_planner"},
+        {"const": "runtime_evidence"},
+        {"const": "standalone_runtime_cli"}
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "provider_code": {"const": false},
+    "delegation": {"$ref": "#/$defs/delegation"},
+    "journal": {"$ref": "#/$defs/journal"},
+    "capability_claims": {
+      "type": "array",
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "declared"}}}]},
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "unknown"}}}]},
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "stale"}}}]},
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "contradictory"}}}]},
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "recalled"}}}]},
+        {"allOf": [{"$ref": "#/$defs/capability_base"}, {"properties": {"state": {"const": "foreign"}}}]}
+      ],
+      "items": false,
+      "minItems": 6,
+      "maxItems": 6
+    },
+    "authority_claims": {
+      "type": "array",
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/authority_base"}, {"properties": {"source": {"const": "role"}}}]},
+        {"allOf": [{"$ref": "#/$defs/authority_base"}, {"properties": {"source": {"const": "route"}}}]},
+        {"allOf": [{"$ref": "#/$defs/authority_base"}, {"properties": {"source": {"const": "model"}}}]},
+        {"allOf": [{"$ref": "#/$defs/authority_base"}, {"properties": {"source": {"const": "conformance"}}}]},
+        {"allOf": [{"$ref": "#/$defs/authority_base"}, {"properties": {"source": {"const": "provider_identity"}}}]}
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "billing_claims": {
+      "type": "array",
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/billing_base"}, {"properties": {"state": {"const": "unknown"}}}]},
+        {"allOf": [{"$ref": "#/$defs/billing_base"}, {"properties": {"state": {"const": "foreign"}}}]}
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "usage_claims": {
+      "type": "array",
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/usage_base"}, {"properties": {"state": {"const": "unknown"}}}]},
+        {"allOf": [{"$ref": "#/$defs/usage_base"}, {"properties": {"state": {"const": "foreign"}}}]}
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "effects": {"$ref": "#/$defs/effects"},
+    "side_channels": {"$ref": "#/$defs/side_channels"},
+    "acceptance_claimed": {"const": false}
+  },
+  "$defs": {
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "child_materialized", "child_usage_included", "child_artifacts_included", "child_journal_included", "child_lifecycle_included"],
+      "properties": {
+        "status": {"enum": ["unsupported", "denied"]},
+        "child_materialized": {"const": false},
+        "child_usage_included": {"const": false},
+        "child_artifacts_included": {"const": false},
+        "child_journal_included": {"const": false},
+        "child_lifecycle_included": {"const": false}
+      }
+    },
+    "journal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "ttl_seconds", "redacted", "executable", "authoritative", "global", "mutable", "persistence_claimed"],
+      "properties": {
+        "scope": {"const": "current_workgraph_subtree"},
+        "ttl_seconds": {"type": "integer", "minimum": 1, "maximum": 1800},
+        "redacted": {"const": true},
+        "executable": {"const": false},
+        "authoritative": {"const": false},
+        "global": {"const": false},
+        "mutable": {"const": false},
+        "persistence_claimed": {"const": false}
+      }
+    },
+    "capability_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "usable"],
+      "properties": {
+        "state": {"enum": ["declared", "unknown", "stale", "contradictory", "recalled", "foreign"]},
+        "usable": {"const": false}
+      }
+    },
+    "authority_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "grants_authority"],
+      "properties": {
+        "source": {"enum": ["role", "route", "model", "conformance", "provider_identity"]},
+        "grants_authority": {"const": false}
+      }
+    },
+    "billing_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "usable"],
+      "properties": {
+        "state": {"enum": ["unknown", "foreign"]},
+        "usable": {"const": false}
+      }
+    },
+    "usage_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "anti_double_counting_id", "counted"],
+      "properties": {
+        "state": {"enum": ["unknown", "foreign"]},
+        "anti_double_counting_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+        "counted": {"const": false}
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_started", "provider_called", "network_used", "filesystem_mutated", "child_dispatched", "lease_created", "run_mutated", "journal_written", "policy_persisted", "capability_granted", "authority_granted", "eligibility_granted", "acceptance_granted", "persistence_granted"],
+      "properties": {
+        "execution_started": {"const": false},
+        "provider_called": {"const": false},
+        "network_used": {"const": false},
+        "filesystem_mutated": {"const": false},
+        "child_dispatched": {"const": false},
+        "lease_created": {"const": false},
+        "run_mutated": {"const": false},
+        "journal_written": {"const": false},
+        "policy_persisted": {"const": false},
+        "capability_granted": {"const": false},
+        "authority_granted": {"const": false},
+        "eligibility_granted": {"const": false},
+        "acceptance_granted": {"const": false},
+        "persistence_granted": {"const": false}
+      }
+    },
+    "side_channels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_headers", "provider_urls", "provider_endpoints", "environment", "credentials", "raw_io", "hidden_options", "unknown_extensions"],
+      "properties": {
+        "provider_headers": {"const": false},
+        "provider_urls": {"const": false},
+        "provider_endpoints": {"const": false},
+        "environment": {"const": false},
+        "credentials": {"const": false},
+        "raw_io": {"const": false},
+        "hidden_options": {"const": false},
+        "unknown_extensions": {"const": false}
+      }
+    }
+  }
+}

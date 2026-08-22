@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codexmax:standalone-runtime-mcp-capabilities:v1",
+  "title": "Standalone runtime MCP facade capabilities v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "protocol_version", "transport", "states", "methods", "tools", "limits", "effect_guarantees"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "standalone_runtime_mcp_capabilities_v1"},
+    "protocol_version": {"const": "2025-06-18"},
+    "transport": {"const": "newline_jsonrpc_stdio"},
+    "states": {
+      "type": "array",
+      "prefixItems": [{"const": "created"}, {"const": "initializing"}, {"const": "ready"}],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "methods": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "initialize"},
+        {"const": "notifications/initialized"},
+        {"const": "ping"},
+        {"const": "tools/list"},
+        {"const": "tools/call"}
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "tools": {
+      "type": "array",
+      "prefixItems": [
+        {"$ref": "#/$defs/status_tool"},
+        {"$ref": "#/$defs/plan_tool"},
+        {"$ref": "#/$defs/run_tool"}
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message_bytes", "depth", "items"],
+      "properties": {
+        "message_bytes": {"const": 1048576},
+        "depth": {"const": 32},
+        "items": {"const": 10000}
+      }
+    },
+    "effect_guarantees": {"$ref": "#/$defs/effects"}
+  },
+  "$defs": {
+    "status_tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "cli_command", "preview_only"],
+      "properties": {
+        "name": {"const": "codexmax_status_v1"},
+        "cli_command": {"const": "status"},
+        "preview_only": {"const": true}
+      }
+    },
+    "plan_tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "cli_command", "preview_only"],
+      "properties": {
+        "name": {"const": "codexmax_plan_v1"},
+        "cli_command": {"const": "plan"},
+        "preview_only": {"const": true}
+      }
+    },
+    "run_tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "cli_command", "preview_only"],
+      "properties": {
+        "name": {"const": "codexmax_run_preview_v1"},
+        "cli_command": {"const": "run"},
+        "preview_only": {"const": true}
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service_started", "network_used", "provider_called", "lease_created", "dispatch_started", "run_mutated", "journal_written", "policy_persisted", "policy_activated", "authority_granted", "acceptance_granted"],
+      "properties": {
+        "service_started": {"const": false},
+        "network_used": {"const": false},
+        "provider_called": {"const": false},
+        "lease_created": {"const": false},
+        "dispatch_started": {"const": false},
+        "run_mutated": {"const": false},
+        "journal_written": {"const": false},
+        "policy_persisted": {"const": false},
+        "policy_activated": {"const": false},
+        "authority_granted": {"const": false},
+        "acceptance_granted": {"const": false}
+      }
+    }
+  }
+}

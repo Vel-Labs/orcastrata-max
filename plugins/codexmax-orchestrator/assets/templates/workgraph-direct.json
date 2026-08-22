@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "graph_id": "fixture-direct",
+  "evidence": [],
+  "work_items": [
+    {
+      "id": "WI-DIRECT",
+      "kind": "task",
+      "objective": "Make one bounded deterministic change.",
+      "status": "active",
+      "clarity_tier": "direct",
+      "scope": {
+        "read": ["input.txt"],
+        "write": ["output.txt"]
+      },
+      "done_condition": "The output matches the deterministic fixture.",
+      "validation": [
+        {
+          "id": "VAL-DIRECT",
+          "kind": "command",
+          "instruction": "python3 <plugin-root>/scripts/workgraph.py validate <workgraph-document.json>",
+          "expected_result": "exit status 0"
+        }
+      ]
+    }
+  ]
+}

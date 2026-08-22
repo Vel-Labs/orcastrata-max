@@ -1,0 +1,56 @@
+# Parent Revision Packet
+
+- Input access contract: [Provider Task Input Contract](../contracts/provider-task-input.md)
+- Goal and checkpoint:
+- Prior Supervisor task:
+- Parent audit finding:
+- Transition mode: `implementation_revision | receipt_only | targeted_evidence_recovery | no_repair | reassignment`
+- Technical work status: `valid | invalid | unknown | not_applicable`
+- Receipt status: `valid | invalid | missing | unknown | not_applicable`
+- Prior lane input-access defect:
+- Prior input delivery and read-receipt state:
+- Preserved accepted artifacts:
+- Rejected or unsupported claims:
+- Exact defect or missing proof:
+- Failure classification: `same_failure_same_reason | different_failure_same_reason | same_failure_different_reason | different_failure_different_reason | no_improvement | not_applicable`
+- Revised objective:
+- Revised dependencies and write scope:
+- Read-first files:
+- Forbidden actions:
+- Preferred repair route:
+- Fallback repair route:
+- Parent predecessor scope set:
+- Parent replacement scope set:
+- Replacement predecessor terminal receipt id, evidence-root path, and SHA-256:
+- Predecessor process/session id and replacement process/session id:
+- Replacement same-scope status: `same_scope | disjoint_scope | not_applicable`
+- Replacement identity provenance: `replacement_runtime_receipt | declared_unknown`; never inherit predecessor identity
+- Unknown replacement identity value shape: `null` plus non-empty reason; literal `unknown`, `unavailable`, and `not_exposed` are invalid values
+- Replacement actual provider and unknown reason:
+- Replacement actual model and unknown reason:
+- Replacement actual runtime and unknown reason:
+- Replacement actual route id and unknown reason:
+- Replacement commands and unknown reason:
+- Replacement command-output characters and unknown reason:
+- Replacement token counts and unknown reason:
+- Replacement wall time and unknown reason:
+- Replacement first-transition command index, wall time, and unknown reason:
+- Receipt-repair evidence root:
+- Original artifact regular-file path and SHA-256:
+- Distinct repaired artifact regular-file path and SHA-256:
+- Source-tree before/after manifest paths and SHA-256 values:
+- Command-ledger before/after manifest paths and SHA-256 values:
+- Accepted command-results digest before and after repair:
+- Source files changed during receipt-only repair: `[]`
+- Workload commands rerun during receipt-only repair: `[]`
+- Targeted evidence recovery required:
+- Repaired input delivery method:
+- Required fact-pack or read-receipt change:
+- Exact input-access retest obligation:
+- Required self-test and independent verification:
+- Required result artifact:
+- Raw output preservation path:
+- Budget remaining:
+- Token, quota, and cost policy:
+- Stop conditions:
+- Required candidate closeout:

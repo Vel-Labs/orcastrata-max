@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "event_id": "event-001",
+  "namespace": "example-goal",
+  "arm": "compact-handoff",
+  "source_corpus_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "timestamp": "2026-08-06T12:00:00Z",
+  "event_type": "attempt",
+  "task_id": "T010",
+  "outcome": "pending",
+  "tags": [
+    "implementation",
+    "local-only"
+  ],
+  "references": [],
+  "artifacts": [
+    {
+      "locator": "reports/example/receipt.json",
+      "sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "usage": {
+    "input_tokens": {
+      "status": "unknown",
+      "value": null,
+      "reason": "not_exposed"
+    },
+    "output_tokens": {
+      "status": "unknown",
+      "value": null,
+      "reason": "not_exposed"
+    },
+    "total_tokens": {
+      "status": "unknown",
+      "value": null,
+      "reason": "not_exposed"
+    },
+    "wall_time_ms": {
+      "status": "known",
+      "value": 0,
+      "reason": null
+    }
+  }
+}

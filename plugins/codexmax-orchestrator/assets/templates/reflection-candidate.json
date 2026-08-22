@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "candidate_id": "reflection-candidate-example",
+  "disposition": "propose",
+  "candidate_action": "revise_packet",
+  "reason_code": "bounded_recovery_supported",
+  "evidence_status": "sufficient",
+  "evidence": [
+    {
+      "kind": "evidence",
+      "path": "plugins/codexmax-orchestrator/assets/contracts/execution-continuity.md",
+      "sha256": "84b42c68b13f6c443cb7d3be4d0daf97961aec277ac4855948f2517939a3f480"
+    }
+  ],
+  "risk_flags": [],
+  "runtime_action": "none",
+  "effects": {
+    "dispatch": false,
+    "goalbuddy_mutation": false,
+    "acceptance": false,
+    "transcript_consumption": false,
+    "candidate_closeout": false
+  }
+}
+

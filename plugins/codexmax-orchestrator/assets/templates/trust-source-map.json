@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "controls": [
+    {
+      "control_id": "ACCESSIBILITY-001",
+      "category": "accessibility",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/.codex-plugin/plugin.json",
+      "source_markers": ["defaultPrompt", "shortDescription", "longDescription", "Orchestrate — Use $codexmax-orchestrator:codexmax-orchestrate for native-first work and optional account setup.", "Discover — Use $codexmax-orchestrator:codexmax-discover for evidence-backed directions for this repository.", "Audit — Use $codexmax-orchestrator:codexmax-verify to audit completed work against its evidence."],
+      "test": "tests/test_skill_surface.py",
+      "test_markers": ["test_current_surface_passes_repository_contract", "test_public_prompts_are_exact_orchestrate_discover_and_audit", "test_config_is_manual_without_loader_frontmatter"]
+    },
+    {
+      "control_id": "BILLING-001",
+      "category": "billing",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py",
+      "source_markers": ["silent_metered_fallback", "silent metered fallback is forbidden"],
+      "test": "tests/test_codexmax_config.py",
+      "test_markers": ["silent_metered_fallback", "fallback.yaml"]
+    },
+    {
+      "control_id": "FILESYSTEM-001",
+      "category": "filesystem",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/codexmax_status.py",
+      "source_markers": ["O_NOFOLLOW", "input_path_alias_forbidden", "input_path_hardlink_forbidden", "input_path_identity_changed"],
+      "test": "tests/test_codexmax_status.py",
+      "test_markers": ["test_final_parent_symlinks_hardlinks_traversal_and_duplicate_inputs_fail", "test_concurrent_name_substitution_is_rejected"]
+    },
+    {
+      "control_id": "FILESYSTEM-002",
+      "category": "filesystem",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py",
+      "source_markers": ["O_NOFOLLOW", "configuration hardlink is forbidden", "configuration identity changed", "configuration file is oversized"],
+      "test": "tests/test_codexmax_config.py",
+      "test_markers": ["test_config_paths_reject_alias_hardlink_special_outside_and_oversize", "test_config_descriptor_swap_fails_closed"]
+    },
+    {
+      "control_id": "FILESYSTEM-003",
+      "category": "filesystem",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/workgraph_goalbuddy_adapter.py",
+      "source_markers": ["O_NOFOLLOW", "adapter_{label}_alias_forbidden", "adapter_lock_alias_forbidden", "adapter_{label}_identity_changed"],
+      "test": "tests/test_workgraph_goalbuddy_adapter.py",
+      "test_markers": ["test_snapshot_rejects_hardlinked_board_and_descriptor_swap", "test_lock_rejects_symlink_and_hardlink"]
+    },
+    {
+      "control_id": "INTEGRITY-001",
+      "category": "integrity",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/workgraph_cli.py",
+      "source_markers": ["tool_json_duplicate_key", "tool_path_identity_changed", "update_expected_board_hash_mismatch"],
+      "test": "tests/test_workgraph_cli.py",
+      "test_markers": ["test_request_shape_version_operation_and_duplicate_keys_fail", "test_corrupt_registry_duplicate_keys_fail_before_readiness", "test_ready_binds_registry_claims_and_stale_board_hash"]
+    },
+    {
+      "control_id": "INTEGRITY-002",
+      "category": "integrity",
+      "severity": "high",
+      "source": "scripts/report_release_inventory.py",
+      "source_markers": ["O_NOFOLLOW", "inventory_tree_alias_forbidden", "inventory_path_identity_changed", "inventory_file_oversize"],
+      "test": "tests/test_release_inventory.py",
+      "test_markers": ["test_product_tree_rejects_symlink_hardlink_and_special_files", "test_inventory_digest_descriptor_swap_fails_closed"]
+    },
+    {
+      "control_id": "INTEGRITY-003",
+      "category": "integrity",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/compile_role_lifecycle.py",
+      "source_markers": ["trusted_receipt_binding_mismatch", "role_not_independent", "applied_to_goalbuddy"],
+      "test": "tests/test_role_lifecycle.py",
+      "test_markers": ["test_fake_processes_complete_full_role_lifecycle_without_goalbuddy_acceptance", "test_self_consistent_packet_tamper_and_stale_packet_never_apply"]
+    },
+    {
+      "control_id": "INTEGRITY-004",
+      "category": "integrity",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/validate_standalone_downstream_fork_kit.py",
+      "source_markers": ["duplicate_json_key", "divergence_chain_invalid", "kit_digest_mismatch"],
+      "test": "tests/test_standalone_downstream_fork_kit.py",
+      "test_markers": ["test_all_adversarial_cases_fail_with_exact_code", "test_digest_recomputation_is_complete_and_nonmutating"]
+    },
+    {
+      "control_id": "MIGRATION-001",
+      "category": "migration",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/workgraph_migrate.py",
+      "source_markers": ["migration_downgrade_refused", "migration_journal_corrupt", "migration_interrupted"],
+      "test": "tests/test_workgraph_migrations.py",
+      "test_markers": ["test_interruptions_recover_forward_and_are_idempotent", "test_refuses_downgrade_repeat_and_nonforward_targets_without_writes", "test_corrupt_and_divergent_recovery_fail_without_rewrite"]
+    },
+    {
+      "control_id": "PRIVACY-001",
+      "category": "privacy",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/codexmax_status.py",
+      "source_markers": ["EXCLUDED_SUPPORT_CONTENT", "automatic_upload", "telemetry_collection", "internal_projection_error"],
+      "test": "tests/test_codexmax_status.py",
+      "test_markers": ["test_support_bundle_is_allowlisted_and_redacts_sensitive_inputs", "test_main_normalizes_unexpected_projection_exception"]
+    },
+    {
+      "control_id": "PRIVACY-002",
+      "category": "privacy",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/bounded_evidence.py",
+      "source_markers": ["MAX_SERVICE_LOG_BYTES", "service_log_root_required", "service_log_root_duplicate", "O_NOFOLLOW", "O_NONBLOCK", "rg_failed_no_detail", "metadata_only", "authorized-root/"],
+      "test": "tests/test_bounded_evidence.py",
+      "test_markers": ["test_service_log_is_metadata_only_bounded_and_source_is_immutable", "test_service_log_duplicate_root_forms_fail_before_path_access", "test_service_log_fifo_replacement_and_post_open_growth_fail_without_read", "test_search_failures_never_reflect_roots_or_rg_stderr"]
+    },
+    {
+      "control_id": "PRIVACY-003",
+      "category": "privacy",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/validate_standalone_downstream_fork_kit.py",
+      "source_markers": ["unsafe_text", "sanitization_required", "handoff_claim_forbidden"],
+      "test": "tests/test_standalone_downstream_fork_kit.py",
+      "test_markers": ["test_valid_proposed_kit_and_receipt_are_deterministic", "test_all_adversarial_cases_fail_with_exact_code"]
+    },
+    {
+      "control_id": "RECOVERY-001",
+      "category": "recovery",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/recover_supervisor_runtime.py",
+      "source_markers": ["pending_loop_transition", "stale_recovery_control", "event_id_duplicate"],
+      "test": "tests/test_supervisor_recovery.py",
+      "test_markers": ["test_paused_stopped_stale_and_uncontrolled_loop_progress_fail_before_write", "test_corrupt_and_truncated_substrate_histories_fail_closed", "test_duplicate_loop_acknowledgement_and_replay_are_exactly_once"]
+    },
+    {
+      "control_id": "STATUS-001",
+      "category": "status",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/codexmax_status.py",
+      "source_markers": ["release_inventory_stale", "recovery_transition_interrupted", "board_mutated"],
+      "test": "tests/test_codexmax_status.py",
+      "test_markers": ["test_stale_inventory_does_not_supply_installed_version", "test_interrupted_recovery_is_visible_and_actionable"]
+    },
+    {
+      "control_id": "SUPPORT-001",
+      "category": "support",
+      "severity": "high",
+      "source": "plugins/codexmax-orchestrator/scripts/codexmax_status.py",
+      "source_markers": ["O_EXCL", "0o600", "export_destination_exists"],
+      "test": "tests/test_codexmax_status.py",
+      "test_markers": ["test_support_export_is_explicit_0600_no_overwrite_and_safe_parent"]
+    }
+  ],
+  "performance_budgets": {
+    "audit_max_bytes": 131072,
+    "audit_max_wall_ms": 330,
+    "measurement_samples": 20,
+    "measurement_warmups": 1,
+    "operation_max_wall_ms": {
+      "status": 100,
+      "config_validation": 70,
+      "workgraph_inspect": 90,
+      "migration_inspect": 100,
+      "interrupted_recovery_snapshot": 100
+    }
+  },
+  "privacy_matrix": [
+    {"data_class": "configuration", "collection": "explicit_local_input", "redaction": "allowlisted_projection", "retention": "source_owner_managed", "opt_in": "explicit_path", "failure": "fail_closed"},
+    {"data_class": "credentials", "collection": "forbidden", "redaction": "excluded", "retention": "not_collected", "opt_in": "not_supported", "failure": "fail_closed"},
+    {"data_class": "diagnostics", "collection": "explicit_local_command", "redaction": "default", "retention": "operator_managed", "opt_in": "explicit_command", "failure": "fail_closed"},
+    {"data_class": "local_paths", "collection": "explicit_local_input", "redaction": "repository_relative_or_omitted", "retention": "operator_managed", "opt_in": "explicit_path", "failure": "fail_closed"},
+    {"data_class": "provider_input", "collection": "owning_route_only", "redaction": "contract_required", "retention": "provider_or_operator_owned", "opt_in": "explicit_dispatch_authority", "failure": "fail_closed"},
+    {"data_class": "support_bundle", "collection": "explicit_local_command", "redaction": "allowlisted_projection", "retention": "operator_managed_delete_after_case", "opt_in": "explicit_export_path", "failure": "fail_closed"},
+    {"data_class": "telemetry", "collection": "explicit_local_command", "redaction": "metadata_only", "retention": "operator_managed", "opt_in": "explicit_project_and_receipt_paths", "failure": "fail_closed"},
+    {"data_class": "transcripts", "collection": "forbidden", "redaction": "excluded", "retention": "not_collected", "opt_in": "not_supported", "failure": "fail_closed"}
+  ],
+  "support_matrix": [
+    {"surface": "configuration_validation", "support_level": "local_supported", "owner": "codexmax", "retention": "source_owner_managed"},
+    {"surface": "goalbuddy_ui", "support_level": "external_boundary", "owner": "goalbuddy", "retention": "external_owner_managed"},
+    {"surface": "installed_cache_parity", "support_level": "not_yet_proven", "owner": "t006", "retention": "receipt_managed"},
+    {"surface": "native_desktop_supervision", "support_level": "experimental_unavailable", "owner": "desktop_t013", "retention": "external_owner_managed"},
+    {"surface": "status_and_support_export", "support_level": "local_supported", "owner": "codexmax", "retention": "operator_managed_delete_after_case"},
+    {"surface": "local_telemetry_snapshot", "support_level": "local_supported", "owner": "orcastrata", "retention": "operator_managed"},
+    {"surface": "telemetry_upload", "support_level": "not_implemented", "owner": "none", "retention": "not_collected"}
+  ],
+  "third_party_boundaries": [
+    {"boundary_id": "codex_host", "relationship": "external_host", "bundled": false, "license_evidence": "not_copied", "source": "plugins/codexmax-orchestrator/.codex-plugin/plugin.json"},
+    {"boundary_id": "goalbuddy", "relationship": "external_ui_and_board", "bundled": false, "license_evidence": "external_not_inferred", "source": "plugins/codexmax-orchestrator/assets/contracts/workgraph-goalbuddy-adapter.md"},
+    {"boundary_id": "python_stdlib", "relationship": "runtime_standard_library", "bundled": false, "license_evidence": "runtime_distribution_owned", "source": "package.json"}
+  ]
+}

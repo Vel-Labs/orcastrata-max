@@ -1,0 +1,187 @@
+schema_version: 1
+journey_id: replace-with-stable-id
+goalbuddy:
+  goal_path: unknown
+  state_path: unknown
+  goal_id: unknown
+  active_checkpoint_id: unknown
+  board_truth_owner: GoalBuddy
+source_hashes:
+  request: unknown
+  repository_rules: unknown
+  goal: unknown
+  board_state: unknown
+  accepted_artifacts: unknown
+  effective_config: unknown
+state:
+  phase: discover
+  classification: unknown
+  status: in_progress
+  proof_boundary: unknown
+active_journey_conflict:
+  checked_before_classification: false
+  detected: false
+  resolution: unknown
+  allowed_resolutions:
+    - continue
+    - inspect
+    - revise
+    - stop_safely
+    - start_distinct_goal
+  silent_overwrite_allowed: false
+  transcript_reconstruction_allowed: false
+questions:
+  count_this_round: 0
+  material_dimensions: []
+  safe_defaults_applied: []
+preview:
+  path: unknown
+  includes_outcome: false
+  includes_scope_and_writes: false
+  includes_external_calls: false
+  includes_billing_and_fallback: false
+  includes_validation: false
+  includes_stop_rule: false
+authority:
+  existing_authority_receipt: unknown
+  reused_without_duplicate_prompt: false
+  new_or_expanded_authority: unknown
+  pause_required: false
+approval_ledger:
+  - action: writes
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: external_calls
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: true
+  - action: installs
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: credentials
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: destructive_actions
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: scope_expansion
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: push
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+  - action: publication
+    exact_scope: unknown
+    authority_source: unknown
+    approval_status: not_requested
+    provenance: unknown
+    lifetime: current_invocation
+    fresh_preflight_required: false
+approval_ledger_contract:
+  approval_status_values:
+    - not_requested
+    - reused_exact
+    - approval_required
+    - approved
+    - denied
+  credential_material_allowed: false
+  instructional_only: true
+  runtime_enforcement_proven: false
+approval_record_validation:
+  required_fields:
+    - action
+    - exact_scope
+    - authority_source
+    - approval_status
+    - provenance
+    - lifetime
+    - fresh_preflight_required
+  rejection_reasons:
+    - missing
+    - malformed
+    - expired
+    - revoked
+    - mismatched
+    - broader
+    - self_asserted
+  rejected_status: approval_required
+  reuse_requires_exact_non_broader_match: true
+  requester_self_authority_allowed: false
+  inferred_authority_allowed: false
+  pause_before_action: true
+# This instructional template does not prove runtime enforcement.
+external_route_preflight:
+  required_for_each_dispatch: true
+  status: pending
+  source_access_gate: unknown
+  input_delivery_gate: unknown
+  route_health_gate: unknown
+  billing_gate: unknown
+  token_cap_gate: unknown
+  fallback_gate: unknown
+  command_capability_gate: unknown
+  token_limit: null
+uncapped_safety_controls:
+  token_limit: null
+  max_turns_safety_ceiling: 20
+  max_attempts_per_checkpoint: 3
+  no_improvement_window: 2
+  concurrency_control: active
+  stop_rule: active
+  operator_stop: active
+execution_continuity:
+  contract: assets/contracts/execution-continuity.md
+  observed_tokens: unknown
+  token_forecast: unknown
+  explicit_token_cap: null
+  forecast_is_authority: false
+  selected_action: continue_current
+  operator_decision_required: false
+  rollover_pack: null
+  next_packet: unknown
+  projection:
+    producer: Codexmax
+    board_truth_owner: GoalBuddy
+    assurance_owner: AOL Core
+    intended_client: Orcastrata/AOL
+    integration_proven: false
+generated_artifacts:
+  goal_contract: unknown
+  assignment_packet: unknown
+  route_packet: unknown
+  evidence_ledger: unknown
+  validation_ledger: unknown
+  candidate_closeout: unknown
+acceptance:
+  authority: Parent Codex
+  auxiliary_acceptance_allowed: false
+  parent_decision: pending
+stop_rule: unknown
+updated_at: unknown

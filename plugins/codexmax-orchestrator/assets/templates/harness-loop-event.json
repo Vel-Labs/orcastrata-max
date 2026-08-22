@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "artifact_type": "HarnessLoopInput",
+  "event_type": "file.changed",
+  "source_event_id": "generic-source-001",
+  "session_id": "session-001",
+  "occurred_at": "2026-07-27T12:00:00Z",
+  "observed_at": "2026-07-27T12:00:01Z",
+  "paths": ["_ops/services/config.yaml"],
+  "origin": {"run_id": null, "loop_id": null, "depth": 0, "ancestry": []}
+}

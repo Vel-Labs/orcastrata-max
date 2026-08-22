@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "graph_id": "fixture-bounded",
+  "evidence": [
+    {
+      "id": "EV-SETUP",
+      "kind": "artifact",
+      "locator": "build/setup.json",
+      "digest": "unknown",
+      "state": "expected",
+      "claim_ids": [],
+      "authority_effect": "none",
+      "acceptance_effect": "none"
+    },
+    {
+      "id": "EV-OUTPUT",
+      "kind": "artifact",
+      "locator": "build/output.json",
+      "digest": "unknown",
+      "state": "expected",
+      "claim_ids": [],
+      "authority_effect": "none",
+      "acceptance_effect": "none"
+    }
+  ],
+  "work_items": [
+    {
+      "id": "WI-SETUP",
+      "kind": "checkpoint",
+      "objective": "Prepare the bounded input artifact.",
+      "status": "active",
+      "clarity_tier": "bounded",
+      "scope": {"read": [], "write": ["build/setup.json"]},
+      "done_condition": "The setup artifact exists and validates.",
+      "validation": [
+        {"id": "VAL-SETUP", "kind": "command", "instruction": "validate setup", "expected_result": "exit status 0"}
+      ],
+      "relationships": {
+        "parent_of": [],
+        "blocked_by": [],
+        "related_to": [],
+        "produces": ["EV-SETUP"],
+        "consumes": []
+      },
+      "owner_role": "Worker",
+      "expected_artifacts": ["EV-SETUP"],
+      "retry_policy": {"max_attempts": 2, "no_improvement_window": 2},
+      "stop_rule": "Stop after two non-improving attempts."
+    },
+    {
+      "id": "WI-BUILD",
+      "kind": "ticket",
+      "objective": "Build the deterministic output from the setup artifact.",
+      "status": "blocked",
+      "clarity_tier": "bounded",
+      "scope": {"read": ["build/setup.json"], "write": ["build/output.json"]},
+      "done_condition": "The output artifact matches the fixture.",
+      "validation": [
+        {"id": "VAL-BUILD", "kind": "command", "instruction": "validate output", "expected_result": "exit status 0"}
+      ],
+      "relationships": {
+        "parent_of": [],
+        "blocked_by": ["WI-SETUP"],
+        "related_to": [],
+        "produces": ["EV-OUTPUT"],
+        "consumes": ["EV-SETUP"]
+      },
+      "owner_role": "Worker",
+      "expected_artifacts": ["EV-OUTPUT"],
+      "retry_policy": {"max_attempts": 2, "no_improvement_window": 2},
+      "stop_rule": "Stop if setup evidence is unavailable."
+    }
+  ]
+}

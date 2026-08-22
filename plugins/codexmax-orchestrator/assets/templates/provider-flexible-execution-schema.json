@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/provider-flexible-execution-v1.json",
+  "title": "Codexmax provider flexible execution artifacts",
+  "oneOf": [
+    {"$ref": "#/$defs/ParentTaskIntent"},
+    {"$ref": "#/$defs/AdapterToolLoopCapability"},
+    {"$ref": "#/$defs/ResolvedExecutionProfile"},
+    {"$ref": "#/$defs/UniversalAdapterSourceLocalConformance"}
+  ],
+  "$defs": {
+    "positiveIntegerOrNull": {"type": ["integer", "null"], "minimum": 1},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reasoning_depth", "answer_verbosity", "context_strategy", "max_input_tokens", "max_output_tokens", "max_turns", "wall_time_seconds", "max_cost_microusd"],
+      "properties": {
+        "reasoning_depth": {"enum": ["minimal", "low", "medium", "high", "xhigh"]},
+        "answer_verbosity": {"enum": ["terse", "concise", "standard", "detailed", "exhaustive"]},
+        "context_strategy": {"enum": ["embedded", "paths_only", "targeted", "full_allowed"]},
+        "max_input_tokens": {"$ref": "#/$defs/positiveIntegerOrNull"},
+        "max_output_tokens": {"$ref": "#/$defs/positiveIntegerOrNull"},
+        "max_turns": {"type": "integer", "minimum": 1},
+        "wall_time_seconds": {"type": "integer", "minimum": 1},
+        "max_cost_microusd": {"$ref": "#/$defs/positiveIntegerOrNull"}
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_read", "scoped_write", "commands", "browser", "web_search", "connectors", "provider_network", "tools"],
+      "properties": {
+        "local_read": {"type": "boolean"}, "scoped_write": {"type": "boolean"},
+        "commands": {"type": "boolean"}, "browser": {"type": "boolean"},
+        "web_search": {"type": "boolean"}, "connectors": {"type": "boolean"},
+        "provider_network": {"type": "boolean"},
+        "tools": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "ParentTaskIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "preset", "task_size", "complexity", "consequence", "independence", "behavior", "requirements", "mutation_mode", "source_delivery", "no_retry", "execution_unknown_policy", "intent_sha256"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "artifact_type": {"enum": ["ParentTaskIntent", "TaskIntentProfile"]},
+        "preset": {"enum": ["advisory_micro", "fast_read", "deep_review", "bounded_implementation", "independent_audit"]},
+        "task_size": {"enum": ["micro", "small", "medium", "large"]},
+        "complexity": {"enum": ["routine", "moderate", "complex", "expert"]},
+        "consequence": {"enum": ["low", "medium", "high", "critical"]},
+        "independence": {"enum": ["not_required", "preferred", "required"]},
+        "behavior": {"$ref": "#/$defs/behavior"},
+        "requirements": {"$ref": "#/$defs/requirements"},
+        "mutation_mode": {"enum": ["read_only", "artifact_only", "scoped_write"]},
+        "source_delivery": {"enum": ["embedded_fact_pack", "paths", "local_filesystem"]},
+        "no_retry": {"const": true},
+        "execution_unknown_policy": {"const": "preserve_and_stop"},
+        "intent_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "AdapterToolLoopCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "adapter_id", "adapter_type", "runtime_family", "tool_loop", "write_transport", "command_transport", "reasoning_controls", "verbosity_controls", "context_controls", "max_turns", "max_wall_time_seconds", "mutation_turn_limit_outcome", "default_disabled_tools", "harness_sha256"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "artifact_type": {"enum": ["AdapterHarnessCard", "AdapterToolLoopCapability"]},
+        "adapter_id": {"type": "string", "minLength": 1},
+        "adapter_type": {"type": "string", "minLength": 1},
+        "runtime_family": {"type": "string", "minLength": 1},
+        "tool_loop": {"enum": ["message_only", "agentic"]},
+        "write_transport": {"enum": ["none", "qualification_required", "accept_edits", "workspace_write"]},
+        "command_transport": {"enum": ["none", "qualification_required", "native_tools"]},
+        "reasoning_controls": {"type": "array", "minItems": 1, "uniqueItems": true},
+        "verbosity_controls": {"type": "array", "minItems": 1, "uniqueItems": true},
+        "context_controls": {"type": "array", "minItems": 1, "uniqueItems": true},
+        "max_turns": {"type": "integer", "minimum": 1},
+        "max_wall_time_seconds": {"type": "integer", "minimum": 1},
+        "mutation_turn_limit_outcome": {"enum": ["terminal", "execution_unknown_after_mutation"]},
+        "default_disabled_tools": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "harness_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "ResolvedExecutionProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "route_name", "adapter_id", "adapter_type", "tool_loop", "write_transport", "command_transport", "intent_sha256", "harness_sha256", "capability_sha256", "grant_sha256", "runtime_budget_sha256", "preset", "task_size", "complexity", "consequence", "reasoning_depth", "answer_verbosity", "context_strategy", "max_input_tokens", "max_output_tokens", "max_turns", "wall_time_seconds", "max_cost_microusd", "mutation_mode", "enabled_tools", "browser_enabled", "web_search_enabled", "connectors_enabled", "no_retry", "execution_unknown_policy", "execution_profile_sha256"],
+      "properties": {
+        "schema_version": {"const": 1}, "artifact_type": {"const": "ResolvedExecutionProfile"},
+        "route_name": {"type": "string"}, "adapter_id": {"type": "string"},
+        "adapter_type": {"type": "string"}, "tool_loop": {"enum": ["message_only", "agentic"]},
+        "write_transport": {"enum": ["none", "qualification_required", "accept_edits", "workspace_write"]},
+        "command_transport": {"enum": ["none", "qualification_required", "native_tools"]},
+        "intent_sha256": {"$ref": "#/$defs/sha256"}, "harness_sha256": {"$ref": "#/$defs/sha256"},
+        "capability_sha256": {"$ref": "#/$defs/sha256"}, "grant_sha256": {"$ref": "#/$defs/sha256"},
+        "runtime_budget_sha256": {"$ref": "#/$defs/sha256"},
+        "preset": {"enum": ["advisory_micro", "fast_read", "deep_review", "bounded_implementation", "independent_audit"]},
+        "task_size": {"enum": ["micro", "small", "medium", "large"]},
+        "complexity": {"enum": ["routine", "moderate", "complex", "expert"]},
+        "consequence": {"enum": ["low", "medium", "high", "critical"]},
+        "reasoning_depth": {"enum": ["minimal", "low", "medium", "high", "xhigh"]},
+        "answer_verbosity": {"enum": ["terse", "concise", "standard", "detailed", "exhaustive"]},
+        "context_strategy": {"enum": ["embedded", "paths_only", "targeted", "full_allowed"]},
+        "max_input_tokens": {"$ref": "#/$defs/positiveIntegerOrNull"},
+        "max_output_tokens": {"$ref": "#/$defs/positiveIntegerOrNull"},
+        "max_turns": {"type": "integer", "minimum": 1}, "wall_time_seconds": {"type": "integer", "minimum": 1},
+        "max_cost_microusd": {"$ref": "#/$defs/positiveIntegerOrNull"},
+        "mutation_mode": {"enum": ["read_only", "artifact_only", "scoped_write"]},
+        "enabled_tools": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "browser_enabled": {"type": "boolean"}, "web_search_enabled": {"type": "boolean"},
+        "connectors_enabled": {"type": "boolean"},
+        "no_retry": {"const": true}, "execution_unknown_policy": {"const": "preserve_and_stop"},
+        "execution_profile_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "UniversalAdapterSourceLocalConformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "qualification_id", "lane_profile", "required_primitives", "exact_tool_allowlist", "effective_concurrency", "concurrency_caps", "scoped_writes_serialized", "proof_boundary", "provider_called", "execution_started", "eligibility_granted", "authority_granted", "acceptance_granted", "no_retry", "execution_unknown_policy", "conformance_sha256"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "artifact_type": {"const": "universal_adapter_source_local_conformance_v1"},
+        "qualification_id": {"type": "string", "pattern": "^qualification_[0-9a-f]{32}$"},
+        "lane_profile": {"enum": ["read", "artifact", "scoped_write", "implementation", "tool_loop", "audit"]},
+        "required_primitives": {"type": "array", "uniqueItems": true, "items": {"enum": ["local_read", "artifact_output", "tool_loop", "command_execution", "scoped_write", "browser_control", "web_search", "connector_access"]}},
+        "exact_tool_allowlist": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "effective_concurrency": {"type": "integer", "minimum": 1},
+        "concurrency_caps": {
+          "type": "object", "additionalProperties": false,
+          "required": ["user", "adapter", "task", "fleet", "provider", "runtime_host"],
+          "properties": {
+            "user": {"type": "integer", "minimum": 1}, "adapter": {"type": "integer", "minimum": 1},
+            "task": {"type": "integer", "minimum": 1}, "fleet": {"type": "integer", "minimum": 1},
+            "provider": {"type": "integer", "minimum": 1}, "runtime_host": {"type": "integer", "minimum": 1}
+          }
+        },
+        "scoped_writes_serialized": {"const": true},
+        "proof_boundary": {"const": "source_local"},
+        "provider_called": {"const": false}, "execution_started": {"const": false},
+        "eligibility_granted": {"const": false}, "authority_granted": {"const": false},
+        "acceptance_granted": {"const": false}, "no_retry": {"const": true},
+        "execution_unknown_policy": {"const": "preserve_and_stop"},
+        "conformance_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

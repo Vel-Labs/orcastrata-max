@@ -1,0 +1,9 @@
+# Standalone operator browser status ABI
+
+The admitted loopback listener creates an in-memory 32-byte HMAC-SHA-256 key and listener nonce. Each dynamic index creates a fresh 32-byte page nonce and embeds a closed `standalone_operator_browser_bootstrap_v1` JSON object. These values are listener-owned capabilities: they are never accepted from configuration, environment, URL, workspace, service, client, CLI, or host records and are destroyed on listener shutdown.
+
+`GET /operator/v1/status` and `POST /operator/v1/submit` require exactly one `X-Codexmax-Operator-Page-Nonce` header for an unexpired page. Status returns the closed schema in `standalone-operator-browser-status-schema.json`. `projection_bytes_b64` is unpadded base64url of canonical UTF-8 JSON; `projection_sha256` hashes those exact bytes. The receipt digest covers every field except `receipt_sha256` and `mac_b64`. The MAC covers the fixed domain `codexmax-operator-browser-status-v1\0` followed by canonical JSON of every field except `mac_b64`.
+
+Status sequence begins at 1 with a null predecessor, increases exactly by one, and binds the previous receipt digest. Receipts expire in no more than five seconds and never outlive the page. The transport envelope uses the analogous domain `codexmax-operator-browser-transport-v1\0`, binds the exact canonical submission digest and ID, and carries only transport acceptance with outcome unknown until a later authenticated status.
+
+The browser must verify bootstrap shape and time, listener/page binding, exact closed envelope, sequence chain, byte and receipt digests, HMAC, and the complete closed V2 projection before retaining or rendering state. Rejection clears state and controls and cannot authorize a POST. This protects an honest package bootstrap against forged or rehashed status; it does not protect a replaced bootstrap/package/origin, stolen in-memory key, or compromised browser execution.

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/protected-grok-clean-session-v1.json",
+  "title": "Protected Grok clean session request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "task_id", "route_name", "route_id", "model",
+    "runtime", "billing_basis", "mode", "prompt", "task_grant_sha256",
+    "attempt_id", "session_id", "worktree_path", "home_sha256",
+    "config_sha256", "project_sha256", "assignment_sha256",
+    "scoped_write_grant", "subscription_receipt_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "task_id": {"$ref": "#/$defs/id"},
+    "route_name": {"const": "worker_grok_4_6"},
+    "route_id": {"const": "grok-subscription-4-6"},
+    "model": {"const": "grok-4.6"},
+    "runtime": {"const": "Grok CLI 1.0.4"},
+    "billing_basis": {"const": "unknown"},
+    "mode": {"enum": ["read_only", "scoped_write"]},
+    "prompt": {"type": "string", "minLength": 1},
+    "task_grant_sha256": {"$ref": "#/$defs/sha256"},
+    "attempt_id": {"$ref": "#/$defs/id"},
+    "session_id": {"$ref": "#/$defs/id"},
+    "worktree_path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"},
+    "home_sha256": {"$ref": "#/$defs/sha256"},
+    "config_sha256": {"$ref": "#/$defs/sha256"},
+    "project_sha256": {"$ref": "#/$defs/sha256"},
+    "assignment_sha256": {"$ref": "#/$defs/sha256"},
+    "scoped_write_grant": {"type": ["object", "null"]},
+    "subscription_receipt_sha256": {"type": "null"}
+  },
+  "allOf": [{
+    "if": {"properties": {"mode": {"const": "read_only"}}},
+    "then": {"properties": {"scoped_write_grant": {"type": "null"}}},
+    "else": {"properties": {"scoped_write_grant": {"type": "object"}}}
+  }],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:@+-]{1,127}$"},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

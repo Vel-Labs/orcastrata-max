@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_type": "CodexLoopHookConfig",
+  "adapter_id": "codex-local",
+  "mode": "advisory_report_only",
+  "installed": false,
+  "debounce_seconds": 2,
+  "supported_hooks": ["PostToolUse", "SessionStart", "Stop", "UserPromptSubmit"]
+}

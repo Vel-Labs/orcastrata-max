@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "standalone-operator-browser-status-schema.json",
+  "title": "Standalone operator browser status receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "listener_id", "listener_nonce", "page_nonce", "status_sequence", "previous_status_receipt_sha256", "projection_encoding", "projection_bytes_b64", "projection_sha256", "issued_at", "expires_at", "receipt_sha256", "mac_algorithm", "mac_b64"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_type": {"const": "standalone_operator_browser_status_receipt_v1"},
+    "listener_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "listener_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "page_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "status_sequence": {"type": "integer", "minimum": 1},
+    "previous_status_receipt_sha256": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}]},
+    "projection_encoding": {"const": "base64url-canonical-json-v1"},
+    "projection_bytes_b64": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "projection_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "receipt_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "mac_algorithm": {"const": "HMAC-SHA-256"},
+    "mac_b64": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/standalone-operator-local-binding-v1.json",
+  "title": "Standalone operator local binding V1",
+  "oneOf": [
+    {"$ref": "#/$defs/admission"},
+    {"$ref": "#/$defs/projection"},
+    {"$ref": "#/$defs/submission"},
+    {"$ref": "#/$defs/record"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"},
+    "admission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "admission_id", "issuer_id", "workspace_id", "source_sha256", "candidate_sha256", "service_instance_id", "capability_ids", "issued_at", "expires_at", "revoked", "seal"],
+      "properties": {
+        "schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_capability_admission_v1"},
+        "admission_id": {"$ref": "#/$defs/identifier"}, "issuer_id": {"$ref": "#/$defs/identifier"}, "workspace_id": {"$ref": "#/$defs/identifier"},
+        "source_sha256": {"$ref": "#/$defs/sha256"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "service_instance_id": {"$ref": "#/$defs/identifier"},
+        "capability_ids": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"enum": ["operator.status", "operator.submit", "operator.listen", "effect.run", "effect.cancel", "effect.recover", "preset.catalog", "preset.select", "responses.bridge", "context.issue"]}},
+        "issued_at": {"type": "string"}, "expires_at": {"type": "string"}, "revoked": {"const": false}, "seal": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "control": {
+      "type": "object", "additionalProperties": false, "required": ["enabled", "reason"],
+      "properties": {"enabled": {"type": "boolean"}, "reason": {"type": "string", "minLength": 1}}
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run", "cancel", "recover", "select", "retry", "fallback", "replacement"],
+      "properties": {"run": {"$ref": "#/$defs/control"}, "cancel": {"$ref": "#/$defs/control"}, "recover": {"$ref": "#/$defs/control"}, "select": {"$ref": "#/$defs/control"}, "retry": {"$ref": "#/$defs/control"}, "fallback": {"$ref": "#/$defs/control"}, "replacement": {"$ref": "#/$defs/control"}}
+    },
+    "artifactRefs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["standalone_responses_request_v1", "effect_kernel_request_v1", "effect_kernel_receipt_v1", "effect_kernel_action_receipt_v1", "standalone_responses_bridge_receipt_v1"],
+      "properties": {"standalone_responses_request_v1": {"type": ["string", "null"]}, "effect_kernel_request_v1": {"type": ["string", "null"]}, "effect_kernel_receipt_v1": {"type": ["string", "null"]}, "effect_kernel_action_receipt_v1": {"type": ["string", "null"]}, "standalone_responses_bridge_receipt_v1": {"type": ["string", "null"]}}
+    },
+    "projectionReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "projection_sha256", "admission_id", "workspace_id", "candidate_sha256", "expires_at", "seal"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_projection_receipt_v1"}, "projection_sha256": {"$ref": "#/$defs/sha256"}, "admission_id": {"$ref": "#/$defs/identifier"}, "workspace_id": {"$ref": "#/$defs/identifier"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "expires_at": {"type": "string"}, "seal": {"$ref": "#/$defs/sha256"}}
+    },
+    "controlGrant": {
+      "type": "object", "additionalProperties": false,
+      "required": ["grant_id", "operation", "provenance", "run_id", "predecessor_run_id", "successor_run_id", "effect_operation", "lease_id", "fencing_token", "lease_expires_at", "cas_expected_state_version", "cas_expected_thread_generation", "authority_receipt_sha256", "effect_request_sha256", "effect_receipt_sha256", "action_receipt_sha256", "bridge_receipt_sha256", "cancel_observed", "recovery", "catalog_receipt_sha256", "bundle_sha256", "bundle_generation", "selection_head_receipt_sha256", "issued_at", "expires_at", "grant_sha256"],
+      "properties": {"grant_id": {"$ref": "#/$defs/identifier"}, "operation": {"enum": ["run", "cancel", "recover", "select"]}, "provenance": {"type": "string", "minLength": 1}, "run_id": {"type": ["string", "null"]}, "predecessor_run_id": {"type": ["string", "null"]}, "successor_run_id": {"type": ["string", "null"]}, "effect_operation": {"type": ["string", "null"]}, "lease_id": {"type": ["string", "null"]}, "fencing_token": {"type": ["integer", "null"], "minimum": 1}, "lease_expires_at": {"type": ["string", "null"]}, "cas_expected_state_version": {"type": "integer", "minimum": 0}, "cas_expected_thread_generation": {"type": "integer", "minimum": 1}, "authority_receipt_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "effect_request_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "effect_receipt_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "action_receipt_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "bridge_receipt_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}, "cancel_observed": {"type": ["boolean", "null"]}, "recovery": {"type": ["object", "null"]}, "catalog_receipt_sha256": {"$ref": "#/$defs/sha256"}, "bundle_sha256": {"$ref": "#/$defs/sha256"}, "bundle_generation": {"type": "integer", "minimum": 1}, "selection_head_receipt_sha256": {"$ref": "#/$defs/sha256"}, "issued_at": {"type": "string"}, "expires_at": {"type": "string"}, "grant_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "controlAuthority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "workspace_id", "source_sha256", "candidate_sha256", "service_instance_id", "admission_id", "admission_seal_sha256", "binding_state_version", "binding_state_sha256", "selection_sha256", "effect_state_version", "effect_state_sha256", "grants", "issued_at", "expires_at", "authority_sha256", "sealed_by"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_control_authority_v1"}, "workspace_id": {"$ref": "#/$defs/identifier"}, "source_sha256": {"$ref": "#/$defs/sha256"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "service_instance_id": {"$ref": "#/$defs/identifier"}, "admission_id": {"$ref": "#/$defs/identifier"}, "admission_seal_sha256": {"$ref": "#/$defs/sha256"}, "binding_state_version": {"type": "integer", "minimum": 0}, "binding_state_sha256": {"$ref": "#/$defs/sha256"}, "selection_sha256": {"$ref": "#/$defs/sha256"}, "effect_state_version": {"type": "integer", "minimum": 0}, "effect_state_sha256": {"$ref": "#/$defs/sha256"}, "grants": {"type": "object", "additionalProperties": false, "required": ["run", "cancel", "recover", "select"], "properties": {"run": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/controlGrant"}]}, "cancel": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/controlGrant"}]}, "recover": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/controlGrant"}]}, "select": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/controlGrant"}]}}, "issued_at": {"type": "string"}, "expires_at": {"type": "string"}, "authority_sha256": {"$ref": "#/$defs/sha256"}, "sealed_by": {"const": "projection_receipt_v1"}}
+    }},
+    "projection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "projection_id", "service_instance_id", "workspace_id", "source_sha256", "candidate_sha256", "binding_state_version", "binding_state_sha256", "selection", "run", "artifact_refs", "controls", "claims", "issued_at", "expires_at", "view_nonce", "projection_sha256", "projection_receipt"],
+      "properties": {
+        "schema_version": {"enum": [1, 2, 3]}, "artifact_type": {"enum": ["standalone_operator_local_projection_v1", "standalone_operator_local_projection_v2", "standalone_operator_local_projection_v3"]},
+        "projection_id": {"$ref": "#/$defs/identifier"}, "service_instance_id": {"$ref": "#/$defs/identifier"}, "workspace_id": {"$ref": "#/$defs/identifier"},
+        "source_sha256": {"$ref": "#/$defs/sha256"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "binding_state_version": {"type": "integer", "minimum": 0}, "binding_state_sha256": {"$ref": "#/$defs/sha256"},
+        "selection": {"type": ["object", "null"]},
+        "run": {"type": "object", "additionalProperties": false, "required": ["run_id", "lifecycle", "fencing_token", "predecessor_run_id", "successor_run_id"], "properties": {"run_id": {"type": ["string", "null"]}, "lifecycle": {"type": "string"}, "fencing_token": {"type": ["integer", "null"]}, "predecessor_run_id": {"type": ["string", "null"]}, "successor_run_id": {"type": ["string", "null"]}}},
+        "artifact_refs": {"$ref": "#/$defs/artifactRefs"}, "controls": {"$ref": "#/$defs/controls"},
+        "claims": {"type": "object", "additionalProperties": false, "required": ["source_local", "capability_admitted", "installed", "live", "provider", "browser", "aol"], "properties": {"source_local": {"const": true}, "capability_admitted": {"type": "boolean"}, "installed": {"enum": ["unknown", "unavailable"]}, "live": {"enum": ["unknown", "unavailable"]}, "provider": {"enum": ["unknown", "unavailable"]}, "browser": {"enum": ["unknown", "unavailable"]}, "aol": {"enum": ["unknown", "unavailable"]}}},
+        "issued_at": {"type": "string"}, "expires_at": {"type": "string"}, "view_nonce": {"$ref": "#/$defs/identifier"}, "projection_sha256": {"$ref": "#/$defs/sha256"}, "projection_receipt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/projectionReceipt"}]},
+        "supervision": {"type": "object", "additionalProperties": false, "required": ["state", "reason", "receipt"], "properties": {"state": {"enum": ["verified", "unavailable"]}, "reason": {"type": ["string", "null"]}, "receipt": {"type": ["object", "null"]}}},
+        "active_selection": {"type":"object"}, "artifact_selection": {"type":"object"}, "preset_catalog": {"type":"object"}, "control_authority": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/controlAuthority"}]}
+      },
+      "allOf": [{"if": {"properties": {"artifact_type": {"enum": ["standalone_operator_local_projection_v2", "standalone_operator_local_projection_v3"]}}}, "then": {"required": ["supervision","active_selection","artifact_selection","preset_catalog","control_authority"]}}, {"if": {"properties": {"artifact_type": {"const": "standalone_operator_local_projection_v1"}}}, "then": {"not": {"anyOf":[{"required": ["supervision"]},{"required":["active_selection"]},{"required":["artifact_selection"]},{"required":["preset_catalog"]},{"required":["control_authority"]}]}}}]
+    },
+    "submission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "submission_id", "projection_sha256", "view_nonce", "action", "payload"],
+      "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_control_submission_v1"}, "submission_id": {"$ref": "#/$defs/identifier"}, "projection_sha256": {"$ref": "#/$defs/sha256"}, "view_nonce": {"$ref": "#/$defs/identifier"}, "action": {"enum": ["run", "cancel", "recover", "select"]}, "payload": {"type": "object"}},
+      "allOf": [
+        {"if": {"properties": {"action": {"const": "run"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/runPayload"}}}},
+        {"if": {"properties": {"action": {"const": "cancel"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/cancelPayload"}}}},
+        {"if": {"properties": {"action": {"const": "recover"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/recoverPayload"}}}},
+        {"if": {"properties": {"action": {"const": "select"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/selectPayload"}}}}
+      ]
+    },
+    "runPayload": {"type": "object", "additionalProperties": false, "required": ["message"], "properties": {"message": {"type": "string", "minLength": 1}}},
+    "cancelPayload": {"type": "object", "additionalProperties": false, "required": ["run_id", "effect_receipt_sha256", "fencing_token"], "properties": {"run_id": {"$ref": "#/$defs/identifier"}, "effect_receipt_sha256": {"$ref": "#/$defs/sha256"}, "fencing_token": {"type": "integer", "minimum": 1}}},
+    "recoverPayload": {"type": "object", "additionalProperties": false, "required": ["predecessor_run_id", "predecessor_receipt_sha256", "predecessor_fencing_token"], "properties": {"predecessor_run_id": {"$ref": "#/$defs/identifier"}, "predecessor_receipt_sha256": {"$ref": "#/$defs/sha256"}, "predecessor_fencing_token": {"type": "integer", "minimum": 1}}},
+    "selectPayload": {"type": "object", "additionalProperties": false, "required": ["preset_id", "expected_generation"], "properties": {"preset_id": {"$ref": "#/$defs/identifier"}, "expected_generation": {"type": "integer", "minimum": 1}}},
+    "record": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "record_id", "workspace_id", "source_sha256", "candidate_sha256", "service_instance_id", "binding_state_version", "responses_request", "effect_request", "effect_receipt", "bridge_receipt", "selection", "cursor", "recovery", "used_view_nonces", "submission_replays", "pending_submission", "validation_seal", "record_sha256"],
+      "properties": {
+        "schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_binding_record_v1"}, "record_id": {"$ref": "#/$defs/identifier"}, "workspace_id": {"$ref": "#/$defs/identifier"}, "source_sha256": {"$ref": "#/$defs/sha256"}, "candidate_sha256": {"$ref": "#/$defs/sha256"}, "service_instance_id": {"$ref": "#/$defs/identifier"}, "binding_state_version": {"type": "integer", "minimum": 1},
+        "responses_request": {"type": "object"}, "effect_request": {"type": "object"}, "effect_receipt": {"type": "object"}, "bridge_receipt": {"type": ["object", "null"]}, "selection": {"$ref": "#/$defs/selection"}, "cursor": {"$ref": "#/$defs/cursor"}, "recovery": {"$ref": "#/$defs/recovery"},
+        "used_view_nonces": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}}, "submission_replays": {"type": "array", "items": {"$ref": "#/$defs/submissionReplay"}}, "pending_submission": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/pendingSubmission"}]},
+        "validation_seal": {"type": "object", "additionalProperties": false, "required": ["artifact_set_sha256", "seal"], "properties": {"artifact_set_sha256": {"$ref": "#/$defs/sha256"}, "seal": {"$ref": "#/$defs/sha256"}}}, "record_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "selection": {"type": "object", "additionalProperties": false, "required": ["bundle_sha256", "preset_id", "family_id", "expected_generation", "scope", "thread_id", "thread_generation", "current_preset_id", "current_family_id", "in_flight"], "properties": {"bundle_sha256": {"$ref": "#/$defs/sha256"}, "preset_id": {"$ref": "#/$defs/identifier"}, "family_id": {"$ref": "#/$defs/identifier"}, "expected_generation": {"type": "integer", "minimum": 1}, "scope": {"type": "string", "minLength": 1}, "thread_id": {"$ref": "#/$defs/identifier"}, "thread_generation": {"type": "integer", "minimum": 1}, "current_preset_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}, "current_family_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}, "in_flight": {"type": "boolean"}}},
+    "cursor": {"type": "object", "additionalProperties": false, "required": ["sequence", "stable", "receipt_sha256"], "properties": {"sequence": {"type": "integer", "minimum": 0}, "stable": {"type": "boolean"}, "receipt_sha256": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}}},
+    "recovery": {"type": "object", "additionalProperties": false, "required": ["reconciliation_observed", "reconciliation_receipt_sha256", "no_successor", "fresh_lease_id", "fresh_fencing_token", "successor_run_id"], "properties": {"reconciliation_observed": {"type": "boolean"}, "reconciliation_receipt_sha256": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}, "no_successor": {"type": "boolean"}, "fresh_lease_id": {"type": ["string", "null"]}, "fresh_fencing_token": {"type": ["integer", "null"], "minimum": 1}, "successor_run_id": {"type": ["string", "null"]}}},
+    "transportReceipt": {"type": "object", "additionalProperties": false, "required": ["schema_version", "artifact_type", "submission_id", "transport_accepted", "effect_outcome", "optimistic_state_change"], "properties": {"schema_version": {"const": 1}, "artifact_type": {"const": "standalone_operator_control_transport_receipt_v1"}, "submission_id": {"$ref": "#/$defs/identifier"}, "transport_accepted": {"const": true}, "effect_outcome": {"const": "unknown_until_status_refresh"}, "optimistic_state_change": {"const": false}}},
+    "submissionReplay": {"type": "object", "additionalProperties": false, "required": ["submission_id", "submission_sha256", "transport_receipt"], "properties": {"submission_id": {"$ref": "#/$defs/identifier"}, "submission_sha256": {"$ref": "#/$defs/sha256"}, "transport_receipt": {"$ref": "#/$defs/transportReceipt"}}},
+    "pendingSubmission": {"type": "object", "additionalProperties": false, "required": ["submission_id", "submission_sha256", "view_nonce", "action"], "properties": {"submission_id": {"$ref": "#/$defs/identifier"}, "submission_sha256": {"$ref": "#/$defs/sha256"}, "view_nonce": {"$ref": "#/$defs/identifier"}, "action": {"enum": ["run", "cancel", "recover", "select"]}}}
+  }
+}

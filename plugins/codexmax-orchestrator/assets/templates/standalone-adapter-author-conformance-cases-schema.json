@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codexmax:standalone-adapter-author-conformance-cases:v1",
+  "title": "Standalone adapter-author conformance cases v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "cases"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "artifact_type": {"const": "standalone_adapter_conformance_cases_v1"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "path", "value", "expected_code"],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+        "path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {"type": "string"},
+              {"type": "integer"}
+            ]
+          }
+        },
+        "value": {},
+        "expected_code": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"}
+      }
+    }
+  }
+}

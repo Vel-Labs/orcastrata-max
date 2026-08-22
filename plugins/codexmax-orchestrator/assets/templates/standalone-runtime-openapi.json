@@ -1,0 +1,286 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Codexmax Standalone Runtime Read API",
+    "version": "1",
+    "description": "Descriptive, workspace-scoped v1 contract for the accepted local CLI and in-process runtime read surface. This document does not bind a network endpoint or grant effects."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "x-codexmax-runtime-version": "1",
+  "x-codexmax-api-version": "1",
+  "x-codexmax-client-version": "1",
+  "x-codexmax-client-transport-boundary": {
+    "default": "in_process",
+    "supported": ["in_process", "local_cli"],
+    "network_bound": false
+  },
+  "x-codexmax-process-mode": "foreground",
+  "x-codexmax-local-only": true,
+  "x-codexmax-network-bound": false,
+  "x-codexmax-descriptive-only": true,
+  "x-codexmax-effect-guarantees": {
+    "provider_called": false,
+    "lease_created": false,
+    "dispatch_started": false,
+    "policy_activated": false,
+    "ledger_written": false,
+    "authority_granted": false,
+    "acceptance_granted": false,
+    "installed": false,
+    "daemon_started": false,
+    "network_bound": false
+  },
+  "paths": {
+    "/v1/workspaces/{workspace_id}/inspect": {
+      "post": {
+        "operationId": "inspectWorkspaceRuntimeV1",
+        "summary": "Inspect accepted foreground runtime truth",
+        "parameters": [{"$ref": "#/components/parameters/WorkspaceId"}],
+        "requestBody": {"$ref": "#/components/requestBodies/WorkspaceSelection"},
+        "responses": {
+          "200": {"description": "Deterministic runtime inspection", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/InspectResult"}}}},
+          "400": {"$ref": "#/components/responses/RuntimeError"}
+        }
+      }
+    },
+    "/v1/workspaces/{workspace_id}/reconnect": {
+      "post": {
+        "operationId": "requestWorkspaceReconnectV1",
+        "summary": "Describe a reconnect request without claiming observation",
+        "parameters": [{"$ref": "#/components/parameters/WorkspaceId"}],
+        "requestBody": {"$ref": "#/components/requestBodies/WorkspaceSelection"},
+        "responses": {
+          "200": {"description": "Evidence-honest reconnect view", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReconnectResult"}}}},
+          "400": {"$ref": "#/components/responses/RuntimeError"}
+        }
+      }
+    },
+    "/v1/workspaces/{workspace_id}/shutdown": {
+      "post": {
+        "operationId": "requestWorkspaceShutdownV1",
+        "summary": "Describe a shutdown request without claiming observation or persistence",
+        "parameters": [{"$ref": "#/components/parameters/WorkspaceId"}],
+        "requestBody": {"$ref": "#/components/requestBodies/WorkspaceSelection"},
+        "responses": {
+          "200": {"description": "Evidence-honest shutdown view", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ShutdownResult"}}}},
+          "400": {"$ref": "#/components/responses/RuntimeError"}
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "WorkspaceId": {
+        "name": "workspace_id",
+        "in": "path",
+        "required": true,
+        "schema": {"$ref": "#/components/schemas/Identifier"},
+        "description": "Must equal the basename and isolation identity of the selected resolved workspace."
+      }
+    },
+    "requestBodies": {
+      "WorkspaceSelection": {
+        "required": true,
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WorkspaceSelection"}}}
+      }
+    },
+    "responses": {
+      "RuntimeError": {
+        "description": "Strict fail-closed local validation error",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RuntimeError"}}}
+      }
+    },
+    "schemas": {
+      "Identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+      "Digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+      "Timestamp": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"},
+      "WorkspaceSelection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["api_version", "workspace_id", "workspace_path_sha256"],
+        "properties": {
+          "api_version": {"const": "1"},
+          "workspace_id": {"$ref": "#/components/schemas/Identifier"},
+          "workspace_path_sha256": {"$ref": "#/components/schemas/Digest"}
+        }
+      },
+      "EffectGuarantees": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["provider_called", "lease_created", "dispatch_started", "policy_activated", "ledger_written", "authority_granted", "acceptance_granted", "installed", "daemon_started", "network_bound"],
+        "properties": {
+          "provider_called": {"const": false},
+          "lease_created": {"const": false},
+          "dispatch_started": {"const": false},
+          "policy_activated": {"const": false},
+          "ledger_written": {"const": false},
+          "authority_granted": {"const": false},
+          "acceptance_granted": {"const": false},
+          "installed": {"const": false},
+          "daemon_started": {"const": false},
+          "network_bound": {"const": false}
+        }
+      },
+      "RuntimeManifest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["runtime_id", "runtime_version", "api_version", "source_sha256", "candidate_sha256", "workspace_root_sha256", "isolation_id", "process_mode", "endpoint_kind", "supported_transports", "health", "degraded_reasons", "recovery_instructions", "mandatory_model_hop", "model_can_admit"],
+        "properties": {
+          "runtime_id": {"$ref": "#/components/schemas/Identifier"},
+          "runtime_version": {"const": "1"},
+          "api_version": {"const": "1"},
+          "source_sha256": {"$ref": "#/components/schemas/Digest"},
+          "candidate_sha256": {"$ref": "#/components/schemas/Digest"},
+          "workspace_root_sha256": {"$ref": "#/components/schemas/Digest", "description": "Must equal workspace_path_sha256."},
+          "isolation_id": {"$ref": "#/components/schemas/Identifier", "description": "Must equal workspace_id."},
+          "process_mode": {"const": "foreground"},
+          "endpoint_kind": {"enum": ["unix_socket", "loopback_http"]},
+          "supported_transports": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["local_cli", "in_process", "unix_socket", "loopback_http"]}},
+          "health": {"enum": ["healthy", "degraded", "unknown", "unavailable"]},
+          "degraded_reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "recovery_instructions": {"type": "string", "minLength": 1},
+          "mandatory_model_hop": {"const": false},
+          "model_can_admit": {"const": false}
+        }
+      },
+      "LifecycleResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state", "history", "foreground"],
+        "properties": {
+          "state": {"enum": ["created", "ready", "stopping", "stopped"]},
+          "history": {"type": "array", "minItems": 1, "items": {"enum": ["created", "ready", "stopping", "stopped"]}},
+          "foreground": {"const": true}
+        }
+      },
+      "Endpoint": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "address", "local_only", "bound"],
+        "properties": {
+          "kind": {"enum": ["unix_socket", "loopback_http"]},
+          "address": {"type": "string", "minLength": 1},
+          "local_only": {"const": true},
+          "bound": {"const": false}
+        }
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "provenance", "observed_at", "expires_at", "degraded_reasons"],
+        "properties": {
+          "status": {"enum": ["healthy", "degraded", "unknown", "unavailable"]},
+          "provenance": {"enum": ["observed", "declared", "unknown"]},
+          "observed_at": {"$ref": "#/components/schemas/Timestamp"},
+          "expires_at": {"$ref": "#/components/schemas/Timestamp"},
+          "degraded_reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      },
+      "ReconnectCapability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["supported", "requires_original_client", "instruction"],
+        "properties": {
+          "supported": {"const": true},
+          "requires_original_client": {"const": false},
+          "instruction": {"type": "string", "minLength": 1}
+        }
+      },
+      "ShutdownCapability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["supported", "mode", "instruction"],
+        "properties": {
+          "supported": {"const": true},
+          "mode": {"const": "foreground_signal"},
+          "instruction": {"type": "string", "minLength": 1}
+        }
+      },
+      "RuntimeResultBase": {
+        "type": "object",
+        "required": ["service_version", "artifact_type", "workspace_id", "workspace_path_sha256", "runtime_json_sha256", "manifest_sha256", "runtime_manifest", "lifecycle", "endpoint", "health", "reconnect", "shutdown", "recovery_instructions", "effect_guarantees", "runtime_json_written", "side_effect_free"],
+        "properties": {
+          "service_version": {"const": 1},
+          "artifact_type": {"const": "standalone_runtime_service_result_v1"},
+          "workspace_id": {"$ref": "#/components/schemas/Identifier"},
+          "workspace_path_sha256": {"$ref": "#/components/schemas/Digest"},
+          "runtime_json_sha256": {"$ref": "#/components/schemas/Digest"},
+          "manifest_sha256": {"$ref": "#/components/schemas/Digest"},
+          "runtime_manifest": {"$ref": "#/components/schemas/RuntimeManifest"},
+          "lifecycle": {"$ref": "#/components/schemas/LifecycleResult"},
+          "endpoint": {"$ref": "#/components/schemas/Endpoint"},
+          "health": {"$ref": "#/components/schemas/Health"},
+          "reconnect": {"$ref": "#/components/schemas/ReconnectCapability"},
+          "shutdown": {"$ref": "#/components/schemas/ShutdownCapability"},
+          "recovery_instructions": {"type": "string", "minLength": 1},
+          "effect_guarantees": {"$ref": "#/components/schemas/EffectGuarantees"},
+          "runtime_json_written": {"const": false},
+          "side_effect_free": {"const": true}
+        }
+      },
+      "InspectResult": {
+        "allOf": [
+          {"$ref": "#/components/schemas/RuntimeResultBase"},
+          {
+            "type": "object",
+            "required": ["operation"],
+            "properties": {"operation": {"const": "inspect"}}
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "ReconnectResult": {
+        "allOf": [
+          {"$ref": "#/components/schemas/RuntimeResultBase"},
+          {
+            "type": "object",
+            "required": ["operation", "reconnect_requested", "reconnected", "reconnect_observed", "original_client_required"],
+            "properties": {
+              "operation": {"const": "reconnect"},
+              "reconnect_requested": {"const": true},
+              "reconnected": {"const": false},
+              "reconnect_observed": {"const": false},
+              "original_client_required": {"const": false}
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "ShutdownResult": {
+        "allOf": [
+          {"$ref": "#/components/schemas/RuntimeResultBase"},
+          {
+            "type": "object",
+            "required": ["operation", "shutdown_requested", "shutdown_observed", "persistent_state_changed"],
+            "properties": {
+              "operation": {"const": "shutdown"},
+              "shutdown_requested": {"const": true},
+              "shutdown_observed": {"const": false},
+              "persistent_state_changed": {"const": false}
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "RuntimeOperationResult": {
+        "oneOf": [
+          {"$ref": "#/components/schemas/InspectResult"},
+          {"$ref": "#/components/schemas/ReconnectResult"},
+          {"$ref": "#/components/schemas/ShutdownResult"}
+        ]
+      },
+      "RuntimeError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["service_version", "artifact_type", "code", "path", "side_effect_free"],
+        "properties": {
+          "service_version": {"const": 1},
+          "artifact_type": {"const": "standalone_runtime_service_error_v1"},
+          "code": {"$ref": "#/components/schemas/Identifier"},
+          "path": {"type": "string", "minLength": 1},
+          "side_effect_free": {"const": true}
+        }
+      }
+    }
+  }
+}

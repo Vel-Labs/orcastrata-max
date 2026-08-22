@@ -1,0 +1,323 @@
+{
+  "schema_version": 2,
+  "artifact_type": "standalone_downstream_fork_kit_v2",
+  "kit_id": "rc6-aol-proposed-kit",
+  "upstream_anchor": {
+    "package_name": "codexmax-orchestrator",
+    "version": "0.6.0-rc.6+codex.20260816",
+    "release_manifest_sha256": "sha256:c7abb4abc0d6ec92b631bfcee9cd0a40e58c45caad8df065fc21610ad4b59865",
+    "source_tree_sha256": "sha256:c40a9f18462faa917963121f18db022044af90d877e8d087a5e860ae0938cc92",
+    "manifest_payload_rows": 362,
+    "physical_files": 363
+  },
+  "fork_identity": {
+    "state": "proposed_not_created",
+    "distribution_id": "aol-codexmax-rc6-proposed",
+    "fork_commit": null,
+    "fork_tree_sha256": null,
+    "build_id": null
+  },
+  "overlay_policy": {
+    "allowed_classes": [
+      "client_adapter",
+      "read_model_projection"
+    ],
+    "forbidden_duplicate_authorities": [
+      "capacity",
+      "assignment_authority",
+      "acceptance"
+    ],
+    "declarations": [
+      {
+        "overlay_class": "client_adapter",
+        "mode": "translate_only",
+        "implementation_included": false,
+        "executable_logic_included": false,
+        "grants_capability": false,
+        "grants_authority": false,
+        "allocates_capacity": false,
+        "creates_lease": false,
+        "normalizes_billing": false,
+        "counts_usage": false,
+        "creates_receipt_truth": false,
+        "accepts_work": false,
+        "mutates_board_truth": false,
+        "mutates_policy_truth": false,
+        "calls_provider": false,
+        "changes_shared_components": false
+      },
+      {
+        "overlay_class": "read_model_projection",
+        "mode": "project_only",
+        "implementation_included": false,
+        "executable_logic_included": false,
+        "grants_capability": false,
+        "grants_authority": false,
+        "allocates_capacity": false,
+        "creates_lease": false,
+        "normalizes_billing": false,
+        "counts_usage": false,
+        "creates_receipt_truth": false,
+        "accepts_work": false,
+        "mutates_board_truth": false,
+        "mutates_policy_truth": false,
+        "calls_provider": false,
+        "changes_shared_components": false
+      }
+    ]
+  },
+  "divergence_ledger": {
+    "ledger_id": "rc6-aol-proposed-divergence",
+    "previous_ledger_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "entry_count": 2,
+    "entries": [
+      {
+        "divergence_id": "overlay-client-adapter",
+        "sequence": 1,
+        "previous_entry_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "classification": "overlay_declaration",
+        "overlay_class": "client_adapter",
+        "applied": false,
+        "shared_component_changes": [],
+        "patch_sha256": null,
+        "compatibility_impact": "none",
+        "upstream_return_status": "not_applicable",
+        "entry_sha256": "sha256:586aa4e92ccb3083f454bf3bc47d1c4288beb577adc064f838cb20bee1765c3b"
+      },
+      {
+        "divergence_id": "overlay-read-model",
+        "sequence": 2,
+        "previous_entry_sha256": "sha256:586aa4e92ccb3083f454bf3bc47d1c4288beb577adc064f838cb20bee1765c3b",
+        "classification": "overlay_declaration",
+        "overlay_class": "read_model_projection",
+        "applied": false,
+        "shared_component_changes": [],
+        "patch_sha256": null,
+        "compatibility_impact": "none",
+        "upstream_return_status": "not_applicable",
+        "entry_sha256": "sha256:5a61e8e2e7b0e29df021733ba0a2ebb3b58b3610fa8af7c7546152560482b707"
+      }
+    ],
+    "ledger_sha256": "sha256:a8edcdd6e07a92871487228871e8330a6c4d4f747b7effb93faaba60eeba06f7"
+  },
+  "compatibility": {
+    "component_versions": {
+      "runtime": 1,
+      "event": 1,
+      "receipt": 1,
+      "adapter": 1,
+      "route_identity": 1,
+      "assignment_authority": 1,
+      "delegation": 1,
+      "task_journal": 1,
+      "capacity_authority": 1
+    },
+    "unknown_versions_fail_closed": true,
+    "shared_component_changes_allowed": false,
+    "compatibility_status": "not_run",
+    "shared_conformance": {
+      "status": "not_run",
+      "receipt_sha256": null,
+      "passed": false,
+      "proves_aol_admission": false
+    }
+  },
+  "lifecycle": {
+    "upgrade": {
+      "status": "not_performed",
+      "requires_new_identity": true,
+      "performed": false,
+      "authority_granted": false
+    },
+    "backport": {
+      "status": "not_proposed",
+      "patch_sha256": null,
+      "performed": false,
+      "authority_granted": false
+    },
+    "upstream_return": {
+      "status": "proposed_unsubmitted",
+      "patch_sha256": null,
+      "submitted": false,
+      "merged": false,
+      "accepted": false
+    },
+    "rollback": {
+      "status": "not_performed",
+      "target": "exact_upstream_anchor",
+      "performed": false,
+      "authority_granted": false,
+      "history_rewritten": false
+    }
+  },
+  "external_mappings": [
+    {
+      "source_artifact": "route_fabric_decision_v1",
+      "external_semantic": "RouteDecision",
+      "external_owner": "AOL Core",
+      "mapping_mode": "reference_only",
+      "mapping_status": "external_owner_unimplemented",
+      "implementation_included": false,
+      "truth_claimed": false,
+      "authority_granted": false,
+      "acceptance_claimed": false
+    },
+    {
+      "source_artifact": "runtime_quality_receipt_v1",
+      "external_semantic": "Assurance",
+      "external_owner": "AOL Core",
+      "mapping_mode": "reference_only",
+      "mapping_status": "external_owner_unimplemented",
+      "implementation_included": false,
+      "truth_claimed": false,
+      "authority_granted": false,
+      "acceptance_claimed": false
+    },
+    {
+      "source_artifact": "correction_economics_v1",
+      "external_semantic": "economics",
+      "external_owner": "AOL Core",
+      "mapping_mode": "reference_only",
+      "mapping_status": "external_owner_unimplemented",
+      "implementation_included": false,
+      "truth_claimed": false,
+      "authority_granted": false,
+      "acceptance_claimed": false
+    },
+    {
+      "source_artifact": "execution_continuity_v1",
+      "external_semantic": "Home/Now",
+      "external_owner": "AOL Home/Now",
+      "mapping_mode": "reference_only",
+      "mapping_status": "external_owner_unimplemented",
+      "implementation_included": false,
+      "truth_claimed": false,
+      "authority_granted": false,
+      "acceptance_claimed": false
+    }
+  ],
+  "handoff": {
+    "target_label": "AOL",
+    "status": "proposed_not_admitted",
+    "sanitization": {
+      "raw_prompts_excluded": true,
+      "raw_transcripts_excluded": true,
+      "raw_provider_output_excluded": true,
+      "credentials_excluded": true,
+      "auth_material_excluded": true,
+      "private_environment_excluded": true,
+      "secret_bearing_paths_excluded": true,
+      "broker_write_authority_excluded": true,
+      "goalbuddy_write_authority_excluded": true
+    },
+    "aol_admitted": false,
+    "c50_accepted": false,
+    "c60_accepted": false,
+    "joined_execution": false,
+    "product_accepted": false,
+    "assurance_claimed": false,
+    "economics_claimed": false,
+    "home_now_truth_claimed": false,
+    "broker_write_authority": false,
+    "goalbuddy_write_authority": false,
+    "provider_called": false,
+    "network_used": false,
+    "service_started": false,
+    "installed": false,
+    "published": false,
+    "proposal_sha256": "sha256:948b3f5769519c547adeef652a59c47015dcfaea3f2b846e3957936716e1bfe5"
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "canonicalization": "sorted_ascii_no_floats_v1",
+    "upstream_anchor_sha256": "sha256:84fd3545b8b85aa00f118793eb88133654c2cc7cb92afbd1129cabb4e42383e1",
+    "overlay_policy_sha256": "sha256:ba6da475dd4575da5854417434b3b7b6810df73912108d6cca56fc1f8a2ba83e",
+    "divergence_ledger_sha256": "sha256:a8edcdd6e07a92871487228871e8330a6c4d4f747b7effb93faaba60eeba06f7",
+    "compatibility_sha256": "sha256:e68b93c97d2e45f0a7efde5c947a970ba3deac6ad0436608b0704bfda33e687f",
+    "lifecycle_sha256": "sha256:8c965bd49f1ebed9c3a26510ac97dea3742caff17d491798d1c9dc8bcd45c920",
+    "external_mappings_sha256": "sha256:b9d2c9a12093bd046b642ec8852ecaad1a482b81faa8c497433dac9b2c18cc96",
+    "handoff_sha256": "sha256:948b3f5769519c547adeef652a59c47015dcfaea3f2b846e3957936716e1bfe5",
+    "kit_sha256": "sha256:473532bad89a4e4f645806acfa138d5ee8a0a1a6f0cdab1f0704e450db1e9760",
+    "signature_state": "not_configured",
+    "authenticity_claimed": false,
+    "evidence_catalog_sha256": "sha256:5fa2ad87ad83771f0b96d0fdf08ddc6ffc91d8ab69cb3692d6745992996199db"
+  },
+  "evidence_catalog": {
+    "status": "hash_bound_reference_only",
+    "verification_required": true,
+    "source_count": 6,
+    "sources": [
+      {
+        "category": "installed_journey",
+        "path": "reports/codexmax-standalone-product-completion-v1/t080/T080-installed-journey-receipt.md",
+        "sha256": "sha256:50a5752c1d90235b11a700cf9e5f5117442025da957c0f2e477bdd3dad37e21d",
+        "proof_scope": "installed_task_scoped_usability",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      },
+      {
+        "category": "provider_dispatch",
+        "path": "reports/codexmax-standalone-product-completion-v1/t080/provider/evidence/dispatch-return-manifest.json",
+        "sha256": "sha256:ebce35fd9690f5957dc191ddc6b82f3c33684339ecacdaa8153cb10c5fdaed55",
+        "proof_scope": "one_task_scoped_provider_attempt",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      },
+      {
+        "category": "compact_telemetry",
+        "path": "reports/codexmax-standalone-product-completion-v1/t080/compact-telemetry/deepseek-pro.json",
+        "sha256": "sha256:ce3d664fddbcac7a001249ab124cbefc2ad4f03a4565a978ac2db4f68b4da727",
+        "proof_scope": "advisory_observation_only",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      },
+      {
+        "category": "advisory_evaluation",
+        "path": "reports/provider-evaluation-suite-v1/V2-parent-acceptance.json",
+        "sha256": "sha256:2e9127d590930d556f4b0d1d8492a96ee7c8d0cc8f75f81f991d104ab7f90169",
+        "proof_scope": "bounded_advisory_evaluation",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      },
+      {
+        "category": "real_work_dogfood",
+        "path": "reports/codexmax-standalone-product-completion-v1/t233/T233-real-work-dogfood-receipt.md",
+        "sha256": "sha256:7edb1f6a9b1a7ffa7935e1d05f9367f05da19d37cb7d6ceebade69777e22f63a",
+        "proof_scope": "parent_reviewed_task_scoped_dogfood",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      },
+      {
+        "category": "deferred_enterprise",
+        "path": "reports/codexmax-standalone-product-completion-v1/t062/T062-R4-current-live-proof-audit.json",
+        "sha256": "sha256:9d87d42844d1d86f1c664127aa92c91e97f6f9530ef974f8033e4a0ae6888463",
+        "proof_scope": "blocked_external_deferred_to_aol",
+        "grants_authority": false,
+        "affects_routing": false,
+        "proves_provider_qualification": false,
+        "proves_protected_production": false,
+        "proves_aol_admission": false
+      }
+    ],
+    "execution_authority": false,
+    "routing_authority": false,
+    "provider_qualification": false,
+    "protected_production": false,
+    "aol_admission": false
+  }
+}

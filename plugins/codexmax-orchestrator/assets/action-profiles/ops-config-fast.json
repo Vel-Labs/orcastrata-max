@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "profile_id": "ops-config-fast",
+  "command_identity": "workspace.ops-config-fast.v1",
+  "argv": ["/usr/bin/ruby", "40_Code/scripts/workspace-maintenance/validate_ops_configs.rb"],
+  "cwd": {"root_id": "workspace", "path": "."},
+  "capability": {"mutation": "read_only", "network": false, "credentials": false, "external_cash": false, "tokens": false},
+  "timeout_seconds": 120,
+  "max_output_bytes": 65536,
+  "validation_ids": ["ops-config-fast"],
+  "parameters": []
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexmax.local/schemas/standalone-operator-surface-binding-v2.json",
+  "title": "Standalone Operator Surface Binding v2",
+  "description": "Closed no-effect binding whose complete source family must belong to one bundle in the fixed package-owned source manifest before CLI import, execution, or display derivation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_type", "source_manifest_sha256", "source_bundle_id",
+    "accepted_cli_sha256", "role_ids", "status", "routes_by_role", "plan", "run",
+    "delegate", "lineage", "journal", "policy_proposal", "effect_guarantees", "binding_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "artifact_type": {"const": "standalone_operator_surface_binding_v2"},
+    "source_manifest_sha256": {"const": "sha256:8532761f9ee497202b0a8a670fbed41fbaa56bd435c7ba9e215e533372c4884c"},
+    "source_bundle_id": {"$ref": "#/$defs/identifier"},
+    "accepted_cli_sha256": {"$ref": "#/$defs/digest"},
+    "role_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "status": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/statusSlot"},
+    "routes_by_role": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/routesRoleSlot"}},
+    "plan": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/planSlot"},
+    "run": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/runSlot"},
+    "delegate": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/delegateSlot"},
+    "lineage": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/lineageSlot"},
+    "journal": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/journalSlot"},
+    "policy_proposal": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/policySlot"},
+    "effect_guarantees": {"$ref": "standalone-operator-surface-binding-schema.json#/$defs/effectGuarantees"},
+    "binding_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "x-codexmax-semantic-validation": {
+    "fixed_source_relative_manifest_only": true,
+    "caller_selectable_manifest_path_forbidden": true,
+    "manifest_regular_non_symlink_raw_sha256_verified_before_parse": true,
+    "manifest_verified_before_cli_import_or_execution": true,
+    "source_bundle_id_selects_only_an_existing_bundle": true,
+    "all_source_request_receipt_route_and_evidence_memberships_required": true,
+    "adapter_identity_sha256_uses_runtime_adapter_domain_wrapped_digest": true,
+    "all_evidence_membership_sets_require_exact_equality": true,
+    "cross_bundle_mixing_forbidden": true,
+    "source_evaluation_window_and_recall_state_required": true,
+    "canonical_json": "accepted standalone_runtime_cli.canonical_json",
+    "binding_digest_excludes_only_binding_sha256": true,
+    "all_v1_request_reexecution_cross_binding_and_effect_rules_retained": true,
+    "legacy_v1_error": "surface_provenance_anchor_required",
+    "membership_grants_no_capability_authority_or_acceptance": true
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
