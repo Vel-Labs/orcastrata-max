@@ -9,6 +9,19 @@ verification. This task is the Parent.
 The package ID remains `codexmax-orchestrator`. The installed skills retain
 their `codexmax-*` names as V1 compatibility IDs.
 
+The [Codex Collaboration Runtime Projection](assets/contracts/codex-runtime-projection.md)
+prevents semantic routing from collapsing into Codex agent-type defaults. It
+records the exact native `agent_type`, model, reasoning effort, inheritance,
+fallback, and route authority before a child spawn. Fixed roles must match the
+selected route exactly; otherwise Orcastrata returns an approval preview and
+stops. Native collaboration is recorded separately from provider dispatch.
+
+Local verification distinguishes three proof classes: `install_state`,
+`manual_installed_cache_invocation`, and `automatic_skill_loader`. The
+compatibility option `--fresh-invocation-proof` proves only the manual cache
+class. Automatic loading requires a separate fresh no-tool JSONL smoke through
+`--automatic-loader-proof` and the exact receipt in the orchestrate skill.
+
 ## Start In 60 Seconds
 
 After installation, start a new Codex task and ask for the work you want:

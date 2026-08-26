@@ -13,6 +13,20 @@ The supported order for one existing Worker lane is:
 4. scheduled Auditor output adapted to `audit_result`; and
 5. controller-owned `candidate_closeout`.
 
+## Role and task lifetimes
+
+Parent is the only final acceptance owner. One Supervisor can persist for the
+active goal. A Worker exists only for its bounded assignment. An Auditor exists
+only for one frozen candidate. Worker and Auditor thread identifiers are
+execution provenance. They are not standing role identities and cannot grant
+authority to a later task.
+
+The Parent can use several independent read-only assignments in parallel when
+their questions are distinct. The Parent must integrate their evidence before
+one serial write lane changes a canonical file. A child result can propose a
+change. It cannot accept a milestone, advance the goal board, or widen its task
+lease.
+
 The legacy `apply_scheduled_dispatch.py` remains the Worker-result gate. It
 continues to reject non-Worker reference bundles. The lifecycle bridge consumes
 those typed, empty non-Worker bundles separately and targets the already

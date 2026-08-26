@@ -31,8 +31,8 @@ TASK_PROFILE_SCHEMA_VERSION = 2
 HEADLESS_DISPATCH_SCHEMA_VERSION = 2
 SCHEDULER_SCHEMA_VERSION = 1
 CAPABILITY_PREFERENCE_SCHEMA_VERSION = 1
-CAPABILITY_MODEL_SCHEMA_VERSION = 1
-REASONING_POLICY_SCHEMA_VERSION = 1
+CAPABILITY_MODEL_SCHEMA_VERSION = 2
+REASONING_POLICY_SCHEMA_VERSION = 2
 ROLE_NAMES = ("planner", "architect", "worker", "tester", "documenter", "auditor")
 LANE_NAMES = (
     "read", "artifact", "scoped_write", "implementation", "tool_loop", "audit",
@@ -123,6 +123,24 @@ def _capability_model_defaults() -> dict[str, Any]:
             "permission_source": "task_authority",
             "quality_floor_source": "task_consequence_floor",
             "fresh_preflight_required": True,
+            "governance": {
+                "schema_version": 2,
+                "parent_is_acceptance_owner": True,
+                "child_binding_mode": "dynamic_ephemeral",
+                "standing_role_thread_ids_forbidden": True,
+                "historical_thread_ids_are_provenance_only": True,
+                "supervisor_lifetime": "goal_persistent",
+                "worker_lifetime": "assignment_ephemeral",
+                "auditor_lifetime": "frozen_candidate_ephemeral",
+                "provider_diversity_mode": "qualified_routes_not_model_family_lock",
+                "provider_or_model_cost_ordering_forbidden": True,
+                "luna_is_exclusive": False,
+                "above_parent_cost_or_effort_requires_operator_approval": True,
+                "sol_max_or_ultra_requires_operator_approval": True,
+                "pre_escalation_work_required": True,
+                "native_and_external_escalation_gate_identical": True,
+                "escalation_binds_task_grant": True,
+            },
             "reasoning_efforts": {
                 re.sub(r"[^a-z0-9]", "_", model): {
                     effort: True for effort in efforts
@@ -471,6 +489,79 @@ ROUTE_DEFAULTS: dict[str, dict[str, Any]] = {
         enabled=False,
     ),
 }
+
+
+_ROUTE_IDENTITY_FIELDS = (
+    "route_kind", "provider", "exact_model", "route_id", "runtime",
+    "reasoning", "billing_basis",
+)
+_ROUTE_COST_RANKS = {
+    "worker_sol_high": 1,
+    "worker_sol_medium": 1,
+    "worker_terra_high": 2,
+    "worker_terra_medium": 2,
+    "worker_luna_xhigh": 0,
+    "worker_codex_spark": 0,
+    "worker_claude_sonnet_5": 2,
+    "worker_claude_code_sonnet_5": 1,
+    "worker_deepseek_v4_pro": 1,
+    "worker_deepseek_v4_flash": 0,
+    "worker_commandcode_claude_sonnet_5": 2,
+    "worker_commandcode_minimax_m3": 2,
+    "worker_commandcode_grok_4_5": 2,
+    "worker_minimax_m3": 1,
+    "worker_minimax_m3_opencode": 1,
+    "worker_minimax_m3_tool_loop": 1,
+    "worker_grok_4_5": 1,
+    "worker_grok_4_6": 1,
+    "worker_qwopus_opencode": 0,
+}
+
+
+def route_identity_fingerprint(route: dict[str, Any]) -> str:
+    """Bind package rank policy to one canonical route identity."""
+    identity = {field: route[field] for field in _ROUTE_IDENTITY_FIELDS}
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _route_capability_policy_defaults() -> dict[str, Any]:
+    """Build provider-neutral ordinal policy for every Worker route."""
+    policies: dict[str, dict[str, Any]] = {}
+    for name, route in ROUTE_DEFAULTS.items():
+        if route["route_kind"] != "worker":
+            continue
+        reasoning = route["reasoning"]
+        effort_mode = "native_preflight" if reasoning == "task_selected" else "fixed"
+        effort_rank = REASONING_RANK.get(reasoning, 1)
+        identity_complete = all(
+            route[field] not in {"unknown", "unverified", ""}
+            for field in _ROUTE_IDENTITY_FIELDS
+        )
+        policies[name] = {
+            "route_fingerprint": route_identity_fingerprint(route),
+            "identity_binding": "complete" if identity_complete else "incomplete",
+            "cost_rank": _ROUTE_COST_RANKS[name],
+            "effort_mode": effort_mode,
+            "effort_rank": effort_rank,
+        }
+    return {
+        "schema_version": 2,
+        "rank_semantics": "ordinal_package_policy",
+        "provider_or_model_names_define_rank": False,
+        "default_parent_cost_ceiling": 1,
+        "default_parent_effort_ceiling": 1,
+        "legacy_v1_compatibility_cost_ceiling": 1,
+        "legacy_v1_compatibility_effort_ceiling": 1,
+        "unknown_identity_is_ineligible": True,
+        "approval_cannot_repair_unknown_identity": True,
+        "routes": policies,
+    }
+
+
+CAPABILITY_MODEL_DEFAULTS["reasoning"]["route_capability_policy"] = (
+    _route_capability_policy_defaults()
+)
 
 
 _NATIVE_ROUTE_ALIASES = {

@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.2 - 2026-08-26
+
+- Project semantic worker roles onto explicit Codex native agent types, exact
+  models, and reasoning efforts, failing closed on fixed-role conflicts or
+  ambiguous default inheritance.
+- Record complete native collaboration dispatch receipts without describing
+  native Codex spawning as external-provider execution.
+- Rotate eligible usage-limit failures through a newly resolved Orcastrata
+  route while preserving exact-route locks and refusing silent fallback.
+- Reconcile the source payload against the retained 1.0.1 baseline without
+  removing admitted package content.
+
+## 1.0.1 - 2026-08-25
+
+- Assign a new package version to the accepted manifest-bound candidate after
+  isolated installation qualification.
+- Preserve the `1.0.0` release identity and its retained qualification evidence.
+
 ## 1.0.0 - 2026-08-21
 
 - Add the local, read-only `OrcastrataTelemetrySnapshotV1` API.

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2 - 2026-08-26
+
+- Add the Codex collaboration runtime projection with explicit route receipts.
+- Fail closed when a fixed native role conflicts with the selected model,
+  reasoning effort, or default-inheritance projection.
+- Resolve eligible native or provider usage-limit failures through a new exact
+  Orcastrata route while preserving route locks and refusing silent fallback.
+- Keep native Codex collaboration receipts distinct from external-provider
+  dispatch receipts.
+
 ## 1.0.0 - 2026-08-21
 
 - Add a local, read-only `OrcastrataTelemetrySnapshotV1` consumer API for

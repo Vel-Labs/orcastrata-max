@@ -41,19 +41,44 @@ selection does not grant authority. See `explicit-tool-model-routing.md`.
 
 ## Versions
 
-- Codexmax configuration schema: `2`.
+- Codexmax configuration schema: `3`.
 - Route registry schema: `1`.
 - Route entry schema: `1`.
 - Task-profile schema: `2`.
 - Headless-dispatch and role-priority schema: `2`.
+- Capability-model and reasoning-policy schema: `2`.
 
 Unsupported versions fail validation. Schema-v1 configuration overlays are
-migrated deterministically to schema 2 before precedence resolution. The
+migrated deterministically to schema 3 before precedence resolution. The
 migration retains the legacy `routing.auxiliary` values for read compatibility
 and projects only `enabled` and `token_limit` into their registry routes.
 Migration never promotes identity, capability, health, billing, authorization,
 or acceptance. Nested schema-v1 profiles and role priorities gain only an
 explicit empty sixth slot before validation.
+
+## Provider-neutral capability ranks
+
+`capability_model.reasoning.route_capability_policy` is package-owned. It binds
+each Worker route identity to ordinal `cost_rank` and `effort_rank` values.
+Provider and model names do not define cost, effort, authority, or quality.
+Configuration cannot change the rank table or its route fingerprints.
+
+Cost ranks are `0` for low or local cost, `1` for standard cost, and `2` for
+elevated cost. Effort ranks are `0` for low, `1` for medium or provider default,
+`2` for high, `3` for xhigh, `4` for max, and `5` for ultra. A native
+`task_selected` route binds its effective effort to fresh preflight evidence.
+The stored rank is its compatibility default, not proof of the dispatched
+effort.
+
+The safe Parent compatibility ceiling is cost rank `1` and effort rank `1`.
+A schema-v1 packet that has no escalation fields receives only this ceiling. It
+cannot request a higher rank. A schema-v2 packet can exceed its Parent ceiling
+only with explicit operator approval, pre-escalation work evidence, and the
+exact task-grant digest. The same gate applies to native and external routes.
+
+Rank eligibility does not repair identity. A missing route policy, mismatched
+fingerprint, incomplete callable identity, missing fresh preflight, or unknown
+rank fails closed. Approval cannot repair an unknown route identity.
 
 ## Fixed Control Routes
 
@@ -420,6 +445,23 @@ resolver also emits:
 
 The receipt is configuration proof only. It is not a route attempt, health
 receipt, input-access receipt, failover receipt, or dispatch receipt.
+
+## Codex Collaboration Projection
+
+An eligible native OpenAI route is still not a Codex child binding. Before
+`spawn_agent`, apply the
+[Codex Collaboration Runtime Projection](codex-runtime-projection.md) and save
+its complete receipt. The projection binds the semantic role to an allowed
+native `agent_type`, exact model, reasoning effort, history mode, fallback, and
+route authority. A fixed native role whose immutable model conflicts with the
+selected route fails closed. A configurable `default` agent may inherit only
+for the explicitly recorded ordinary native default or when its exact Parent
+identity matches the selected special route.
+
+This projection is a native collaboration control and records
+`provider_dispatch: false`. External provider dispatch continues through the
+headless dispatcher and must not reuse a native collaboration receipt as
+provider-execution proof.
 
 ## Fail-Closed Validation
 

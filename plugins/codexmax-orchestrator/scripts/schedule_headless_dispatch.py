@@ -467,6 +467,26 @@ def _verify_task_bound_resolver(route: dict[str, Any], envelope: dict[str, Any],
     if receipt.get("status") != "dispatch_required" or receipt.get("stop_reason") != "dispatch_required" or not isinstance(next_attempt, dict):
         reasons = receipt.get("considerations", [{}])[0].get("reasons", [])
         return False, "resolver_ineligible:" + ",".join(reasons)
+    capability = next_attempt.get("capability_authority")
+    if not isinstance(capability, dict) or capability.get("authorized") is not True:
+        return False, "resolver_capability_authority_missing"
+    if capability.get("route_name") != route["name"]:
+        return False, "resolver_capability_route_mismatch"
+    if capability.get("escalation_required") is True:
+        authority_sha256 = envelope.get("bindings", {}).get("authority_sha256")
+        if not isinstance(authority_sha256, str):
+            return False, "capability_escalation_authority_missing"
+        normalized = (
+            authority_sha256
+            if authority_sha256.startswith("sha256:")
+            else "sha256:" + authority_sha256
+        )
+        if (
+            capability.get("escalation_approved") is not True
+            or capability.get("task_grant_sha256") != normalized
+            or not isinstance(capability.get("approval_digest"), str)
+        ):
+            return False, "capability_escalation_authority_mismatch"
     identity = next_attempt.get("identity", {})
     expected_identity = {
         "route_name": route["name"], "provider": route["provider"], "model": route["exact_model"],

@@ -128,6 +128,14 @@ and fallback. Never silently switch a subscription route to metered API billing.
 MiniMax M2.7 is a historical or parent-approved explicit fallback, not a default
 for new work. Preserve historical M2.7 receipts instead of relabeling them M3.
 
+For a native OpenAI route, route selection is not complete until the
+[Codex Collaboration Runtime Projection](../../assets/contracts/codex-runtime-projection.md)
+binds it to the actual Codex `agent_type`, exact model, and reasoning effort.
+`default` otherwise inherits the Parent; fixed native roles select their own
+predefined identity. A conflict returns an approval preview or rejection, never
+a silent substitution. This path is native Codex collaboration, not external
+provider dispatch.
+
 ## Provider Input Capability Gate
 
 Read `../../assets/contracts/provider-task-input.md` before dispatch. Record the
@@ -177,6 +185,12 @@ Every dispatched lane records:
   hard stops for that lane.
 - Model start failure, rate limit, quota exhaustion, weak output, stale context,
   or failed validation are revision or reassignment events.
+- A native `usage_limit`, `quota_exhausted`, or `rate_limit` result rotates
+  automatically to the next fresh eligible model when the projection records
+  `route_rotation_policy: automatic_within_authority`. Preserve the failed
+  attempt, rerun Orcastrata route resolution, and create a new exact projection;
+  do not let Codex silently substitute inside the failed spawn. Exact
+  tool/model selections and authority or billing changes remain non-rotating.
 - Use provider-diverse correction when the likely defect is reasoning,
   interpretation, or implementation quality.
 - Use parent repair when integration requires global context, shared-file

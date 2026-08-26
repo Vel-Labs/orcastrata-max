@@ -158,6 +158,19 @@ Maintain a board or ledger with one row per lane:
 The board is execution state, not acceptance. Parent Codex still decides final
 acceptance.
 
+### Phase And Milestone Rollup
+
+For a phase container with a depth-one milestone board, report these six fields
+from validated board state: milestones complete, milestones total, current
+milestone, current gate, exact blocker, and next milestone. Keep one milestone
+active unless the accepted board contract permits safe parallel work. Never
+infer phase completion from a child status summary.
+
+Keep repair evidence compact. Record package identity, attempt identity,
+candidate identity, validation identity and result, repair disposition, and the
+receipt path or digest. Append a new attempt record after failure. Do not erase
+or rewrite a failed attempt when a later candidate passes.
+
 When presenting usage to the operator, show only lanes that were actually
 invoked. Preserve unknown input, cached-input, output, reasoning, and total
 tokens. Add one short notice for configured lanes that were available but not

@@ -81,6 +81,25 @@ tasks:
     forbidden_actions: []
     preferred_routes: []
     fallback_routes: []
+    codex_runtime_projection:
+      required: false
+      runtime_surface: codex_collaboration
+      receipt_path: null
+      child_task_id: null
+      runtime_child_id: null
+      runtime_child_id_status: pending_spawn
+      requested_native_agent_type: null
+      native_agent_type: null
+      exact_model: null
+      reasoning_effort: null
+      selection_mode: null # inherited | explicit | fixed_native
+      requested_fork_turns: null
+      effective_fork_turns: null
+      fallback: null
+      route_authority: null
+      route_rotation_policy: automatic_within_authority # or forbidden for exact selection
+      provider_dispatch: false
+      projection_status: null
     expected_artifacts: []
     worker_progress:
       receipt_path: null

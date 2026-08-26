@@ -67,6 +67,21 @@ verify the user-visible result.
 
 No second provider account is required for native work.
 
+## Native Routing And Provider Limits
+
+Native fixed roles are bound to the exact Codex `agent_type`, model, reasoning
+effort, inheritance mode, fallback policy, and route authority. If a fixed-role
+request or default-inheritance projection conflicts with the selected route,
+Orcastrata Max fails closed and returns an approval preview instead of silently
+coercing the route. Explicit route receipts record the effective projection
+before a child is started.
+
+An eligible native or provider `usage_limit`, `quota_exhausted`, or
+`rate_limit` result can request a new exact Orcastrata route within existing
+authority. An exact-route lock remains exact. Rotation creates a new recorded
+selection; it never silently changes a running worker's model or crosses from
+native Codex collaboration into external-provider dispatch.
+
 ## Choose An Exact Tool And Model
 
 If OpenCode or Command Code is already installed and configured, say:

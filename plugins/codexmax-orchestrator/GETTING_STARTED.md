@@ -97,6 +97,23 @@ If the requested native model or effort is unavailable, Orcastrata Max reports
 the mismatch and does not substitute another choice silently. You can approve
 an available native route, change the request, or stop that part of the work.
 
+### Native agent-type defaults
+
+Codex native agent types can carry their own fixed model defaults. Orcastrata
+Max projects each semantic role onto an allowed native `agent_type`, exact
+model, and reasoning effort before spawning. A fixed-role mismatch fails
+closed. A `default` worker is allowed only when inheritance is explicit and
+unambiguous; otherwise Orcastrata shows an approval preview instead of silently
+inheriting the Parent model. The dispatch receipt records the semantic role,
+native type, exact model, effort, inheritance, fallback, runtime surface, and
+route authority.
+
+Native Codex collaboration is not provider dispatch. If an eligible native
+route returns `usage_limit`, `quota_exhausted`, or `rate_limit`, Orcastrata asks
+its route resolver for another allowed model and records the new projection.
+An exact-route lock remains exact and does not rotate. External-provider
+failures remain governed by the provider dispatch and retry contracts.
+
 ### Complete native example
 
 This transcript shows the expected interaction. It is an example, not evidence

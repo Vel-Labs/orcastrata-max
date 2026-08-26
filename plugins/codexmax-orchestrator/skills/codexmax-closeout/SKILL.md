@@ -99,6 +99,20 @@ must name its later owner and gate; it is not a closeout defect to preserve it.
 Registration, a valid dry-run, or a matched event cannot prove compilation,
 execution, promotion, activation, or acceptance.
 
+## Phase And Milestone Closeout
+
+Roll an accepted child milestone into its Parent phase only after the milestone
+receipt and required independent evidence pass the Parent gate. Preserve every
+failed validation, rejected candidate, superseded attempt, and unresolved
+blocker in compact attempt history. A later pass does not erase earlier
+failures.
+
+Report milestones complete, milestones total, current milestone, current gate,
+exact blocker, and next milestone. Do not call the Parent phase complete while
+any required child milestone, phase gate, or Parent acceptance remains open.
+Only the Parent/PM owns terminal `T999`; a child closeout must not create,
+accept, mutate, or complete it.
+
 ## Terminal Lifecycle Gate
 
 After a hash-bound final audit says `complete` (and, when the goal contract

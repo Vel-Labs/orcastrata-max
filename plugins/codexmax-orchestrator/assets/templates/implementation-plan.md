@@ -31,6 +31,21 @@ item exists.>
 No active task. This document-only plan has not created execution state.
 <!-- codexmax-current-task:end -->
 
+## Phase-To-Milestone Hierarchy
+
+- Parent phase: <Parent task id and phase outcome>
+- Child board: <depth-one child board path, or not applicable>
+- Child milestones: <ordered milestone ids and outcomes>
+- Active milestone: <exactly one milestone id, or none before execution>
+- Split triggers: <material gates, independent outcomes, ownership changes, or
+  validation boundaries that forbid one flat mega-task or giga-task>
+- Dependencies: <milestone dependency order>
+- Independently useful outcomes: <usable result produced by each milestone>
+
+Use the Parent task as a phase container. Put bounded executable milestones in
+one depth-one child board. Do not create child `T999` tasks. Reserve terminal
+`T999` for Parent/PM lifecycle closeout.
+
 ## High-Level Task Ledger
 
 <!-- codexmax-task-ledger:start -->
@@ -77,7 +92,9 @@ flow.>
 
 ## Progressive Phases and Gates
 
-<Phase order, entry conditions, exit gates, blockers, and external decisions.>
+<Parent phase order, child milestones, entry conditions, exit gates, blockers,
+and external decisions. Keep one milestone active unless the accepted board
+contract permits safe parallel work.>
 
 ## Detailed Task Contracts
 

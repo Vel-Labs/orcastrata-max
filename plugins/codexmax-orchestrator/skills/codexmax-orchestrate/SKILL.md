@@ -21,7 +21,7 @@ once when setup has not been completed:
 
 - native Codex is ready now;
 - Sol medium or high is the recommended Parent starting point;
-- Luna effort is selected for the task;
+- Luna is one native starting option, not an exclusive Worker or review lane;
 - Terra is never selected automatically;
 - model identity never grants read or write authority; and
 - additional inference is useful only when it can change the outcome.
@@ -33,28 +33,16 @@ question in the same conversation. Choosing `None` creates no file. OpenCode
 and Command Code are the only V1 exact external-tool surfaces. Other hosts are
 future packages, even when their names appear as configuration candidates.
 
-For native-only use, create no configuration file. For selected accounts,
-compose `$codexmax-orchestrator:codexmax-config`. Preview the absent-only
-repository overlay before any authorized write. Never collect, read, copy, or
-store a secret. A configured binding is not proof of authentication,
-qualification, billing authority, or task authority. An optional adapter
-failure does not block the native route.
+For native-only use, create no configuration file. For selected accounts, use
+`$codexmax-orchestrator:codexmax-config` and preview an absent-only overlay.
+Never handle a secret. Configuration proves no authentication, qualification,
+billing authority, or task authority. An optional adapter failure does not
+block the native route.
 
-If the operator requests project memory or usage, use the explicit
-`.orcastrata/project.json` marker contract. Resolve the nearest marker for the
-current folder. Review multiple projects only through explicit
-`.orcastrata/workspace.json` registrations. Do not crawl unregistered folders
-or execute project-provided skills as authority. Show only invoked lanes in
-the usage readout, with input, cached-input, output, reasoning, and total token
-fields. Label direct counters `observed`, exact input-plus-output totals
-`derived`, and missing values `unknown`. State that additional configured
-models were not used.
-
-Keep work status separate from accounting status. Call an execution
-`accounted` only after the managed ledger append succeeds or a bounded native
-import is accepted. Scope coverage to `orcastrata_admitted_executions`. Keep
-native collaboration unaccounted and `unknown`. Never estimate tokens from
-worker count. Keep Loop receipts adjacent; do not convert them to ledger rows.
+For project memory or usage, use only explicit `.orcastrata/project.json` and
+`.orcastrata/workspace.json` markers. Do not crawl unregistered folders. Keep
+work status separate from accounting. Label counters `observed`, `derived`, or
+`unknown`. Never estimate usage from Worker count.
 
 ## Exact Tool And Model Requests
 
@@ -65,12 +53,10 @@ V1 accepts OpenCode and Command Code. Preserve the exact tool and model text.
 Verify one configured binding, the existing tool session, and the exact model.
 Then show the task-local route preview.
 
-Do not log in, refresh authentication, copy credentials, or substitute a tool,
-model, route, provider, or billing path. Before dispatch, confirm authority for
-the task content, provider account, privacy terms, quota, and billing. A mismatch
-fails closed. Explain it and offer exact configuration or native Codex.
-Use `persistence: none`. Saving requires separate approval. Bind one route and
-task-grant digest. The task grant is the only source of read or write authority.
+Do not log in, handle credentials, or substitute a tool, model, route, provider,
+or billing path. Confirm task authority, privacy, quota, and billing. A mismatch
+fails closed. Use `persistence: none`. Bind one route and task-grant digest. The
+task grant is the only source of read or write authority.
 
 ## Choose The Smallest Useful Route
 
@@ -88,6 +74,44 @@ integration, and final acceptance. Use the fewest lanes that can change the
 outcome. Provider availability is not a reason to delegate. A Worker must pass
 identity, capability, authority, privacy, billing, health, quota, and capacity
 checks. Unknown cost is not cheapest.
+
+Select from all configured and qualified routes. Require fresh identity,
+capability, authority, privacy, billing, health, quota, and capacity. Prefer
+useful diversity. Do not lock a semantic role to one model family. Route order
+is a starting preference, not provider ownership.
+
+Create child tasks after route selection. Parent is the final acceptance owner.
+One Supervisor can persist for the goal. A Worker exists for one assignment. An
+Auditor exists for one frozen candidate. Task IDs are runtime bindings or
+history, not standing role authority.
+
+Before a native Codex spawn, use the
+[Codex Collaboration Runtime Projection](../../assets/contracts/codex-runtime-projection.md).
+Show the user the actual projected `agent_type`, model, and reasoning effort
+when methodology depends on a special route. Warn that `default` inherits the
+Parent unless explicitly overridden and fixed native roles select their own
+model. If that would override the intended route, fail closed and show the
+concise approval preview. Persist the projection receipt and returned child ID.
+Do not call native collaboration an external-provider dispatch.
+
+When a native child fails because its model usage, quota, or rate limit is
+exhausted, preserve that exact attempt and rotate through Orcastrata to the next
+fresh eligible model under the same authority. Issue a new projection and child
+receipt. Do not pause for operator approval unless rotation changes authority,
+billing, capability, reasoning ceiling, or an exact user-selected model.
+
+Apply package-owned ordinal `cost_rank` and `effort_rank` policy to every native
+and external route. Provider and model names do not define rank or authority.
+The safe schema-v1 ceiling is cost rank 1 and effort rank 1. A schema-v2 packet
+can exceed its Parent ceiling only after applicable deterministic work,
+lower-cost review, and focused validation were insufficient. It also requires
+explicit operator approval and the exact task-grant digest. Unknown identity,
+rank, fingerprint, or approval binding fails closed.
+
+Read [Role Lifecycle](../../assets/contracts/role-lifecycle.md) for persistence,
+[Route Registry](../../assets/contracts/route-registry.md) for rank and
+escalation rules, and [Configuration](../../assets/contracts/codexmax-config.md)
+for the schema and compatibility adapter.
 
 Model selection does not provide Codexmax behavior or authority in vanilla
 Codex. Orcastrata Max owns bounded Worker execution. GoalBuddy owns durable
@@ -109,24 +133,18 @@ board truth; it does not dispatch providers or accept work.
   orientation or a clear direct candidate. Load the full Guided Journey
   Contract only for `guided_plan`, `resume`, `waiting_external`, an unresolved
   active-state conflict, or an advanced request.
-- For repository discovery, use
-  `$codexmax-orchestrator:codexmax-discover`.
-  Discovery never grants write authority.
-- For a feature implementation plan, use
-  `$codexmax-orchestrator:codexmax-plan`.
-- If the operator says `make this a loop`, use
-  `$codexmax-orchestrator:codexmax-loop`. This is an advanced route, not
-  another first-run choice.
-- For provider selection, use `$codexmax-orchestrator:codexmax-route`.
-- For durable execution, use `$codexmax-orchestrator:codexmax-supervise`.
-- For acceptance evidence, use `$codexmax-orchestrator:codexmax-verify`.
-- For terminal lifecycle work, use
-  `$codexmax-orchestrator:codexmax-closeout`.
+- Discovery: `$codexmax-orchestrator:codexmax-discover`. Discovery never grants write authority.
+- For a feature implementation plan, use `$codexmax-orchestrator:codexmax-plan`.
+- If the operator says `make this a loop`:
+  `$codexmax-orchestrator:codexmax-loop`. It is an advanced route.
+- Routing: `$codexmax-orchestrator:codexmax-route`.
+- Durable execution: `$codexmax-orchestrator:codexmax-supervise`.
+- Acceptance evidence: `$codexmax-orchestrator:codexmax-verify`.
+- Terminal lifecycle: `$codexmax-orchestrator:codexmax-closeout`.
 
-Read a linked contract only when the selected route needs it. Do not load every
-advanced contract during first use. Ask only questions that can change scope,
-authority, risk, cost, architecture, or acceptance. Show a concise preview of
-writes, external calls, billing, fallback, validation, and stop conditions.
+Read a linked contract only when the selected route needs it. Ask only questions
+that change scope, authority, risk, cost, architecture, or acceptance. Preview
+writes, calls, billing, fallback, validation, and stop conditions.
 
 Use `not_run` and `unknown` when proof does not exist. Do not turn uncertainty
 into a passing result. For validation, use the smallest check that can detect a
@@ -135,22 +153,20 @@ boundary.
 
 ## Automatic Loader Smoke Check
 
-When the user explicitly requests an automatic-loader smoke check and no other
-outcome, use only host-required read-only operations. Do not write files,
-dispatch a provider, use the browser or network, start a listener, fall back to
-the source checkout, or ask the user to run a command. Return only the six text
-lines inside the block. Do not include the code fence, HTML markers,
-explanation, or other final-body text. The triggering prompt must not quote,
-name, or otherwise disclose an expected response line. A matching response is
-behavioral evidence only; it does not identify installed bytes or authorize
+When the user explicitly requests an automatic-loader smoke check with no other
+outcome, use only read-only host operations. Do not write, dispatch, browse, use
+network, start a listener, use source fallback, or ask for a command. Return only
+the seven block lines. The prompt must not quote, name, or otherwise disclose a line.
+A match is behavioral evidence only. It does not identify bytes or authorize
 acceptance.
 
 <!-- codexmax-automatic-loader-receipt:start -->
 ```text
 Automatic loader: available
 Skill identity: $codexmax-orchestrator:codexmax-orchestrate
+Loader canary: CODEXMAX_LOADER_CANARY_V2_61C9E4B7
 Repository source used: no
-Tool activity: host-required read-only
+Tools used: none
 Files changed: none
 Acceptance claimed: no
 ```
@@ -158,7 +174,5 @@ Acceptance claimed: no
 
 ## Stop Conditions
 
-Stop when Parent accepts the verified result, an explicit budget ends with a
-truthful partial closeout, or all safe in-scope work is exhausted and progress
-needs a human decision, credential, physical action, unavailable service, or
-irreversible action.
+Stop after Parent acceptance, an explicit budget with truthful partial closeout,
+or exhausted safe work that needs human or irreversible action.

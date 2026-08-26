@@ -46,6 +46,13 @@ unsupported YAML syntax fail closed. A partial override may omit fields.
 Future Worker route keys are extensible only through the registry contract and
 begin with unknown or unverified identity and capability state.
 
+The capability model and reasoning policy use schema version 2. Their
+package-owned route-capability table binds every shipped Worker route to one
+identity fingerprint and ordinal cost and effort ranks. The safe compatibility
+ceiling is rank 1 for cost and rank 1 for effort. An overlay cannot change this
+table, infer rank from a provider or model name, or use approval to repair an
+unknown route identity.
+
 `headless_dispatch.role_priorities` and `scheduler.task_class_profiles` are the
 data-driven semantic routing authority. Runtime task compilation and scheduler
 validation consume these mappings. They do not keep a separate role-to-model
@@ -89,6 +96,11 @@ not effective. Operator overrides last for the current invocation.
 - `hard_spend_limit_usd: null` does not authorize metered billing.
 - Parent remains exact `gpt-5.6-sol`; the goal-lifetime Supervisor remains
   exact `gpt-5.6-terra` at `high`. Configuration cannot add a control route.
+- Parent owns final acceptance. Supervisor is goal-persistent. Worker is
+  assignment-ephemeral. Auditor is frozen-candidate-ephemeral.
+- Every native and external route uses the same Parent capability ceiling.
+  Above-ceiling selection requires explicit operator approval, pre-escalation
+  evidence, and an exact task-grant binding.
 - Registry health and availability are not configuration facts. Model identity
   never implies local files, commands, browser, search, connectors, or writes.
 - Command Code is a gateway identity, not a model identity. The shipped

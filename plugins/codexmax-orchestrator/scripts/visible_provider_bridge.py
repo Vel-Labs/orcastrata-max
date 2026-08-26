@@ -375,6 +375,21 @@ def compile_visible_provider_assignment(
         requested_route=assignment["requested_route"],
         expected_route=exact_route,
     )
+    capability = resolver_receipt.get("next_attempt", {}).get("capability_authority")
+    if not isinstance(capability, dict) or capability.get("authorized") is not True:
+        raise BridgeError("capability_authority_missing")
+    if capability.get("route_name") != assignment["requested_route"]:
+        raise BridgeError("capability_authority_mismatch", "route_name")
+    if capability.get("escalation_required") is True:
+        normalized_authority = authority["authority_sha256"]
+        if not normalized_authority.startswith("sha256:"):
+            normalized_authority = "sha256:" + normalized_authority
+        if (
+            capability.get("escalation_approved") is not True
+            or capability.get("task_grant_sha256") != normalized_authority
+            or not isinstance(capability.get("approval_digest"), str)
+        ):
+            raise BridgeError("capability_escalation_authority_mismatch")
 
     state = {
         "schema_version": SCHEMA_VERSION,
@@ -408,6 +423,7 @@ def compile_visible_provider_assignment(
             "human_approval_required": False,
             "fresh_automatic_preflight_verified": True,
             "quota_observability": exact_route["quota_observability"],
+            "capability_approval_digest": capability.get("approval_digest"),
         },
         "dispatch_binding": {
             "route_packet_sha256": digest(assignment["route_packet"]),

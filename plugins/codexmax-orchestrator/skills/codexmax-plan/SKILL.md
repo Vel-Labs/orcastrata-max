@@ -55,6 +55,21 @@ one acceptance oracle, architecture boundary, and delivery sequence. Otherwise
 split them. Preserve roadmap provenance and return accepted evidence to the
 roadmap owner at closeout; never silently edit or complete the roadmap.
 
+## Phase-To-Milestone Hierarchy
+
+Reject or split a flat mega-task or giga-task before execution. Use a Parent
+task as the phase container. Put its executable work in one depth-one child
+board whose tasks are bounded milestones. Each milestone must name its
+dependencies, its independently useful outcome, its proof, and its stop
+conditions. Keep exactly one milestone active unless the board contract
+explicitly admits safe parallel work.
+
+Do not use a large Parent task as an executable checklist. Split it when its
+work crosses a material gate, has multiple independently useful outcomes,
+needs different write owners, or cannot be validated as one bounded change.
+Reserve `T999` for Parent/PM lifecycle closeout. A child board must not create,
+accept, or complete a `T999` task.
+
 ## Method
 
 1. Read discovered repository rules, GoalBuddy state, accepted artifacts,
@@ -102,6 +117,8 @@ Implementation plans additionally record:
 
 - plan id, `document_only | board_prepared | execution_authorized`, lifecycle,
   execution authority, and roadmap origin;
+- Parent phase identity, depth-one child board path, child milestone identities,
+  split triggers, and the one active milestone;
 - TL;DR, current task, current-state assessment, architecture and data flow;
 - critical path, dependencies, downstream unlocks, progressive phases, and
   gates;

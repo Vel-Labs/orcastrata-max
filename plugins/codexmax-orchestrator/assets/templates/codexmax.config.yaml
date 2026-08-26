@@ -328,6 +328,23 @@ capability_model:
         web_search: true
   reasoning:
     fresh_preflight_required: true
+    governance:
+      above_parent_cost_or_effort_requires_operator_approval: true
+      auditor_lifetime: "frozen_candidate_ephemeral"
+      child_binding_mode: "dynamic_ephemeral"
+      escalation_binds_task_grant: true
+      historical_thread_ids_are_provenance_only: true
+      luna_is_exclusive: false
+      native_and_external_escalation_gate_identical: true
+      parent_is_acceptance_owner: true
+      pre_escalation_work_required: true
+      provider_diversity_mode: "qualified_routes_not_model_family_lock"
+      provider_or_model_cost_ordering_forbidden: true
+      schema_version: 2
+      sol_max_or_ultra_requires_operator_approval: true
+      standing_role_thread_ids_forbidden: true
+      supervisor_lifetime: "goal_persistent"
+      worker_lifetime: "assignment_ephemeral"
     permission_source: "task_authority"
     quality_floor_source: "task_consequence_floor"
     reasoning_efforts:
@@ -350,9 +367,134 @@ capability_model:
         medium: true
         ultra: true
         xhigh: true
-    schema_version: 1
+    route_capability_policy:
+      approval_cannot_repair_unknown_identity: true
+      default_parent_cost_ceiling: 1
+      default_parent_effort_ceiling: 1
+      legacy_v1_compatibility_cost_ceiling: 1
+      legacy_v1_compatibility_effort_ceiling: 1
+      provider_or_model_names_define_rank: false
+      rank_semantics: "ordinal_package_policy"
+      routes:
+        worker_claude_code_sonnet_5:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "61d967f71a9132c84086b3bbf64f50402e322d94f785906daff54ca3e2d4f857"
+        worker_claude_sonnet_5:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "incomplete"
+          route_fingerprint: "374cf8323235a7072e90ebf0ae819deb39f27b64e43c2544a313f109a13a11ea"
+        worker_codex_spark:
+          cost_rank: 0
+          effort_mode: "fixed"
+          effort_rank: 0
+          identity_binding: "complete"
+          route_fingerprint: "4d9ba953423294456601bf09cba9642b60df7c438f024ea0a9b03791e1c9609b"
+        worker_commandcode_claude_sonnet_5:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "f87a855971766d67aefa9588f83e10b0396b36749462715b30bfa9a5f5cb24a5"
+        worker_commandcode_grok_4_5:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "e9f06299f796f374d8a4f86492d1f19aba64390711abdf8f4a804d26c675c323"
+        worker_commandcode_minimax_m3:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "4782d03c32414735c261c07724ac38778271818c6fa74ce31d212a185d36525a"
+        worker_deepseek_v4_flash:
+          cost_rank: 0
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "8d1b1ace81419eb48fa196f3e338c60751faf7d82362075ea92da12e6355dcd2"
+        worker_deepseek_v4_pro:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "ce896311dee3ce96ed6f32d9b28e38895d02b6cf601ef4745a6005d04ff42b9c"
+        worker_grok_4_5:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "a8aa9c015d9f54741ad08ab824ca85399303f8aa258cf1c37172ff4f4437e9a3"
+        worker_grok_4_6:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "5ae158060bb48eb822cbc0eb317e0e7bca1cedfbe10d625a68e90e787812f878"
+        worker_luna_xhigh:
+          cost_rank: 0
+          effort_mode: "native_preflight"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "3498bc9a61c8df0c7f25b24e815fd3b5bf8d77a1b28f9d38e58d79d885d2bfa2"
+        worker_minimax_m3:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "b3dadea0d4b1b05c104ecf74c8f298d464e9134d124260a9e28c2c1a4f540247"
+        worker_minimax_m3_opencode:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "434dfd8da4d36f137aa8d92be1969fd45710ee588e628c8c32a60e6015303a14"
+        worker_minimax_m3_tool_loop:
+          cost_rank: 1
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "ba7bd034c184d2454912f15965be90dbe6aceeafda3c962f0024f4c2c78a17d2"
+        worker_qwopus_opencode:
+          cost_rank: 0
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "49abe5b5c677f521380424818d9994b31f7ad7348695ae137007b6fcf1a3ae87"
+        worker_sol_high:
+          cost_rank: 1
+          effort_mode: "native_preflight"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "f026f5ae2d11b8d5832cee69d4907375ed8a560565dfec47bf92799db14b972f"
+        worker_sol_medium:
+          cost_rank: 1
+          effort_mode: "native_preflight"
+          effort_rank: 1
+          identity_binding: "complete"
+          route_fingerprint: "9d4322177948fe7e6f41340198dca650df1660d199a567472ff01e036f2a8a60"
+        worker_terra_high:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 2
+          identity_binding: "complete"
+          route_fingerprint: "d339f463df2677212ac048e63cf22daa19aa8e3127b5adb82df307d4160a94f5"
+        worker_terra_medium:
+          cost_rank: 2
+          effort_mode: "fixed"
+          effort_rank: 1
+          identity_binding: "incomplete"
+          route_fingerprint: "3d6f54ab4d1dee4ece009ab92f76b7775f8a43fc40b1d1127887bd83e7dea1a5"
+      schema_version: 2
+      unknown_identity_is_ineligible: true
+    schema_version: 2
     selection: "compositional"
-  schema_version: 1
+  schema_version: 2
   task_authority:
     access_modes:
       read_only: true

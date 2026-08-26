@@ -11,6 +11,8 @@ Use `../../assets/templates/parallelism-packet.yaml` and the
 Every task defines:
 
 - task id and objective;
+- Parent phase id, depth-one child milestone id, and child board path when the
+  task belongs to a phase-to-milestone hierarchy;
 - dependencies and parallel group;
 - allowed read and write scope;
 - preferred and fallback routes;
@@ -21,6 +23,14 @@ Every task defines:
 - lane mode plus the bounded write-Worker progress receipt path and transition
   allowlist;
 - stop conditions.
+
+For a native Codex child, also create and persist the
+[Codex Collaboration Runtime Projection](../../assets/contracts/codex-runtime-projection.md)
+before `spawn_agent`. The assignment must name the child task ID, semantic role,
+selected route and authority, requested native agent type, Parent model and
+effort, history projection, and fallback. Do not use a native fixed role when
+its model or reasoning conflicts with the selected route. A missing or
+`approval_required` projection blocks the spawn.
 
 When the GoalBuddy Supervisor execution loop dispatches the packet, wrap it in
 an `assignment_created` event defined by
@@ -33,6 +43,12 @@ or narrower than that task's `allowed_files`. Include
 A repair assignment uses a fresh assignment ID and distinct result artifact.
 The append-only event chain retains the predecessor assignment, route receipts,
 artifacts, and failures; replacement prose cannot overwrite them.
+
+Keep package identity, attempt identity, candidate identity, validation
+identity, and repair identity in separate fields. Do not overload the task id,
+phase id, or milestone id with those identities. A child assignment forbids
+phase acceptance, milestone acceptance, GoalBuddy board mutation, and `T999`
+creation or completion. Only the Parent/PM can perform those actions.
 
 Parallel read-only tasks may overlap. Concurrent writers require disjoint files
 or isolated worktrees. One Integrator owns shared boundaries and merge truth.
@@ -121,6 +137,11 @@ Every Worker packet requires the Worker to return:
   acceptance gaps;
 - handoff: produced, not produced, safe to use, must verify, next owner, and
   parent decision requested.
+
+Native collaboration results additionally retain the pre-spawn projection
+receipt and the canonical child ID returned by Codex. Record
+`runtime_surface: codex_collaboration` and `provider_dispatch: false`; do not
+describe the child as an external-provider execution.
 
 Do not ask a Worker to infer final acceptance. Worker outputs remain
 `ready_for_review`, `candidate_complete`, `needs_revision`,

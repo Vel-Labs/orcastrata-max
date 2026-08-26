@@ -77,6 +77,7 @@ _explicit_tool_model = _load_module(
 
 
 SCHEMA_VERSION = 1
+PACKET_SCHEMA_VERSION = 2
 RESOLUTION_PHASES = {"evidence", "pre_dispatch"}
 EXPLICIT_ESCALATION_REASONS = {
     "material_architecture_risk",
@@ -398,11 +399,77 @@ def _escalation_authorized(
     selection = packet.get("explicit_selection")
     if isinstance(selection, dict) and selection.get("route_name") == route_name:
         return True
+    if route.get("route_kind") == "worker":
+        return False
     return (
         packet.get("escalation_reason") in EXPLICIT_ESCALATION_REASONS
         and isinstance(packet.get("task_grant_sha256"), str)
         and re.fullmatch(r"sha256:[0-9a-f]{64}", packet["task_grant_sha256"]) is not None
     )
+
+
+def _route_capability_decision(
+    packet: dict[str, Any], route_name: str, route: dict[str, Any],
+    preflight: dict[str, Any],
+) -> dict[str, Any]:
+    """Evaluate one route against provider-neutral Parent rank ceilings."""
+    policy = _config.CAPABILITY_MODEL_DEFAULTS["reasoning"]["route_capability_policy"]
+    row = policy["routes"].get(route_name)
+    reasons: list[str] = []
+    if not isinstance(row, dict):
+        return {"authorized": False, "reasons": ["route_capability_policy_missing"]}
+    fingerprint = _config.route_identity_fingerprint(route)
+    if row["route_fingerprint"] != fingerprint:
+        reasons.append("route_capability_fingerprint_mismatch")
+    if row["identity_binding"] != "complete":
+        reasons.append("route_capability_identity_incomplete")
+
+    effort_rank = row["effort_rank"]
+    if row["effort_mode"] == "native_preflight":
+        effort_rank = _config.REASONING_RANK.get(preflight.get("reasoning"))
+        if effort_rank is None:
+            reasons.append("route_capability_effort_unknown")
+    parent = packet["parent_capability"]
+    escalation_required = (
+        row["cost_rank"] > parent["cost_ceiling"]
+        or effort_rank is None
+        or effort_rank > parent["effort_ceiling"]
+    )
+    approval = packet.get("capability_escalation")
+    approval_digest = None
+    escalation_approved = False
+    if isinstance(approval, dict):
+        approval_digest = "sha256:" + hashlib.sha256(
+            json.dumps(approval, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        escalation_approved = bool(
+            approval["route_name"] == route_name
+            and approval["route_fingerprint"] == fingerprint
+            and approval["cost_rank"] == row["cost_rank"]
+            and approval["effort_rank"] == effort_rank
+            and approval["task_grant_sha256"] == packet.get("task_grant_sha256")
+            and approval["operator_approved"] is True
+            and approval["prework_status"] == "attempted_exhausted"
+            and approval["approval_reference"].strip()
+            and bool(approval["prework_evidence"])
+        )
+    if escalation_required and not escalation_approved:
+        reasons.append("capability_escalation_approval_required")
+    return {
+        "schema_version": 2,
+        "route_name": route_name,
+        "route_fingerprint": fingerprint,
+        "cost_rank": row["cost_rank"],
+        "effort_rank": effort_rank,
+        "parent_cost_ceiling": parent["cost_ceiling"],
+        "parent_effort_ceiling": parent["effort_ceiling"],
+        "escalation_required": escalation_required,
+        "escalation_approved": escalation_approved,
+        "approval_digest": approval_digest,
+        "task_grant_sha256": packet.get("task_grant_sha256"),
+        "authorized": not reasons,
+        "reasons": reasons,
+    }
 
 
 def _provider_input_reasons(provider_input: dict[str, Any], preflight: dict[str, Any]) -> list[str]:
@@ -425,18 +492,25 @@ def _eligibility_reasons(
 ) -> tuple[list[str], dict[str, Any] | None]:
     reasons: list[str] = []
     escalation_authorized = _escalation_authorized(packet, route_name, route)
-    if route.get("escalation_policy", "ordinary") == "explicit_only" and not escalation_authorized:
-        reasons.append("explicit_escalation_required")
     if route["route_kind"] != "worker":
         reasons.append("control_route_not_worker_eligible")
-    if not route["enabled"] and not escalation_authorized:
-        reasons.append("route_disabled")
     if not isinstance(preflight, dict):
         return reasons + ["fresh_preflight_missing"], None
 
     missing = sorted(PREFLIGHT_REQUIRED_FIELDS - set(preflight))
     if missing:
         return reasons + [f"preflight_missing:{field}" for field in missing], preflight
+
+    capability = _route_capability_decision(packet, route_name, route, preflight)
+    reasons.extend(capability["reasons"])
+    if route.get("escalation_policy", "ordinary") == "explicit_only" and not (
+        escalation_authorized or capability["escalation_approved"]
+    ):
+        reasons.append("explicit_escalation_required")
+    if not route["enabled"] and not (
+        escalation_authorized or capability["escalation_approved"]
+    ):
+        reasons.append("route_disabled")
 
     reasons.extend(_identity_mismatch_reasons(route, preflight))
     if preflight["task_id"] != packet["task_id"]:
@@ -561,8 +635,25 @@ def _eligibility_reasons(
 
 def _validate_packet(packet: Any) -> dict[str, Any]:
     packet = _require_mapping(packet, "packet")
-    if packet.get("schema_version") != SCHEMA_VERSION:
+    input_schema_version = packet.get("schema_version")
+    if input_schema_version not in {1, PACKET_SCHEMA_VERSION}:
         raise ResolutionError("unsupported_schema", str(packet.get("schema_version")))
+    if "reasoning_escalation" in packet:
+        raise ResolutionError(
+            "legacy_escalation_shape_rejected",
+            "model-based reasoning escalation is not authoritative",
+        )
+    if input_schema_version == 1:
+        if "parent_capability" in packet:
+            raise ResolutionError(
+                "legacy_escalation_shape_rejected",
+                "schema-v1 model-based capability fields are not authoritative",
+            )
+        packet["schema_version"] = PACKET_SCHEMA_VERSION
+        packet["parent_capability"] = {
+            "cost_ceiling": 1,
+            "effort_ceiling": 1,
+        }
     for field in ("task_id", "role"):
         _require_nonempty_string(packet.get(field), field)
     packet.setdefault("resolution_phase", "evidence")
@@ -613,6 +704,52 @@ def _validate_packet(packet: Any) -> dict[str, Any]:
     escalation_reason = packet.get("escalation_reason")
     if escalation_reason is not None and escalation_reason not in EXPLICIT_ESCALATION_REASONS:
         raise ResolutionError("invalid_packet", "escalation_reason is unsupported")
+    parent_capability = packet.get("parent_capability")
+    parent_capability = _require_mapping(parent_capability, "parent_capability")
+    if set(parent_capability) != {"cost_ceiling", "effort_ceiling"}:
+        raise ResolutionError("invalid_packet", "parent_capability fields are incomplete")
+    policy = _config.CAPABILITY_MODEL_DEFAULTS["reasoning"]["route_capability_policy"]
+    for field, package_ceiling in (
+        ("cost_ceiling", policy["default_parent_cost_ceiling"]),
+        ("effort_ceiling", policy["default_parent_effort_ceiling"]),
+    ):
+        value = parent_capability[field]
+        if type(value) is not int or value < 0 or value > package_ceiling:
+            raise ResolutionError("invalid_packet", f"parent_capability.{field} exceeds package ceiling")
+    capability_escalation = packet.get("capability_escalation")
+    if capability_escalation is not None:
+        capability_escalation = _require_mapping(
+            capability_escalation, "capability_escalation"
+        )
+        required = {
+            "route_name", "route_fingerprint", "cost_rank", "effort_rank",
+            "operator_approved", "approval_reference", "prework_status",
+            "prework_evidence", "task_grant_sha256",
+        }
+        if set(capability_escalation) != required:
+            raise ResolutionError("invalid_packet", "capability_escalation fields are incomplete")
+        for field in ("route_name", "route_fingerprint", "approval_reference", "task_grant_sha256"):
+            _require_nonempty_string(
+                capability_escalation[field], f"capability_escalation.{field}"
+            )
+        if re.fullmatch(r"[0-9a-f]{64}", capability_escalation["route_fingerprint"]) is None:
+            raise ResolutionError("invalid_packet", "capability_escalation.route_fingerprint is invalid")
+        if capability_escalation["task_grant_sha256"] != packet.get("task_grant_sha256"):
+            raise ResolutionError("invalid_packet", "capability_escalation task grant mismatch")
+        if re.fullmatch(r"sha256:[0-9a-f]{64}", capability_escalation["task_grant_sha256"]) is None:
+            raise ResolutionError("invalid_packet", "capability_escalation.task_grant_sha256 is invalid")
+        for field in ("cost_rank", "effort_rank"):
+            if type(capability_escalation[field]) is not int or capability_escalation[field] < 0:
+                raise ResolutionError("invalid_packet", f"capability_escalation.{field} is invalid")
+        if type(capability_escalation["operator_approved"]) is not bool:
+            raise ResolutionError("invalid_packet", "capability_escalation.operator_approved must be a boolean")
+        if capability_escalation["prework_status"] != "attempted_exhausted":
+            raise ResolutionError("invalid_packet", "capability_escalation.prework_status must be attempted_exhausted")
+        capability_escalation["prework_evidence"] = _string_list(
+            capability_escalation["prework_evidence"], "capability_escalation.prework_evidence"
+        )
+        if not capability_escalation["prework_evidence"]:
+            raise ResolutionError("invalid_packet", "capability_escalation.prework_evidence must not be empty")
     controls = _require_mapping(packet.get("controls"), "controls")
     for field in ("max_attempts_per_checkpoint", "max_attempts_per_route", "circuit_breaker_threshold", "no_improvement_window"):
         if type(controls.get(field)) is not int or controls[field] <= 0:
@@ -760,10 +897,16 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
     hard_stop = False
     total_attempts = 0
     next_attempt: dict[str, Any] | None = None
+    selected_capability_authority: dict[str, Any] | None = None
 
     for order, route_name in enumerate(ordered_routes, start=1):
         route = registry["routes"][route_name]
         reasons, preflight = _eligibility_reasons(packet, route_name, route, packet["preflights"].get(route_name))
+        capability_authority = (
+            _route_capability_decision(packet, route_name, route, preflight)
+            if isinstance(preflight, dict) and PREFLIGHT_REQUIRED_FIELDS.issubset(preflight)
+            else None
+        )
         considerations.append(
             {
                 "order": order,
@@ -771,6 +914,7 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
                 "eligible": not reasons,
                 "reasons": reasons,
                 "preflight_id": preflight.get("preflight_id") if isinstance(preflight, dict) else None,
+                "capability_authority": capability_authority,
             }
         )
         if reasons:
@@ -787,7 +931,9 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
                     "route_attempt_index": 1,
                     "route_name": route_name,
                     "identity": copy.deepcopy(identity),
+                    "capability_authority": copy.deepcopy(capability_authority),
                 }
+                selected_capability_authority = copy.deepcopy(capability_authority)
                 stop_reason = "dispatch_required"
             break
 
@@ -831,6 +977,7 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
 
             if outcome_name == "success":
                 selected_route = route_name
+                selected_capability_authority = copy.deepcopy(capability_authority)
                 actual_route = {
                     **copy.deepcopy(identity),
                     "attempt_index": total_attempts,
@@ -865,7 +1012,9 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
                 "route_attempt_index": len(route_outcomes) + 1,
                 "route_name": route_name,
                 "identity": copy.deepcopy(identity),
+                "capability_authority": copy.deepcopy(capability_authority),
             }
+            selected_capability_authority = copy.deepcopy(capability_authority)
             stop_reason = "dispatch_required"
             break
 
@@ -897,6 +1046,7 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
         "failed_preferred_route": failed_preferred_route,
         "stop_reason": stop_reason,
         "external_call_performed": False,
+        "capability_authority": selected_capability_authority,
     }
     if packet["resolution_phase"] == "pre_dispatch":
         receipt["resolution_phase"] = "pre_dispatch"

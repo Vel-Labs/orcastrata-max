@@ -18,6 +18,28 @@
 - Marginal cost:
 - Runtime measurements:
 
+### Native Codex Collaboration Projection
+
+- Child task ID:
+- Runtime child ID:
+- Runtime child ID status: `pending_spawn | recorded | not_applicable`
+- Semantic role:
+- Requested native agent type:
+- Native agent type:
+- Exact model:
+- Reasoning effort:
+- Selection mode: `inherited | explicit | fixed_native | not_applicable`
+- Requested fork turns:
+- Effective fork turns:
+- Runtime surface: `codex_collaboration | not_applicable`
+- Fallback:
+- Route authority:
+- Route rotation policy: `automatic_within_authority | forbidden | not_applicable`
+- Rotation status: `route_resolution_required | forbidden_or_not_applicable | not_applicable`
+- Projection receipt:
+- Projection status: `ready | approval_required | rejected | not_applicable`
+- Provider dispatch: `false | not_applicable`
+
 ## Outcome
 
 - Outcome:

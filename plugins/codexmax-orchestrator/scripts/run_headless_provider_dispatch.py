@@ -2666,6 +2666,28 @@ def run_dispatch(
         identity = next_attempt.get("identity")
         if not isinstance(identity, dict):
             raise DispatchError("invalid_resolution", "next_attempt identity missing")
+        capability = next_attempt.get("capability_authority")
+        if not isinstance(capability, dict) or capability.get("authorized") is not True:
+            raise DispatchError(
+                "capability_authority_missing", "resolver did not authorize route ranks"
+            )
+        if capability.get("route_name") != route_name:
+            raise DispatchError("capability_authority_mismatch", "route_name")
+        if capability.get("escalation_required") is True:
+            authority_sha256 = (
+                task_envelope.get("bindings", {}).get("authority_sha256")
+                if isinstance(task_envelope, dict) else None
+            )
+            if isinstance(authority_sha256, str) and not authority_sha256.startswith("sha256:"):
+                authority_sha256 = "sha256:" + authority_sha256
+            if (
+                capability.get("escalation_approved") is not True
+                or capability.get("task_grant_sha256") != authority_sha256
+                or not isinstance(capability.get("approval_digest"), str)
+            ):
+                raise DispatchError(
+                    "capability_escalation_authority_mismatch", "task grant or approval"
+                )
         expected_response_identity = _expected_response_identity(route_name, identity)
         execution_profile = _resolved_execution_profile(
             task_envelope=task_envelope, route_name=route_name, identity=identity,
