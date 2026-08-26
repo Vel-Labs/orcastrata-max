@@ -16,6 +16,13 @@ fallback, and route authority before a child spawn. Fixed roles must match the
 selected route exactly; otherwise Orcastrata returns an approval preview and
 stops. Native collaboration is recorded separately from provider dispatch.
 
+This is Parent-governed spawning, not global interception. Codex still owns
+`spawn_agent` and executes native children. Orcastrata does not provide model
+weights or replace a Codex model with an Orcastrata model. A native spawn
+outside an active Orcastrata task path continues under Codex defaults. See
+[Runtime Support And Ownership](RUNTIME_SUPPORT.md) for the exact harness
+matrix.
+
 Local verification distinguishes three proof classes: `install_state`,
 `manual_installed_cache_invocation`, and `automatic_skill_loader`. The
 compatibility option `--fresh-invocation-proof` proves only the manual cache
@@ -103,13 +110,14 @@ skills for advanced workflows.
 
 | Surface | V1 status |
 | --- | --- |
-| Native Codex | Primary path |
-| Configured OpenCode route | Exact selection supported |
-| Configured Command Code route | Exact selection supported |
-| Provider login automation | Not supported |
-| Credential storage | Not supported |
+| Orcastrata-governed native Codex task | Projection before the Parent calls `spawn_agent`; Codex executes the child |
+| Unrelated native Codex task or spawn | Not globally intercepted |
+| Configured OpenCode route | Exact adapter dispatch after fresh verification |
+| Configured Command Code route | Exact adapter dispatch after fresh verification |
+| Standalone/provider-neutral contracts | Architecture and qualification substrate; not generic live harness proof |
+| Claude, Grok, standalone MiniMax, or other host packages | Roadmap; not public V1 support |
+| Provider login or credential storage | Not supported |
 | Saved tool/model preference | Approval required |
-| Other host-native packages | Roadmap |
 
 ## First Use
 

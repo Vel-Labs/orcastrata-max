@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.3 - 2026-08-26
+
+- Clarify that native Codex support is an Orcastrata-governed Parent path, not
+  a global `spawn_agent` interception hook or an Orcastrata model.
+- Publish one runtime support matrix distinguishing native Codex, configured
+  OpenCode and Command Code dispatch, provider-neutral contracts, and future
+  host packages.
+- Keep configured external routes conditional on fresh qualification and keep
+  contract presence distinct from live provider execution proof.
+
 ## 1.0.2 - 2026-08-26
 
 - Project semantic worker roles onto explicit Codex native agent types, exact

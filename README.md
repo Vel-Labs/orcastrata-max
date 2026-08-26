@@ -82,6 +82,24 @@ authority. An exact-route lock remains exact. Rotation creates a new recorded
 selection; it never silently changes a running worker's model or crosses from
 native Codex collaboration into external-provider dispatch.
 
+### Runtime ownership boundary
+
+Orcastrata Max is an orchestration layer, not a model. In an active Orcastrata
+task, the Parent projects the selected semantic role onto an allowed native
+Codex agent type, exact model, and reasoning effort before it calls
+`spawn_agent`. Codex still owns that tool and executes the child. Installation
+does not globally intercept unrelated Codex tasks or spawns.
+
+For a configured and freshly verified OpenCode or Command Code route,
+Orcastrata owns the adapter-dispatch decision. The external tool still owns its
+authentication, provider session, quota, billing, and runtime. Standalone and
+provider-neutral contracts in the package are architecture and qualification
+substrate, not generic live-harness proof.
+
+Read the complete
+[Runtime Support And Ownership](plugins/codexmax-orchestrator/RUNTIME_SUPPORT.md)
+matrix before relying on a native or external route.
+
 ## Choose An Exact Tool And Model
 
 If OpenCode or Command Code is already installed and configured, say:
@@ -157,9 +175,11 @@ task scope. Model capability or reasoning effort never grants extra access.
 
 | Surface | V1 status |
 | --- | --- |
-| Native Codex Parent and workers | Primary path |
-| OpenCode exact tool/model selection | Supported for configured connections |
-| Command Code exact tool/model selection | Supported for configured connections |
+| Orcastrata-governed native Codex task | Projection before the Parent calls `spawn_agent`; Codex executes the child |
+| Unrelated native Codex task or spawn | Not globally intercepted |
+| OpenCode exact tool/model selection | Adapter dispatch after fresh verification of a configured route |
+| Command Code exact tool/model selection | Adapter dispatch after fresh verification of a configured route |
+| Standalone/provider-neutral contracts | Not generic installed live-harness proof |
 | Automatic provider login or credential storage | Not supported |
 | Persistent tool/model preference | Optional; approval required |
 | Claude or other host-native packages | Roadmap |
@@ -169,7 +189,10 @@ task scope. Model capability or reasoning effort never grants extra access.
 
 V1 does not increase Codex plan limits, provide external accounts, automate
 provider login, silently substitute routes, or save a tool/model pairing
-without approval. Choosing None during optional setup creates no file.
+without approval. It does not provide an Orcastrata model, globally intercept
+Codex `spawn_agent`, or make an arbitrary harness operational merely because a
+contract or adapter candidate is packaged. Choosing None during optional setup
+creates no file.
 
 Interactive native Codex token counters can remain unknown. V1 usage readouts
 are on demand. Recurring reports and Claude or other non-Codex host packages

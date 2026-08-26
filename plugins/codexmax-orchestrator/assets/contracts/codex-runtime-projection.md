@@ -12,6 +12,24 @@ Native Codex collaboration is not provider dispatch. Its runtime surface is
 `codex_collaboration`; external OpenCode, Command Code, standalone CLI, and
 connector work continues through the provider-dispatch contracts and receipts.
 
+## Host-Ownership And Non-Interception Boundary
+
+The Codex host owns `spawn_agent` and the native child runtime. Orcastrata does
+not register model weights, replace a Codex model with an "Orcastrata model,"
+or install a global pre-spawn hook. This projection is mandatory only when an
+active Orcastrata Parent is preparing a native child. A Codex task or spawn
+outside that governed path continues under the host's own defaults.
+
+When Orcastrata owns a supported external adapter dispatch, it resolves and
+binds the exact provider route before launching that adapter. This is stronger
+dispatch ownership than the native Codex projection, but it applies only to a
+configured, freshly qualified route within task authority. Provider-neutral
+contracts, dormant bindings, and standalone schemas do not prove an installed
+host package, authenticated provider, or live execution.
+
+An arbitrary host that creates its own workers remains host-owned unless that
+host explicitly integrates an Orcastrata package or dispatch boundary.
+
 ## Native Agent-Type Facts
 
 | Native agent type | Model | Reasoning | Semantic roles allowed |

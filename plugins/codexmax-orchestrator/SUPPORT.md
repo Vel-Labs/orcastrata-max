@@ -12,6 +12,13 @@ private task content. If you attach a receipt or telemetry snapshot, remove
 paths, hashes, model output, and execution metadata that the report does not
 need. Read [Privacy](PRIVACY.md) before sharing it.
 
+Before reporting a routing defect, identify the runtime surface using
+[Runtime Support And Ownership](RUNTIME_SUPPORT.md). State whether the task was
+an Orcastrata-governed native Codex task, an unrelated Codex spawn, a configured
+OpenCode or Command Code route, or a standalone/provider-neutral contract test.
+Installing the plugin does not globally intercept every Codex `spawn_agent`
+call, and contract presence does not prove a live provider harness.
+
 If an exact OpenCode or Command Code request fails, configure that exact tool
 and try again, or ask Orcastrata Max to continue with native Codex. It does not
 switch to another tool or model silently.

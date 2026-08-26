@@ -114,6 +114,21 @@ its route resolver for another allowed model and records the new projection.
 An exact-route lock remains exact and does not rotate. External-provider
 failures remain governed by the provider dispatch and retry contracts.
 
+### Where Orcastrata governance applies
+
+Orcastrata governs this native projection only when the task has loaded or
+explicitly invoked Orcastrata Max. Codex still owns `spawn_agent` and executes
+the native child. The plugin does not globally intercept unrelated Codex
+spawns, register an Orcastrata model, or replace native model weights.
+
+OpenCode and Command Code use a different boundary: for a configured and
+freshly verified exact route, Orcastrata owns the adapter-dispatch decision.
+The external tool still owns its provider session, authentication, quota,
+billing, and runtime. Standalone and provider-neutral contracts in the package
+are not proof of a live generic harness. Read the complete
+[Runtime Support And Ownership](RUNTIME_SUPPORT.md) matrix before relying on a
+non-Codex route.
+
 ### Complete native example
 
 This transcript shows the expected interaction. It is an example, not evidence
@@ -455,6 +470,9 @@ Orcastrata Max V1 does not:
 - create a file when you choose None during optional setup;
 - guarantee token counters that a host does not report;
 - automatically account for interactive native Codex collaboration;
+- globally intercept native Codex `spawn_agent` calls;
+- provide an Orcastrata model or replace native model weights;
+- turn provider-neutral contracts into a live generic harness;
 - run recurring monthly reports; or
 - provide Claude or other non-Codex host packages.
 

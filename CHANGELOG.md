@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 - 2026-08-26
+
+- Clarify that native Codex support is an Orcastrata-governed Parent path, not
+  global `spawn_agent` interception or an Orcastrata model.
+- Add one runtime ownership matrix for native Codex, configured OpenCode and
+  Command Code dispatch, provider-neutral contracts, and future host packages.
+- Keep contract presence distinct from configured, qualified, live execution.
+
 ## 1.0.2 - 2026-08-26
 
 - Add the Codex collaboration runtime projection with explicit route receipts.

@@ -31,6 +31,12 @@ guarantee counters that a host does not report.
 The current package name is `codexmax-orchestrator`. Current skills use the
 `codexmax-*` namespace. These technical IDs remain supported for compatibility.
 Read [Getting Started](GETTING_STARTED.md) for the first-use journey.
+Read [Runtime Support And Ownership](RUNTIME_SUPPORT.md) for the current
+host-by-host boundary.
+
+Native V1 governance is Parent-controlled: Orcastrata projects a route before
+an active Orcastrata Parent calls Codex `spawn_agent`. It is not a global Codex
+spawn hook and does not replace Codex models with Orcastrata models.
 
 ## Next: Public Package
 
@@ -57,6 +63,14 @@ The task grants its actual read or write scope.
 No other host package is current V1 proof. Provider-neutral contracts do not
 prove provider authentication, availability, billing, quota, or production
 readiness.
+
+## Research: Codex Host Interception
+
+Research may determine whether Codex exposes supported pre-spawn middleware,
+custom native agent registration, or another enforceable collaboration hook.
+Until demonstrated, the supported architecture remains an Orcastrata-governed
+Parent path. Installation alone does not place Orcastrata between every Codex
+task and `spawn_agent`.
 
 ## Future: Orcastrata Control
 
