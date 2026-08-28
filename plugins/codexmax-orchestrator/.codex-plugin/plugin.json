@@ -1,6 +1,6 @@
 {
   "name": "codexmax-orchestrator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Orcastrata Max is the open agentic orchestration layer, native-first for Codex V1.",
   "author": {
     "name": "Vel Labs"

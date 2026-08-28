@@ -8,6 +8,7 @@ import copy
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -33,6 +34,9 @@ DISPATCH = TASK.DISPATCH
 
 SUPPORTED = {"commandcode": "Command Code", "opencode_tool_loop": "OpenCode"}
 ROLES = ("planner", "architect", "worker", "tester", "documenter", "auditor")
+COMMANDCODE_MODEL_ROW_RE = re.compile(
+    r"^\s*([A-Za-z0-9._-]+(?:/[A-Za-z0-9._/-]+)?)\s{2,}\S"
+)
 
 
 def _public_rows(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -131,10 +135,10 @@ def _discover_commandcode_models(runner: Callable[..., Any]) -> list[str]:
     cleaned = SESSION._clean_bounded_output(stdout, tool="Command Code")
     models: list[str] = []
     for line in cleaned.splitlines():
-        parts = line.split()
-        if not parts:
+        match = COMMANDCODE_MODEL_ROW_RE.match(line)
+        if match is None:
             continue
-        model = parts[0]
+        model = match.group(1)
         if SESSION.MODEL_TOKEN_RE.fullmatch(model) is not None and model not in models:
             models.append(model)
     return models[:128]

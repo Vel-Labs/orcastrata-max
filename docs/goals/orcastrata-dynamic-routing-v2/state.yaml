@@ -213,20 +213,21 @@ tasks:
       - "Independent ACCEPT or REVISE verdict"
     receipt:
       result: partial
-      decision: approved_candidate
+      decision: approved_candidate_pending_install
       full_outcome_complete: false
       changed_files:
         - docs/goals/orcastrata-dynamic-routing-v2/notes/final-acceptance.md
       commands:
         - command: "python3 -B -m unittest discover -s tests -p 'test_*.py' -q"
           status: pass
-        - command: "python3 scripts/verify_release_parity.py verify --source-root plugins/codexmax-orchestrator --stage-leaf .package-stage/codexmax-orchestrator/1.1.0/1f0be86195e152a0756fbf3241620f672737a98415e93a7c81e5e6294fbd4a93"
+        - command: "python3 scripts/verify_release_parity.py verify --source-root plugins/codexmax-orchestrator --stage-leaf .package-stage/codexmax-orchestrator/1.1.1/9e694a4c598b417db21ad90c1911a2845df161d922e4a811b84326732e78149c"
           status: pass
       summary: >-
-        Independent Luna audit accepted the 1.1.0 candidate with 9.5/10
-        confidence and no blocking candidate defect. The active installed host
-        remains on the older package, so the clean installed natural-language
-        proof is still required before full outcome completion.
+        Installed 1.1.0 natural-language acceptance exposed a formatted model
+        catalog parsing defect. Luna accepted the 1.1.1 repair. It parses 62
+        current model rows, passes 63 tests and immutable package parity, and
+        completed one live source automatic task. Fresh installed 1.1.1 proof
+        remains required.
 
   - id: T999
     type: pm

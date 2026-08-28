@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 - 2026-08-28
+
+- Parse the formatted Command Code 1.38.1 model catalog as model rows instead
+  of treating section headings and footer text as candidate model IDs.
+- Add the current formatted catalog as a regression fixture. Live automatic
+  routing now discovers all 62 catalog models and completes through a
+  task-local DeepSeek Flash route without fallback.
+
 ## 1.1.0 - 2026-08-28
 
 - Make normal external delegation model-free for the user. The Parent selects a

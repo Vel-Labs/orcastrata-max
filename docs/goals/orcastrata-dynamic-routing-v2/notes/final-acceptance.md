@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Orcastrata 1.1.0 is accepted as a source and immutable-package candidate.
+Orcastrata 1.1.1 is accepted as a source and immutable-package candidate.
 The normal route does not require the operator to name a worker model. The
 Parent selects a role. Orcastrata ranks enabled or discovered models from
 declared route metadata, performs a fresh session probe, and starts at most one
@@ -15,10 +15,11 @@ to named existing files in a linked worktree, runs allowlisted validation, and
 writes a rollback bundle outside that worktree. Parent acceptance remains
 false until the Parent reviews the result.
 
-The active plugin under `~/.codex` was not changed. Workspace policy prohibits
-that write. Therefore, this receipt does not claim that a fresh Codex host task
-loaded 1.1.0. That install and fresh host journey are the remaining deployment
-proof, not a candidate defect.
+The installed 1.1.0 host journey failed because its catalog discovery did not
+admit candidates from the formatted Command Code 1.38.1 model list. The active
+plugin under `~/.codex` was not changed by this repair because workspace policy
+prohibits that write. Therefore, this receipt does not claim that a fresh Codex
+host task loaded 1.1.1. That install and fresh host journey remain required.
 
 ## Changed files
 
@@ -53,6 +54,10 @@ Tests:
 - `tests/test_isolated_provider_implementation.py`
 - `tests/test_installed_provider_task_journey.py`
 
+The 1.1.1 repair changed only the automatic catalog parser, its two formatted
+catalog fixtures, the package version, changelog, release manifest, goal state,
+and this receipt.
+
 Goal and plan:
 
 - `docs/goals/orcastrata-dynamic-routing-v2/goal.md`
@@ -66,19 +71,30 @@ external consumer reference was found. Git commit `75952f7` retains recovery.
 
 ## Validation
 
-- `python3 -B -m unittest discover -s tests -p 'test_*.py' -q`: 62 tests passed.
-- Focused automatic, implementation, and rollback tests: 18 tests passed.
+- `python3 -B -m unittest discover -s tests -p 'test_*.py' -q`: 63 tests passed.
+- Focused automatic and installed-package journey tests: 9 tests passed.
 - Release manifest build and source verification: passed.
 - Immutable package stage verification: passed.
-- Package version: 1.1.0.
+- Package version: 1.1.1.
 - Package files: 392.
-- Release manifest SHA-256: `1f0be86195e152a0756fbf3241620f672737a98415e93a7c81e5e6294fbd4a93`.
-- Source and staged tree SHA-256: `11e3e84c930e2e4dff8324ea05f2ca75360d9ffcea07ff0746cc9036ae0d4174`.
+- Release manifest SHA-256: `9e694a4c598b417db21ad90c1911a2845df161d922e4a811b84326732e78149c`.
+- Source and staged tree SHA-256: `653267205ec52c4a24eba7a8a08f0a93597bb326436dfded4804af11665b834e`.
 - `git diff --check`: passed.
 - Goal state validator: passed at each milestone and must pass after closeout.
 
 ## Live behavior
 
+- Installed 1.1.0 host task: loaded the skill but reported zero discovered
+  candidates, then recorded one DeepSeek Pro process exit with return code 6.
+  No worker result or fallback was accepted. This rejected 1.1.0 as the final
+  installed candidate.
+- Current Command Code 1.38.1 catalog: 62 model rows parsed. Section headings,
+  summary text, examples, and documentation footer text were excluded.
+- Exact DeepSeek Pro diagnostic after the failure: returned valid JSON with
+  process exit code 0 under the same read-only isolation flags.
+- Repaired 1.1.1 source automatic task: selected
+  `deepseek/deepseek-v4-flash`, called one process, completed with validated
+  exact response identity, and used no fallback.
 - Automatic no-model task: selected `deepseek/deepseek-v4-flash` through
   Command Code 1.38.1 and completed with validated response identity.
 - Exact task-local task: selected `minimaxai/minimax-m3` without a saved binding,
@@ -99,16 +115,16 @@ report them. Orcastrata no longer invents zero usage or qualification.
 
 ## Independent audit
 
-The Luna auditor returned `ACCEPT` with no blocking candidate defects and
-9.5/10 confidence. It independently reran the 62-test suite, checked the task
-identifier security boundary, confirmed metadata-only model ranking, verified
-source and staged package parity, and confirmed the old evidence bloat removal.
+The original Luna audit accepted 1.1.0 before installed-host testing. That
+acceptance was superseded by the host failure. The narrow 1.1.1 Luna re-audit
+returned `ACCEPT`. It verified the formatted row parser, metadata-only ranking,
+both installed-style regression fixtures, 63 passing tests, and source/stage
+parity. It found no source change justified for the non-reproduced exit code 6.
 
 ## Remaining risk
 
 The candidate cannot score 10/10 until an authorized deployment replaces the
-active installed plugin and a fresh Codex task proves that ordinary language
-loads this exact 1.1.0 package. The current active installation is older and was
-not modified. Direct MiniMax and Grok CLI transports also remain separate
+active installed 1.1.0 plugin and a fresh Codex task proves that ordinary
+language loads this exact 1.1.1 package. Direct MiniMax and Grok CLI transports remain separate
 code-owned adapter work; current generic model selection is supported through
 the approved Command Code and OpenCode transports.

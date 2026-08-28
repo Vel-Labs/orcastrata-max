@@ -42,7 +42,14 @@ class AutomaticSelectorTests(unittest.TestCase):
             self.assertEqual(list(argv), ["commandcode", "--list-models"])
             return subprocess.CompletedProcess(
                 argv, 0,
-                "deepseek/deepseek-v4-pro\ndeepseek/deepseek-v4-flash\nxai/grok-4.6\n",
+                "Available models  ·  4 models\n\n"
+                "Open Source\n\n"
+                "deepseek/deepseek-v4-pro    hybrid-attention long-context reasoning\n"
+                "deepseek/deepseek-v4-flash  fast hybrid-attention reasoning (default)\n"
+                "minimaxai/minimax-m3         frontier coding and agents\n\n"
+                "xAI\n\n"
+                "xai/grok-4.6                 frontier coding and knowledge work\n\n"
+                "Pass the full id, or just the short name after the last slash.\n",
                 "",
             )
 
@@ -71,6 +78,26 @@ class AutomaticSelectorTests(unittest.TestCase):
         self.assertEqual(result["selected_model"], "deepseek/deepseek-v4-flash")
         selected = next(row for row in result["considered"] if row.get("selected") is True)
         self.assertEqual(selected["candidate_origin"], "discovered_session_model")
+
+    def test_current_formatted_catalog_excludes_headings_and_footer(self):
+        output = (
+            "Available models  ·  3 models\n\n"
+            "Open Source\n\n"
+            "deepseek/deepseek-v4-pro  hybrid-attention long-context reasoning\n"
+            "gpt-5.6-luna               optimized for cost-sensitive workloads\n\n"
+            "xAI\n\n"
+            "xai/grok-4.6               frontier coding and knowledge work\n\n"
+            "cmd --model kimi-k2.5\n"
+            "Docs:  https://commandcode.ai/docs/reference/cli/models\n"
+        )
+
+        def catalog(argv, **kwargs):
+            return subprocess.CompletedProcess(argv, 0, output, "")
+
+        self.assertEqual(
+            auto._discover_commandcode_models(catalog),
+            ["deepseek/deepseek-v4-pro", "gpt-5.6-luna", "xai/grok-4.6"],
+        )
 
     def test_disabled_only_and_no_binding(self):
         empty = copy.deepcopy(auto.TASK.CONFIG.DEFAULTS)

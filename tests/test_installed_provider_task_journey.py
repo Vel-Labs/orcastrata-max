@@ -29,9 +29,13 @@ if args == ["status", "--json"]:
         "version": "9.9.9-fake",
     }))
 elif args == ["--list-models"]:
-    print("vendor/new-model")
-    print("deepseek/deepseek-v4-pro")
-    print("deepseek/deepseek-v4-flash")
+    print("Available models  ·  3 models")
+    print()
+    print("Open Source")
+    print()
+    print("vendor/new-model                 generic test model")
+    print("deepseek/deepseek-v4-pro         long-context reasoning")
+    print("deepseek/deepseek-v4-flash       fast reasoning (default)")
 else:
     model = args[args.index("--model") + 1]
     print(json.dumps({
