@@ -17,9 +17,14 @@ or silently replace the tool, model, route, billing path, or adapter binding.
 
 ## Task-local selection
 
-`explicit-route preview` resolves one enabled configured adapter binding. It
-runs two fixed, bounded adapter-owned commands against the tool's existing
-session. Command Code uses `commandcode status --json` and
+`explicit-route preview` uses one enabled saved binding when it exists. An
+existing disabled binding is a denial. If a Command Code model has no binding,
+the preview can create an in-memory binding on the package-owned generic
+Command Code route. That binding has `persistence: none` and cannot add a
+transport field. OpenCode requires an enabled saved provider binding.
+
+The preview runs two fixed, bounded adapter-owned commands against the tool's
+existing session. Command Code uses `commandcode status --json` and
 `commandcode --list-models`. OpenCode uses `opencode providers list` and the
 non-refreshing generic command `opencode models`. The OpenCode parser strips
 ANSI output, requires the bounded credential listing to end with a positive
@@ -75,7 +80,7 @@ authorize that write.
 
 ## Proof boundary
 
-Focused source tests can prove parsing, configured-binding selection, fixed
-probe behavior, digest binding, single-route resolution, and fail-closed
+Focused source tests can prove parsing, saved or task-local binding selection,
+fixed probe behavior, digest binding, single-route resolution, and fail-closed
 substitution. They do not prove an installed tool session, live provider
 availability, provider execution, billing, installation, or publication.

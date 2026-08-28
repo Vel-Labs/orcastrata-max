@@ -50,8 +50,11 @@ When the operator starts with `Use model X through tool Y`, with or without one
 bounded task suffix, follow the
 [Explicit Tool And Model Routing Contract](../../assets/contracts/explicit-tool-model-routing.md).
 V1 accepts OpenCode and Command Code. Preserve the exact tool and model text.
-Verify one configured binding, the existing tool session, and the exact model.
-Then show the task-local route preview.
+For Command Code, use an enabled saved binding when one exists. If no binding
+exists, declare the exact model on the package-owned generic Command Code
+transport for this task only. Verify the existing session and exact model
+before dispatch. Never bypass an existing disabled binding. OpenCode still
+requires a configured provider binding. Then show the task-local route preview.
 
 Do not log in, handle credentials, or substitute a tool, model, route, provider,
 or billing path. Confirm task authority, privacy, quota, and billing. A mismatch
@@ -76,13 +79,16 @@ identity, capability, authority, privacy, billing, health, quota, and capacity
 checks. Unknown cost is not cheapest.
 
 For ordinary read-only work, when an independent external lane adds material
-value, use the package-owned automatic Worker selector. It considers enabled
-Command Code and OpenCode Worker bindings in package route order, probes each
-exact configured session, and starts at most one provider process. A probe
-denial may move to the next candidate. A started provider task never falls
-back. The selector does not accept a model, provider, executable, endpoint, or
-credential from the operator. Native workers remain valid and this is not
-global interception.
+value, use `scripts/run_automatic_provider_task.py`. Infer one semantic role
+from the task: `planner`, `architect`, `worker`, `tester`, `documenter`, or
+`auditor`. Do not ask the operator to select a model. The selector first probes
+enabled saved bindings in package role order. It can then inspect the fixed
+Command Code model catalog and create in-memory bindings on the generic
+Command Code transport. It records the exact selected model and does not save
+the discovery. A probe denial can move to the next candidate. A started task
+never falls back. The selector accepts no executable, endpoint, credential, or
+arbitrary transport from the operator. Native workers remain valid. This is
+not global interception outside the loaded skill.
 
 Select from all configured and qualified routes. Require fresh identity,
 capability, authority, privacy, billing, health, quota, and capacity. Prefer
@@ -128,37 +134,39 @@ board truth; it does not dispatch providers or accept work.
 
 ## Route The Work
 
-- For ordinary bounded work, inspect repository instructions and use `direct`
-  only when all eight fast-path criteria are true:
-  1. The scope is bounded and low risk.
-  2. The change is one file or one tightly coupled change.
-  3. No active journey conflict exists.
-  4. No new external auxiliary fanout is needed.
+For ordinary bounded work, inspect repository instructions and use `direct`
+only when all eight fast-path criteria are true:
+
+1. The scope is bounded and low risk.
+2. The change is one file or one tightly coupled change.
+3. No active journey conflict exists.
+4. No external fan-out is needed.
+5. No install, credential, destructive, push, publish, or scope expansion is needed.
+6. Repository-native validation is known.
+7. Architecture and acceptance are unambiguous.
+8. Existing authority covers the complete change.
+
+Otherwise use `guided_plan`. Load the full Guided Journey Contract only for
+`guided_plan`, `resume`, `waiting_external`, an unresolved active-state
+conflict, or an advanced request.
 
 For an explicit adversarial comparison, use
 `scripts/run_adversarial_provider_fanout.py`. Supply one `--request` per exact
-model and the same candidate, prompt, and rubric for every lane. The command
-creates isolated task-scoped read-only assignments. It records rejected lanes,
-does not retry or substitute within a lane, and leaves synthesis to Parent.
+model and the same candidate, prompt, and rubric for every lane. Each lane has
+one task-scoped read-only assignment. The controller records rejected lanes,
+does not retry or substitute, and leaves synthesis to Parent.
 
-For one controlled development write canary, use
-`scripts/run_task_scoped_provider_write.py`. Supply the source repository, a
-separate linked Git worktree, one existing regular-file target, one exact
-configured Command Code model request, a bounded task prompt, a worktree-local
-configuration file, sibling evidence and artifact paths, and
-`--allow-provider-call`. It permits one attempt and no fallback. Parent must
-review the exact target diff and either accept it or use the retained rollback
-bytes. This lane does not authorize shared-tree, production, or T062 writes.
-The operator must pre-create the linked worktree. A failed or uncertain attempt
-retains its controls for forensic review. Start a new task in a fresh worktree.
-  5. No install, credential, destructive, push, publish, or scope expansion is needed.
-  6. Repository-native validation is known.
-  7. Architecture and acceptance are unambiguous.
-  8. Existing authority covers the complete change.
-  Otherwise use `guided_plan`. Do not open `guided-journey.md` for first-use
-  orientation or a clear direct candidate. Load the full Guided Journey
-  Contract only for `guided_plan`, `resume`, `waiting_external`, an unresolved
-  active-state conflict, or an advanced request.
+For real implementation, use
+`scripts/run_isolated_provider_implementation.py`. The provider has read-only
+authority and returns a unified diff. Orcastrata validates the patch against
+the exact existing-file allowlist, applies it in a separate linked Git
+worktree, runs only Parent-authorized exact validation argument arrays, and
+writes a change and rollback receipt outside the worktree. The provider never
+receives repository write or shell authority. Parent acceptance starts false.
+
+Keep `scripts/run_task_scoped_provider_write.py` only as the fixed Command Code
+write-canary regression. Do not present the canary as general implementation.
+Neither path authorizes shared-tree, production, or T062 writes.
 - Discovery: `$codexmax-orchestrator:codexmax-discover`. Discovery never grants write authority.
 - For a feature implementation plan, use `$codexmax-orchestrator:codexmax-plan`.
 - If the operator says `make this a loop`:

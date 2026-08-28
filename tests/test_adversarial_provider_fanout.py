@@ -89,6 +89,23 @@ class FanoutTests(unittest.TestCase):
         self.assertEqual(result["rejected_lane_count"], 1)
         self.assertEqual(result["lanes"][0]["result"]["reason"], "session_probe_failed")
 
+    def test_post_start_exception_preserves_called_truth_from_durable_attempt(self):
+        def runner(**kwargs):
+            attempt = Path(kwargs["repo_root"]) / kwargs["evidence_directory"] / "attempt-001"
+            attempt.mkdir(parents=True)
+            (attempt / "stdout.bin").write_bytes(b"provider output")
+            raise RuntimeError("late receipt failure")
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = fanout.run_fanout(
+                repo_root=Path(directory), task_id="T060",
+                requests=["m through Command Code"], prompt="review",
+                candidate="candidate", rubric="rubric", read_scope=["."],
+                evidence_directory="reports", workspace_config=None,
+                allow_provider_call=True, task_runner=runner)
+        self.assertTrue(result["lanes"][0]["called"])
+        self.assertFalse(result["lanes"][0]["completed"])
+
     def test_duplicate_requests_are_rejected_before_execution(self):
         with self.assertRaisesRegex(ValueError, "requests_must_be_unique"):
             fanout.run_fanout(

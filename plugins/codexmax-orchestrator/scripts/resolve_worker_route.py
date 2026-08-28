@@ -613,7 +613,26 @@ def _eligibility_reasons(
             )
         )
     )
-    if preflight["quota"] != "available" and not unknown_quota_exception:
+    task_scoped_unknown_quota = (
+        preflight["quota"] == "unknown"
+        and packet.get("profile") == "task_scoped_read_only"
+        and isinstance(packet.get("explicit_selection"), dict)
+        and packet["explicit_selection"].get("route_name") == route_name
+        and route["billing_basis"] == "subscription"
+        and preflight["billing"] == "subscription"
+        and packet["allowed_billing"] == ["subscription"]
+        and packet["resolution_phase"] == "pre_dispatch"
+        and all(
+            packet["controls"][field] == 1
+            for field in (
+                "max_attempts_per_checkpoint", "max_attempts_per_route",
+                "circuit_breaker_threshold", "no_improvement_window",
+            )
+        )
+    )
+    if preflight["quota"] != "available" and not (
+        unknown_quota_exception or task_scoped_unknown_quota
+    ):
         reasons.append("quota_not_available")
     if preflight["credential_access_required"] is not False:
         reasons.append("credential_access_required")

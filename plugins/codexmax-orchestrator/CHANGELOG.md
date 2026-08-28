@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.0 - 2026-08-28
+
+- Make normal external delegation model-free for the user. The Parent selects a
+  semantic role. Orcastrata prefers enabled bindings, then discovers exact
+  Command Code models and creates task-local bindings without persistence.
+- Let an exact Command Code model use the generic package-owned transport when
+  no saved binding exists. Preserve a real operator-created disabled binding
+  as a denial.
+- Consolidate exact, automatic, and adversarial execution on one task service.
+  Preserve one-attempt truth and compact fan-out receipts.
+- Add general isolated implementation. A provider returns a unified diff with
+  read-only authority. Orcastrata validates and applies it to an exact
+  existing-file allowlist, runs bounded Parent validation, and retains rollback
+  evidence.
+- Prove staged-package exact and automatic journeys with real subprocesses.
+  Prove live automatic DeepSeek Flash, exact MiniMax M3, three-lane partial
+  fan-out, isolated patch application, validation, and rollback.
+
 ## 1.0.4 - 2026-08-28
 
 - Add declarative exact models over approved, package-owned transports. A new

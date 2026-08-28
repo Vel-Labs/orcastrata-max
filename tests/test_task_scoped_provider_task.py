@@ -90,6 +90,45 @@ def capture_result(payload, *, returncode=0):
 
 
 class TaskScopedProviderTaskTests(unittest.TestCase):
+    def test_unconfigured_commandcode_model_gets_task_local_binding_only(self):
+        effective = copy.deepcopy(module.CONFIG.DEFAULTS)
+        original = copy.deepcopy(effective)
+        overlay, created = module.SERVICE.task_local_exact_config(
+            effective=effective, request=REQUEST, session_module=module.SESSION,
+            config_module=module.CONFIG,
+        )
+        self.assertTrue(created)
+        self.assertEqual(effective, original)
+        binding_id, binding, _ = module.SESSION._configured_binding(
+            overlay, "Command Code", MODEL,
+        )
+        self.assertEqual(binding["route"]["exact_model"], MODEL)
+        self.assertIn(binding_id, overlay["adapter_registry"]["bindings"])
+
+    def test_existing_disabled_binding_is_not_bypassed(self):
+        effective = effective_with_model()
+        for binding in effective["adapter_registry"]["bindings"].values():
+            if binding.get("route", {}).get("exact_model") == MODEL:
+                binding["enabled"] = False
+        with self.assertRaisesRegex(module.SESSION.ExplicitSelectionError, "requested_binding_disabled"):
+            module.SERVICE.task_local_exact_config(
+                effective=effective, request=REQUEST, session_module=module.SESSION,
+                config_module=module.CONFIG,
+            )
+
+    def test_shipped_disabled_example_is_not_an_operator_denial(self):
+        effective = copy.deepcopy(module.CONFIG.DEFAULTS)
+        request = "Use deepseek/deepseek-v4-pro through Command Code"
+        overlay, created = module.SERVICE.task_local_exact_config(
+            effective=effective, request=request, session_module=module.SESSION,
+            config_module=module.CONFIG,
+        )
+        self.assertTrue(created)
+        _, binding, _ = module.SESSION._configured_binding(
+            overlay, "Command Code", "deepseek/deepseek-v4-pro",
+        )
+        self.assertTrue(binding["enabled"])
+
     def test_timeout_is_bounded_before_configuration_or_dispatch(self):
         with tempfile.TemporaryDirectory(dir=ROOT) as directory, \
              mock.patch.object(module.DISPATCH, "_effective_config") as resolve:
@@ -133,7 +172,14 @@ class TaskScopedProviderTaskTests(unittest.TestCase):
              mock.patch.object(module.DISPATCH, "_require_assignment", side_effect=lambda value, root: value), \
              mock.patch.object(module.DISPATCH, "_resolve_pre_dispatch", return_value={"status": "dispatch_required"}), \
              mock.patch.object(module.DISPATCH, "run_dispatch", return_value={
-                 "status": "selected", "attempts": [{"returncode": 0, "response_identity_validated": True}],
+                 "status": "selected", "attempts": [{
+                     "returncode": 0,
+                     "expected_response_identity": {
+                         "declared_route": "worker", "actual_provider": "provider",
+                         "actual_model": "model", "fallback_used": False, "retry_count": 0,
+                     },
+                     "response_identity_validated": True,
+                 }],
                  "artifact": {"path": "result.json"}, "usage": {},
              }) as dispatch:
             result = module.run_task(**{**task_kwargs(Path(directory)), "workspace_config": workspace})

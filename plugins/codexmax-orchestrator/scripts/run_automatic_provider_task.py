@@ -7,6 +7,7 @@ import argparse
 import copy
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -26,15 +27,19 @@ def _load(name: str, path: Path) -> Any:
     return module
 
 
-SESSION = _load("automatic_provider_session", SCRIPT.with_name("verify_configured_tool_session.py"))
-DISPATCH = _load("automatic_provider_dispatch", SCRIPT.with_name("run_headless_provider_dispatch.py"))
 TASK = _load("automatic_provider_task", SCRIPT.with_name("run_task_scoped_provider_task.py"))
+SESSION = TASK.SESSION
+DISPATCH = TASK.DISPATCH
 
 SUPPORTED = {"commandcode": "Command Code", "opencode_tool_loop": "OpenCode"}
+ROLES = ("planner", "architect", "worker", "tester", "documenter", "auditor")
 
 
 def _public_rows(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    return [{key: value for key, value in row.items() if key not in {"sort_key", "binding", "route"}} for row in rows]
+    return [{
+        key: value for key, value in row.items()
+        if key not in {"sort_key", "binding", "route", "probe"}
+    } for row in rows]
 
 
 class _ProbeCache:
@@ -49,9 +54,11 @@ class _ProbeCache:
         return self.rows[key]
 
 
-def _priority(effective: Mapping[str, Any]) -> dict[str, tuple[int, int, int]]:
+def _priority(effective: Mapping[str, Any], role: str = "worker") -> dict[str, tuple[int, int, int]]:
     fields = tuple(f"route_{index:02d}" for index in range(1, 7))
-    ordered = effective.get("headless_dispatch", {}).get("role_priorities", {}).get("worker", {})
+    if role not in ROLES:
+        raise ValueError("role_invalid")
+    ordered = effective.get("headless_dispatch", {}).get("role_priorities", {}).get(role, {})
     result: dict[str, tuple[int, int, int]] = {}
     for ordinal, field in enumerate(fields):
         route = ordered.get(field)
@@ -68,10 +75,10 @@ def _priority(effective: Mapping[str, Any]) -> dict[str, tuple[int, int, int]]:
     return result
 
 
-def _candidates(effective: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _candidates(effective: Mapping[str, Any], role: str = "worker") -> list[dict[str, Any]]:
     registry = effective.get("adapter_registry", {}).get("bindings", {})
     routes = effective.get("route_registry", {}).get("routes", {})
-    priority = _priority(effective)
+    priority = _priority(effective, role)
     rows: list[dict[str, Any]] = []
     for binding_id, binding in registry.items() if isinstance(registry, Mapping) else ():
         route_ref = binding.get("route") if isinstance(binding, Mapping) else None
@@ -81,9 +88,8 @@ def _candidates(effective: Mapping[str, Any]) -> list[dict[str, Any]]:
         row = {"binding_id": binding_id, "route_name": route_name, "adapter_type": adapter,
                "exact_model": route_ref.get("exact_model") if isinstance(route_ref, Mapping) else None,
                "tool": SUPPORTED.get(adapter), "reason": "", "configured": False,
-               "pre_probe_eligible": False,
-               "probed": False, "selected": False, "called": False, "completed": False,
-               "rejected": True}
+               "pre_probe_eligible": False, "probed": False, "selected": False,
+               "called": False, "completed": False, "rejected": True}
         if adapter not in SUPPORTED:
             row["reason"] = "transport_not_supported_by_automatic_lane"
         elif not isinstance(route, Mapping) or route.get("route_kind") != "worker":
@@ -106,24 +112,129 @@ def _candidates(effective: Mapping[str, Any]) -> list[dict[str, Any]]:
     return sorted(rows, key=lambda row: row.get("sort_key", (999, 999, 999, str(row.get("binding_id", "")))))
 
 
-def run_automatic_task(*, repo_root: Path, task_id: str, prompt: str, read_scope: Sequence[str],
-                       evidence_directory: str, expected_artifact: str, workspace_config: Path,
-                       allow_provider_call: bool, probe_runner: Callable[..., Any] = subprocess.run) -> dict[str, Any]:
+def _discover_commandcode_models(runner: Callable[..., Any]) -> list[str]:
+    """Read the fixed Command Code model catalog without starting a model."""
+    env = {key: os.environ[key] for key in SESSION.PROBE_ENV_KEYS if key in os.environ}
+    try:
+        completed = runner(
+            list(SESSION.COMMANDCODE_MODELS_ARGV), input="", text=True,
+            capture_output=True, check=False, timeout=15, env=env,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return []
+    stdout = completed.stdout or ""
+    stderr = completed.stderr or ""
+    if completed.returncode != 0 or not SESSION._stderr_is_safe("Command Code", stderr):
+        return []
+    if len(stdout.encode("utf-8")) + len(stderr.encode("utf-8")) > 262144:
+        return []
+    cleaned = SESSION._clean_bounded_output(stdout, tool="Command Code")
+    models: list[str] = []
+    for line in cleaned.splitlines():
+        parts = line.split()
+        if not parts:
+            continue
+        model = parts[0]
+        if SESSION.MODEL_TOKEN_RE.fullmatch(model) is not None and model not in models:
+            models.append(model)
+    return models[:128]
+
+
+def _model_preference(effective: Mapping[str, Any], model: str,
+                      role: str) -> tuple[int, int, int, str]:
+    """Rank a discovered model only from declared route metadata."""
+    priorities = _priority(effective, role)
+    routes = effective.get("route_registry", {}).get("routes", {})
+    matches: list[tuple[int, int, int, str]] = []
+    for route_name, route in routes.items() if isinstance(routes, Mapping) else ():
+        if (
+            isinstance(route_name, str)
+            and isinstance(route, Mapping)
+            and route.get("route_kind") == "worker"
+            and route.get("exact_model") == model
+            and route_name in priorities
+        ):
+            ordinal, cost, effort = priorities[route_name]
+            matches.append((ordinal, cost, effort, route_name))
+    return min(matches) if matches else (999, 999, 999, model)
+
+
+def _with_discovered_candidates(effective: Mapping[str, Any], role: str,
+                                runner: Callable[..., Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    overlay = copy.deepcopy(dict(effective))
+    existing = overlay.get("adapter_registry", {}).get("bindings", {})
+    blocked_models = {
+        binding.get("route", {}).get("exact_model")
+        for binding_id, binding in existing.items()
+        if isinstance(binding_id, str) and not binding_id.startswith("example_")
+        and isinstance(binding, Mapping) and binding.get("enabled") is False
+    }
+    rows: list[dict[str, Any]] = []
+    ordered = sorted(
+        _discover_commandcode_models(runner),
+        key=lambda model: _model_preference(effective, model, role),
+    )
+    for ordinal, model in enumerate(ordered[:8]):
+        if model in blocked_models:
+            continue
+        request = f"Use {model} through Command Code"
+        try:
+            overlay, created = TASK.SERVICE.task_local_exact_config(
+                effective=overlay, request=request, session_module=SESSION,
+                config_module=TASK.CONFIG,
+            )
+            binding_id, binding, route = SESSION._configured_binding(
+                overlay, "Command Code", model,
+            )
+        except (SESSION.ExplicitSelectionError, ValueError):
+            continue
+        if not created:
+            continue
+        rows.append({
+            "binding_id": binding_id, "route_name": binding["route"]["route_name"],
+            "adapter_type": "commandcode", "exact_model": model,
+            "tool": "Command Code", "reason": "eligible_for_session_probe",
+            "configured": True, "pre_probe_eligible": True, "probed": False,
+            "selected": False, "called": False, "completed": False,
+            "rejected": True, "task_local_binding": True,
+            "candidate_origin": "discovered_session_model",
+            "sort_key": (100, *_model_preference(effective, model, role), ordinal, binding_id),
+            "binding": copy.deepcopy(dict(binding)), "route": copy.deepcopy(dict(route)),
+        })
+    return overlay, rows
+
+
+def run_automatic_task(*, repo_root: Path, task_id: str, prompt: str,
+                       read_scope: Sequence[str], evidence_directory: str,
+                       expected_artifact: str, workspace_config: Path,
+                       allow_provider_call: bool,
+                       role: str = "worker",
+                       timeout_seconds: float = 60.0,
+                       probe_runner: Callable[..., Any] = subprocess.run) -> dict[str, Any]:
     if allow_provider_call is not True:
         return {"configured": False, "selected": False, "called": False, "completed": False,
                 "rejected": True, "reason": "task_scoped_provider_call_not_authorized", "considered": []}
     repo_root = Path(repo_root).resolve(strict=True)
+    if role not in ROLES:
+        raise ValueError("role_invalid")
     effective = DISPATCH._effective_config(repo_root, workspace_config)
-    considered = _candidates(effective)
     cache = _ProbeCache(probe_runner)
+    considered = _candidates(effective, role)
+    effective, discovered = _with_discovered_candidates(effective, role, cache)
+    considered.extend(discovered)
+    considered.sort(key=lambda row: row.get("sort_key", (999, 999, 999, str(row.get("binding_id", "")))))
     selected = None
     for row in considered:
         if row["reason"] != "eligible_for_session_probe":
             continue
         try:
-            provider_id, token = SESSION._probe_identity(row["tool"], row["route"], row["exact_model"])
-            probe = SESSION.probe_existing_session(row["tool"], provider_id, token, runner=cache)
-            row.update({"reason": "session_probe_succeeded", "probed": True, "probe": probe})
+            request = f"Use {row['exact_model']} through {row['tool']}"
+            probe_service = TASK.SERVICE.ProviderTaskExecutionService(
+                session_module=SESSION, dispatch_module=DISPATCH, config_module=TASK.CONFIG,
+            )
+            probe = probe_service.probe_exact(request, effective, cache)
+            row.update({"reason": "session_probe_succeeded", "probed": True,
+                        "selected": True, "probe": probe})
             row["rejected"] = False
             selected = row
             break
@@ -131,45 +242,38 @@ def run_automatic_task(*, repo_root: Path, task_id: str, prompt: str, read_scope
             row.update({"reason": getattr(exc, "code", "session_probe_failed"), "probed": True})
     if selected is None:
         return {"configured": any(row["pre_probe_eligible"] for row in considered),
-                "selected": False, "called": False, "completed": False, "rejected": True,
-                "reason": "no_eligible_configured_worker", "considered": _public_rows(considered)}
+                "selected": False, "called": False, "completed": False,
+                "rejected": True, "reason": "no_eligible_configured_worker",
+                "considered": _public_rows(considered)}
     request = f"Use {selected['exact_model']} through {selected['tool']}"
-    assignment, lifecycle = TASK.build_assignment(
-        request=request, task_id=task_id, prompt=prompt, repo_root=repo_root,
+    # The service receives the already verified probe and the existing seams.
+    # This keeps automatic selection to one route and one dispatch.
+    lifecycle_extra = {
+        "considered": _public_rows(considered), "selected_binding_id": selected["binding_id"],
+        "selected_tool": selected["tool"], "selected_model": selected["exact_model"],
+        "selected_role": role,
+        "task_local_binding": selected.get("task_local_binding") is True,
+    }
+    return TASK.SERVICE.execute_task(
+        repo_root=repo_root, request=request, task_id=task_id, prompt=prompt,
         read_scope=read_scope, evidence_directory=evidence_directory,
-        expected_artifact=expected_artifact, probe_runner=cache, effective=effective,
-        allow_provider_call=True,
+        expected_artifact=expected_artifact, workspace_config=workspace_config,
+        allow_provider_call=True, probe_runner=cache, timeout_seconds=timeout_seconds,
+        session_module=SESSION, dispatch_module=DISPATCH, config_module=TASK.CONFIG,
+        assignment_builder=TASK.build_assignment, session_probe=probe,
+        effective_config=effective,
+        lifecycle_extra=lifecycle_extra,
     )
-    checked = DISPATCH._require_assignment(assignment, repo_root)
-    packet = copy.deepcopy(checked["route_packet"])
-    preview = DISPATCH._resolve_pre_dispatch(packet)
-    considered = _public_rows(considered)
-    lifecycle.update({"considered": considered, "selected": True, "selected_binding_id": selected["binding_id"],
-                      "selected_tool": selected["tool"], "selected_model": selected["exact_model"],
-                      "route_resolution": preview})
-    if preview.get("status") != "dispatch_required":
-        lifecycle.update({"called": False, "completed": False, "rejected": True, "reason": preview.get("stop_reason", "pre_dispatch_rejected")})
-        return lifecycle
-    result = DISPATCH.run_dispatch(checked, packet, repo_root, {}, effective=effective,
-        allow_provider_call=True, allow_simulated_process=False, timeout=60.0,
-        stdout_limit=1024 * 1024, stderr_limit=256 * 1024)
-    attempts = result.get("attempts") or []
-    called = any(attempt.get("returncode") is not None for attempt in attempts)
-    completed = result.get("status") == "selected" and isinstance(result.get("artifact"), dict) and bool(attempts and attempts[-1].get("response_identity_validated") is True)
-    for row in lifecycle["considered"]:
-        if row.get("binding_id") == selected["binding_id"]:
-            row.update({"selected": True, "called": called, "completed": completed, "rejected": not completed})
-    lifecycle.update({"called": called, "completed": completed, "rejected": not completed,
-                      "usage": result.get("usage"), "manifest": result})
-    return lifecycle
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--task-id", required=True)
-    parser.add_argument("--workspace-config", type=Path, required=True)
+    parser.add_argument("--workspace-config", type=Path)
     parser.add_argument("--allow-provider-call", action="store_true")
+    parser.add_argument("--role", choices=ROLES, default="worker")
+    parser.add_argument("--timeout-seconds", type=float, default=60.0)
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--read-scope", action="append", required=True)
     parser.add_argument("--evidence-directory", default="reports/task-scoped")

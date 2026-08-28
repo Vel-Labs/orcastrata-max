@@ -35,6 +35,43 @@ def probe_runner(argv, **kwargs):
 
 
 class AutomaticSelectorTests(unittest.TestCase):
+    def test_no_binding_discovers_and_selects_by_task_role(self):
+        effective = copy.deepcopy(auto.TASK.CONFIG.DEFAULTS)
+
+        def catalog(argv, **kwargs):
+            self.assertEqual(list(argv), ["commandcode", "--list-models"])
+            return subprocess.CompletedProcess(
+                argv, 0,
+                "deepseek/deepseek-v4-pro\ndeepseek/deepseek-v4-flash\nxai/grok-4.6\n",
+                "",
+            )
+
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory, \
+             patch.object(auto.DISPATCH, "_effective_config", return_value=effective), \
+             patch.object(auto.SESSION, "probe_existing_session", return_value={"output_sha256": "sha256:" + "a" * 64}), \
+             patch.object(auto.TASK, "build_assignment", return_value=({"route_packet": {}, "proof_mode": "task_scoped_live"}, {"configured": True})), \
+             patch.object(auto.DISPATCH, "_require_assignment", side_effect=lambda value, root: value), \
+             patch.object(auto.DISPATCH, "_resolve_pre_dispatch", return_value={"status": "dispatch_required"}), \
+             patch.object(auto.DISPATCH, "run_dispatch", return_value={
+                 "status": "selected", "attempts": [{
+                     "returncode": 0,
+                     "expected_response_identity": {
+                         "declared_route": "worker", "actual_provider": "provider",
+                         "actual_model": "model", "fallback_used": False, "retry_count": 0,
+                     }, "response_identity_validated": True,
+                 }], "artifact": {}, "usage": {}}):
+            result = auto.run_automatic_task(
+                repo_root=Path(directory), task_id="T040", prompt="document",
+                read_scope=["."], evidence_directory="reports",
+                expected_artifact="reports/result.json", workspace_config=None,
+                allow_provider_call=True, role="documenter", probe_runner=catalog,
+            )
+        self.assertTrue(result["completed"])
+        self.assertEqual(result["selected_role"], "documenter")
+        self.assertEqual(result["selected_model"], "deepseek/deepseek-v4-flash")
+        selected = next(row for row in result["considered"] if row.get("selected") is True)
+        self.assertEqual(selected["candidate_origin"], "discovered_session_model")
+
     def test_disabled_only_and_no_binding(self):
         empty = copy.deepcopy(auto.TASK.CONFIG.DEFAULTS)
         self.assertFalse(any(row["reason"] == "eligible_for_session_probe" for row in auto._candidates(empty)))
@@ -81,7 +118,15 @@ class AutomaticSelectorTests(unittest.TestCase):
              patch.object(auto.TASK, "build_assignment", return_value=({"route_packet": {}, "proof_mode": "task_scoped_live"}, {"configured": True})), \
              patch.object(auto.DISPATCH, "_require_assignment", side_effect=lambda value, root: value), \
              patch.object(auto.DISPATCH, "_resolve_pre_dispatch", return_value={"status": "dispatch_required"}), \
-             patch.object(auto.DISPATCH, "run_dispatch", return_value={"status": "selected", "attempts": [{"returncode": 0, "response_identity_validated": True}], "artifact": {}, "usage": {}}) as dispatch:
+             patch.object(auto.DISPATCH, "run_dispatch", return_value={
+                 "status": "selected", "attempts": [{
+                     "returncode": 0,
+                     "expected_response_identity": {
+                         "declared_route": "worker", "actual_provider": "provider",
+                         "actual_model": "model", "fallback_used": False, "retry_count": 0,
+                     },
+                     "response_identity_validated": True,
+                 }], "artifact": {}, "usage": {}}) as dispatch:
             result = auto.run_automatic_task(repo_root=Path(directory), task_id="T040", prompt="p", read_scope=["."], evidence_directory="reports", expected_artifact="reports/result.json", workspace_config=Path("config"), allow_provider_call=True, probe_runner=probe_runner)
         dispatch.assert_called_once()
         self.assertTrue(result["completed"])

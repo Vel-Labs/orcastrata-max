@@ -187,9 +187,12 @@ Use one exact tool-and-model clause. A second route clause fails. A request to
 save, remember, persist, or make the pairing a default also stops for separate
 approval.
 
-Orcastrata Max checks the configured connection to the tool and verifies the
-existing session and exact model. It does not read credentials, start login,
-refresh authentication, or create a profile.
+Orcastrata Max checks the tool and verifies the existing session and exact
+model. For Command Code, a model that has no saved binding can use an in-memory
+binding on the package-owned generic transport. This does not save a profile.
+An existing disabled binding remains disabled. OpenCode requires a saved
+provider binding. Orcastrata does not read credentials, start login, or refresh
+authentication.
 
 Before dispatch, you receive a preview like this:
 
@@ -231,10 +234,11 @@ Configure minimaxai/minimax-m3 through Command Code as an Orcastrata worker.
 Then run a read-only review with that exact model.
 ```
 
-Orcastrata writes only model identity and package-controlled transport fields.
+Orcastrata uses only model identity and package-controlled transport fields.
 It does not accept an executable, endpoint, URL, argv, environment, token, or
-secret from this request. The candidate starts as configured. A fresh session
-and exact-model probe must pass before the task gets authority or starts.
+secret from this request. The default declaration is task-local. A fresh
+session and exact-model probe must pass before the task gets authority or
+starts. Ask separately if you want to save the pairing.
 
 For normal work, do not name a model:
 
@@ -242,9 +246,11 @@ For normal work, do not name a model:
 Use Orcastrata Max to review this change with a compatible available worker.
 ```
 
-Automatic selection probes enabled candidates and starts one compatible
-route. It reports the exact invoked provider and model. It does not treat an
-ordered fallback list as fan-out.
+Automatic selection uses the task role. It probes enabled candidates first.
+It can then inspect the fixed Command Code model catalog and create temporary
+generic-transport candidates. It starts one compatible route and reports the
+exact provider and model. It does not save discovery or treat an ordered list
+as fan-out.
 
 For an adversarial review, name the route set explicitly:
 
@@ -257,11 +263,13 @@ one times out. Do not substitute or retry a failed lane.
 Each lane gets a distinct task, evidence directory, artifact, and receipt.
 The Parent performs synthesis. A timed-out lane remains a timed-out lane.
 
-Controlled writes are narrower. V1 permits one existing regular file in a
-pre-created linked development worktree. A catch-all tool guard allows only
-the bound read-edit-read sequence. Orcastrata validates the exact resulting
-bytes and changed path, then returns a rollback receipt for Parent review.
-This lane does not grant shared-tree or protected-production write authority.
+Implementation uses a pre-created linked development worktree. The provider
+reads the task and returns a unified diff. It receives no repository write or
+shell authority. Orcastrata validates the patch against an exact allowlist of
+existing regular files, applies it, runs exact Parent-authorized validation
+commands, and returns a durable rollback receipt. The older one-file
+read-edit-read path remains a fixed security canary only. Neither lane grants
+shared-tree or protected-production write authority.
 
 ### Complete exact external-route example
 

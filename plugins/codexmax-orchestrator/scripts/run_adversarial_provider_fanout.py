@@ -61,9 +61,33 @@ def _public_result(result: Mapping[str, Any]) -> dict[str, Any]:
     """Keep aggregate receipts free of duplicated provider payloads."""
     allowed = (
         "configured", "selected", "called", "completed", "rejected", "reason",
-        "binding_id", "task_grant_sha256", "route_resolution", "usage", "manifest",
+        "binding_id", "task_grant_sha256", "usage", "task_local_binding",
     )
-    return {key: copy.deepcopy(result[key]) for key in allowed if key in result}
+    public = {key: copy.deepcopy(result[key]) for key in allowed if key in result}
+    manifest = result.get("manifest")
+    if isinstance(manifest, Mapping):
+        attempts = manifest.get("attempts") if isinstance(manifest.get("attempts"), list) else []
+        public["dispatch"] = {
+            "status": manifest.get("status"),
+            "failure": copy.deepcopy(manifest.get("failure")),
+            "selected_route": manifest.get("selected_route"),
+            "artifact": {
+                key: manifest.get("artifact", {}).get(key)
+                for key in ("sha256", "bytes")
+                if isinstance(manifest.get("artifact"), Mapping) and key in manifest["artifact"]
+            },
+            "attempts": [
+                {
+                    key: attempt.get(key)
+                    for key in (
+                        "route_name", "outcome", "returncode", "timed_out",
+                        "elapsed_time_ms", "response_identity_validated", "tokens", "cost", "quota",
+                    )
+                }
+                for attempt in attempts if isinstance(attempt, Mapping)
+            ],
+        }
+    return public
 
 
 def run_fanout(
@@ -140,8 +164,16 @@ def run_fanout(
                 "result": _public_result(result),
             })
         except Exception as exc:  # one lane cannot suppress the explicit set
+            # A late exception can occur after the dispatcher has durably
+            # recorded an attempt.  Preserve that fact in the aggregate
+            # receipt; only a proven pre-start failure may report called=false.
+            called = TASK.SERVICE.durable_attempt_started(
+                Path(repo_root), lane_evidence,
+                getattr(exc, "manifest", None)
+                if isinstance(getattr(exc, "manifest", None), Mapping) else None,
+            )
             lane.update({
-                "status": "rejected", "called": False, "completed": False,
+                "status": "rejected", "called": called, "completed": False,
                 "result": {"rejected": True, "reason": getattr(exc, "code", str(exc))},
             })
         lanes.append(lane)
