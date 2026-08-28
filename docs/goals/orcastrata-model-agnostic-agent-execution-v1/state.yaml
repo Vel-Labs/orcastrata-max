@@ -1,0 +1,584 @@
+version: 2
+
+goal:
+  title: "Orcastrata Model-Agnostic Agent Execution V1"
+  slug: orcastrata-model-agnostic-agent-execution-v1
+  kind: implementation
+  tranche: >-
+    Prove one installed external read-only task, generalize exact model
+    onboarding over approved transports, add automatic routing, controlled
+    writes, explicit fan-out, and installed acceptance.
+  status: done
+  oracle:
+    signal: >-
+      An installed successor configures a non-hardcoded exact model through an
+      approved transport, executes and validates compatible read and controlled
+      write tasks, reports invoked identity and usage truthfully, and runs an
+      explicit three-model adversarial fan-out.
+    cadence: "after each milestone and final audit"
+    final_proof: >-
+      Focused and consumer tests, package parity, reversible install, real
+      provider receipts, exact artifacts and diffs, and independent Luna audit.
+  intake:
+    original_request: >-
+      Fix Orcastrata so configured models routinely carry out tasks, and let an
+      operator configure model X through runtime Y as an agent.
+    interpreted_outcome: >-
+      Deliver a model-declarative, adapter-controlled, installed orchestration
+      journey with real task execution and truthful receipts.
+    input_shape: ordinary_language
+    audience: "Orcastrata operators and repository agents"
+    authority: approved
+    proof_type: behavioral
+    completion_proof: "Installed real-provider execution plus independent audit."
+    likely_misfire: >-
+      Add more route configuration and synthetic tests without making an
+      installed operator task reach a provider process.
+    blind_spots_considered:
+      - "Dirty source checkout versus installed 1.0.3 identity"
+      - "Closed transport safety versus declarative model extensibility"
+      - "Configured versus qualified versus invoked state"
+      - "Task-scoped development versus T062 protected production"
+      - "Ordered fallback versus explicit fan-out"
+      - "Provider identity, billing, usage, and isolation drift"
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  pm_routes_safe_successors: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: null
+
+tasks:
+  - id: T010
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: high
+    objective: "Freeze the successor base, architecture, authority, oracle, and task graph."
+    dependencies: []
+    constraints:
+      - "Governance files only."
+      - "Do not edit the dirty main checkout."
+    expected_output:
+      - "Execution-authorized implementation plan"
+      - "Valid GoalBuddy charter and board"
+      - "Exact first Luna Worker package"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      base_commit: "2bdd4c534a9c9ca046af1fd5645139182d3c7bc8"
+      branch: "codex/orcastrata-model-agnostic-agent-execution-v1"
+      summary: >-
+        Selected the exact clean 1.0.3 release base, preserved the dirty main
+        checkout, and froze the model-declarative execution oracle.
+
+  - id: T020
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: >-
+      Implement declarative exact-model candidates over existing approved
+      transports without allowing arbitrary execution configuration.
+    dependencies:
+      - T010
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/adapter_registry.py
+      - plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py
+      - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+      - plugins/codexmax-orchestrator/assets/contracts/adapter-registry.md
+      - plugins/codexmax-orchestrator/assets/contracts/codexmax-config.md
+      - plugins/codexmax-orchestrator/assets/templates/codexmax.config.yaml
+      - tests/test_adapter_registry.py
+      - tests/test_codexmax_config.py
+      - tests/test_configured_tool_session.py
+      - tests/test_automatic_provider_task.py
+      - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/**
+    constraints:
+      - "One Luna writer."
+      - "Keep transport implementations package-owned and digest-bound."
+      - "Reject user executable, argv, URL, endpoint, environment, module, path, token, and secret fields."
+      - "New candidates start configured, never qualified."
+    expected_output:
+      - "Generic exact-model authoring through an approved transport"
+      - "Compatibility migration for existing bindings"
+      - "Focused positive and negative tests"
+    verify:
+      - "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config -q"
+      - "git diff --check"
+    stop_if:
+      - "The design requires arbitrary user-supplied executable behavior."
+      - "Existing binding IDs or installed 1.0.3 configuration cannot migrate conservatively."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/adapter_registry.py
+        - plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py
+        - plugins/codexmax-orchestrator/assets/contracts/adapter-registry.md
+        - plugins/codexmax-orchestrator/assets/contracts/codexmax-config.md
+        - plugins/codexmax-orchestrator/assets/templates/codexmax.config.yaml
+        - tests/test_adapter_registry.py
+        - tests/test_codexmax_config.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T020-worker-receipt.md
+      commands:
+        - cmd: "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config -q"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: >-
+        Added exact-model declarations over package-owned Worker transports.
+        Provider, runtime, route, billing, and transport identity remain
+        controlled. New candidates remain configured and unqualified.
+      validation:
+        - "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config -q: 5 passed"
+        - "git diff --check: passed"
+      remaining_risk: >-
+        Execution, live qualification, package parity, and installed provider
+        behavior remain unproved and are owned by T030 and later tasks.
+
+  - id: T030
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: >-
+      Connect onboarding, exact session/model preflight, task grant, and
+      task_scoped_live dispatch into one operator-facing installed read-only journey.
+    dependencies:
+      - T020
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/verify_configured_tool_session.py
+      - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+      - plugins/codexmax-orchestrator/assets/contracts/headless-provider-dispatch.md
+      - plugins/codexmax-orchestrator/assets/contracts/standalone-provider-usability.md
+      - plugins/codexmax-orchestrator/skills/codexmax-route/SKILL.md
+      - tests/test_task_scoped_provider_task.py
+      - tests/test_configured_tool_session.py
+      - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/**
+    constraints:
+      - "Start with DeepSeek through Command Code."
+      - "One attempt, no fallback, no credential inspection."
+      - "Do not use T062 for task-scoped read-only work."
+    expected_output:
+      - "One operator command or skill flow from model configuration to validated artifact"
+      - "Truthful configured, selected, called, completed, rejected, and usage states"
+      - "Real non-mocked installed acceptance fixture and packet"
+    verify:
+      - "python3 -B -m unittest tests.test_task_scoped_provider_task tests.test_configured_tool_session -q"
+      - "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config -q"
+      - "git diff --check"
+    stop_if:
+      - "The wrapper requires arbitrary executable, argv, endpoint, environment, token, or secret input."
+      - "The read-only journey requires T062 protected-production authority."
+      - "An exact selected route can silently substitute another model or provider."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+        - plugins/codexmax-orchestrator/scripts/verify_configured_tool_session.py
+        - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+        - plugins/codexmax-orchestrator/assets/contracts/headless-provider-dispatch.md
+        - plugins/codexmax-orchestrator/assets/contracts/standalone-provider-usability.md
+        - plugins/codexmax-orchestrator/skills/codexmax-route/SKILL.md
+        - tests/test_task_scoped_provider_task.py
+        - tests/test_configured_tool_session.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T030-worker-receipt.md
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T030-deepseek.config.yaml
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T030-installed-deepseek-v2-result.json
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T030-installed-deepseek-v2/**
+      commands:
+        - cmd: "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config tests.test_configured_tool_session tests.test_task_scoped_provider_task -q"
+          status: pass
+        - cmd: "python3 installed/scripts/run_task_scoped_provider_task.py --request 'Use deepseek/deepseek-v4-pro through Command Code' --allow-provider-call"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: >-
+        The installed local candidate invoked Command Code 1.38.0 with exact
+        model deepseek/deepseek-v4-pro, completed one read-only task, validated
+        the artifact and response identity, used no fallback, and kept token,
+        quota, cost, and network observations unknown when not reported.
+      remaining_risk: >-
+        Automatic ordinary-task selection, controlled writes, explicit fan-out,
+        final versioned package parity, and the other provider routes remain.
+
+  - id: T040
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: >-
+      Make ordinary Orcastrata delegation select a currently qualified compatible
+      model without requiring the operator to name Luna or an external provider.
+    dependencies:
+      - T030
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/run_automatic_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/skills/codexmax-route/SKILL.md
+      - plugins/codexmax-orchestrator/assets/contracts/standalone-provider-usability.md
+      - plugins/codexmax-orchestrator/assets/contracts/route-registry.md
+      - tests/test_automatic_provider_task.py
+      - tests/test_task_scoped_provider_task.py
+      - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/**
+    constraints:
+      - "Explicit selections never fall back."
+      - "Automatic selection reports the exact invoked route."
+    expected_output:
+      - "Capability-based automatic route selection"
+      - "Operator-visible invoked-model receipt"
+    verify:
+      - "python3 -B -m unittest tests.test_automatic_provider_task tests.test_task_scoped_provider_task -q"
+      - "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config tests.test_configured_tool_session -q"
+      - "git diff --check"
+    stop_if:
+      - "Automatic selection treats configured-only or unknown identity as eligible without a fresh probe."
+      - "Automatic selection silently substitutes after an explicit model request."
+      - "The ordinary task can start more than one provider process."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/run_automatic_provider_task.py
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - plugins/codexmax-orchestrator/assets/contracts/route-registry.md
+        - tests/test_automatic_provider_task.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T040-worker-receipt.md
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T040-installed-automatic-result.json
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T040-installed-automatic/**
+      commands:
+        - cmd: "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config tests.test_configured_tool_session tests.test_task_scoped_provider_task tests.test_automatic_provider_task -q"
+          status: pass
+        - cmd: "python3 installed/scripts/run_automatic_provider_task.py --allow-provider-call"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: >-
+        The installed selector accepted an ordinary read-only task with no
+        model or provider argument, freshly probed the enabled binding,
+        selected exact DeepSeek through Command Code, started one provider
+        process, and completed with validated identity and no fallback.
+      remaining_risk: >-
+        Controlled writes, explicit adversarial fan-out, final versioned
+        package parity, and non-Command-Code transports remain.
+
+  - id: T050
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: >-
+      Add task-scoped controlled-write execution in an isolated worktree with
+      exact scope, before/after evidence, validation, and Parent review.
+    dependencies:
+      - T040
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_write.py
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/run_headless_provider_dispatch.py
+      - plugins/codexmax-orchestrator/scripts/provider_execution_policy.py
+      - plugins/codexmax-orchestrator/assets/contracts/provider-scoped-work.md
+      - plugins/codexmax-orchestrator/assets/contracts/headless-provider-dispatch.md
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - tests/test_task_scoped_provider_write.py
+      - tests/test_task_scoped_provider_task.py
+      - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/**
+    constraints:
+      - "No shared-tree or protected-production claim."
+      - "One writer and one exact write scope."
+    expected_output:
+      - "Installed controlled-write journey"
+      - "Change receipt and rollback behavior"
+    verify:
+      - "python3 -B -m unittest tests.test_task_scoped_provider_write tests.test_task_scoped_provider_task -q"
+      - "git diff --check"
+    stop_if:
+      - "The provider can write outside one exact granted target."
+      - "The controlled-write lane can run in the shared source checkout."
+      - "Parent cannot validate or reject the exact resulting diff."
+    receipt:
+      result: done
+      decision: accepted
+      full_outcome_complete: false
+      path: docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T050-parent-acceptance.md
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_write.py
+        - plugins/codexmax-orchestrator/scripts/run_headless_provider_dispatch.py
+        - plugins/codexmax-orchestrator/scripts/provider_execution_policy.py
+        - plugins/codexmax-orchestrator/assets/contracts/provider-scoped-work.md
+        - plugins/codexmax-orchestrator/assets/contracts/headless-provider-dispatch.md
+        - tests/test_task_scoped_provider_write.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T050-parent-acceptance.md
+      commands:
+        - cmd: "python3 -m unittest tests.test_task_scoped_provider_write"
+          status: pass
+        - cmd: "python3 installed/scripts/run_task_scoped_provider_write.py --task-id T050-installed-write-v7 --allow-provider-call"
+          status: pass
+        - cmd: "installed rollback with bound before and after SHA-256"
+          status: pass
+      summary: >-
+        The installed candidate used exact MiniMax M3 through Command Code to
+        change one granted target in an isolated worktree. The catch-all guard
+        proved one read-edit-read sequence, exact resulting bytes, no fallback,
+        and no retry. Parent then restored the exact before bytes.
+      validation:
+        - "7 focused controlled-write tests passed"
+        - "Installed provider write completed in 11,522 ms"
+        - "Only orcastrata-canary.txt changed during provider execution"
+        - "Rollback restored sha256:5959b9a77eb51290e15bbca40228b2d1af6e565add2119658c911364b8ea12e8"
+      remaining_risk: >-
+        The controlled-write proof is limited to Command Code in an isolated
+        development worktree. Shared-tree and protected-production writes
+        remain outside this goal.
+
+  - id: T060
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: >-
+      Implement explicit multi-model adversarial fan-out as distinct assignments
+      over one frozen candidate and rubric.
+    dependencies:
+      - T040
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/run_adversarial_provider_fanout.py
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py
+      - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/skills/codexmax-route/SKILL.md
+      - plugins/codexmax-orchestrator/assets/contracts/provider-fanout-v1.md
+      - plugins/codexmax-orchestrator/assets/contracts/route-registry.md
+      - tests/test_adversarial_provider_fanout.py
+      - tests/test_task_scoped_provider_task.py
+      - tests/test_codexmax_config.py
+      - tests/test_configured_tool_session.py
+      - tests/test_automatic_provider_task.py
+      - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/**
+    constraints:
+      - "Do not interpret route fallback order as fan-out."
+      - "Each lane keeps exact route identity and isolated evidence."
+      - "One immutable adapter overlay can declare every requested exact model without hand-edited YAML."
+    expected_output:
+      - "Explicit route-set fan-out"
+      - "Parent-only synthesis receipt"
+    verify:
+      - "python3 -B -m unittest tests.test_adversarial_provider_fanout tests.test_task_scoped_provider_task -q"
+      - "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config tests.test_configured_tool_session tests.test_automatic_provider_task -q"
+      - "git diff --check"
+    stop_if:
+      - "A lane can silently substitute its exact model, tool, route, or billing path."
+      - "A lane can write outside its lane-specific evidence and artifact paths."
+      - "Fan-out is represented as fallback order instead of distinct assignments."
+    receipt:
+      result: done
+      decision: accepted
+      full_outcome_complete: false
+      path: docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T060-parent-acceptance.md
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/run_adversarial_provider_fanout.py
+        - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+        - plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py
+        - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+        - plugins/codexmax-orchestrator/assets/contracts/provider-fanout-v1.md
+        - plugins/codexmax-orchestrator/assets/contracts/route-registry.md
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - plugins/codexmax-orchestrator/skills/codexmax-route/SKILL.md
+        - tests/test_adversarial_provider_fanout.py
+        - tests/test_task_scoped_provider_task.py
+        - tests/test_codexmax_config.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T060-parent-acceptance.md
+      commands:
+        - cmd: "python3 -B -m unittest tests.test_adapter_registry tests.test_codexmax_config tests.test_configured_tool_session tests.test_task_scoped_provider_task tests.test_automatic_provider_task tests.test_adversarial_provider_fanout -q"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: >-
+        Installed fan-out admitted and started exact DeepSeek, MiniMax, and Grok
+        lanes from one frozen input. MiniMax completed with validated identity.
+        DeepSeek and Grok timed out and were truthfully rejected without retry
+        or substitution.
+      validation:
+        - "33 focused T020-T060 tests passed"
+        - "Installed MiniMax lane completed with strict identity validation"
+        - "Installed DeepSeek and Grok lanes hard-stopped on timeout without fallback"
+      remaining_risk: >-
+        DeepSeek Pro and Grok 4.6 did not complete the bounded adversarial
+        prompts through Command Code. Their exact CLI paths remain live but
+        provider completion is not accepted.
+
+  - id: T070
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: high
+    objective: >-
+      Freeze a successor package, install it reversibly, and run real bounded
+      provider journeys for currently available DeepSeek, MiniMax, and Grok routes.
+    dependencies:
+      - T050
+      - T060
+    constraints:
+      - "Fresh preflight for every provider attempt."
+      - "Subscription-only billing and no silent fallback."
+      - "Preserve unavailable routes without weakening the oracle."
+    expected_output:
+      - "Package and installed parity"
+      - "Real read, controlled-write, automatic-routing, and fan-out receipts"
+      - "Rollback proof"
+    receipt:
+      result: done
+      decision: accepted
+      full_outcome_complete: false
+      path: docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T070-installed-acceptance.md
+      changed_files:
+        - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - plugins/codexmax-orchestrator/CHANGELOG.md
+        - plugins/codexmax-orchestrator/GETTING_STARTED.md
+        - plugins/codexmax-orchestrator/RUNTIME_SUPPORT.md
+        - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T070-installed-acceptance.md
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T070-installed-104-fanout-acceptance.md
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T070-installed-104-fanout/**
+      commands:
+        - cmd: "python3 -B -m unittest discover -s tests -p 'test_*.py' -q"
+          status: pass
+        - cmd: "verify_release_parity.py verify source, stage, and installed cache"
+          status: pass
+        - cmd: "installed 1.0.4 run_automatic_provider_task.py"
+          status: pass
+        - cmd: "installed 1.0.4 run_task_scoped_provider_write.py"
+          status: pass
+        - cmd: "installed 1.0.4 digest-bound rollback"
+          status: pass
+        - cmd: "installed 1.0.4 run_adversarial_provider_fanout.py with three exact lanes"
+          status: pass
+      summary: >-
+        Version 1.0.4 has exact source, immutable-stage, and installed-cache
+        parity. Fresh installed automatic read and controlled-write journeys
+        completed through MiniMax M3 with strict identity, no fallback, and
+        successful rollback.
+      validation:
+        - "40 full repository tests passed"
+        - "389 package files matched across source, stage, and installed cache"
+        - "Installed automatic read completed in 3,024 ms"
+        - "Installed controlled write completed in 8,980 ms"
+        - "Rollback restored the exact before digest"
+        - "Installed 1.0.4 fan-out started all three exact lanes once; MiniMax completed and DeepSeek and Grok timed out"
+      remaining_risk: >-
+        DeepSeek Pro and Grok 4.6 started but did not complete the bounded T060
+        adversarial prompts. Provider accounting remains unknown where the
+        runtimes omit it. The package is installed locally but not published.
+
+  - id: T080
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Independently audit the exact installed candidate against the complete goal oracle."
+    dependencies:
+      - T070
+    constraints:
+      - "Read-only Luna audit."
+      - "Reject synthetic, source-only, or transferred provider proof."
+    expected_output:
+      - "ACCEPT or REVISE verdict"
+      - "Claim-to-receipt matrix"
+    receipt:
+      result: done
+      decision: accepted
+      full_outcome_complete: false
+      path: docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T080-independent-luna-audit.md
+      changed_files:
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T080-independent-luna-audit.md
+      commands:
+        - cmd: "independent Luna audit of source, installed 1.0.4, and receipts"
+          status: pass
+        - cmd: "independent Luna re-audit of final 1.0.4 fan-out repair"
+          status: pass
+      summary: >-
+        Luna accepted the complete installed 1.0.4 candidate after Parent ran
+        the missing final-version three-lane fan-out. No material blocker
+        remains.
+      validation:
+        - "Model-declarative onboarding: pass"
+        - "Automatic read and controlled write: pass"
+        - "Installed 1.0.4 three-lane fan-out: pass"
+        - "Package parity and truthful provider limits: pass"
+      remaining_risk: >-
+        DeepSeek Pro and Grok 4.6 remain proven as admitted and bounded but did
+        not complete the adversarial prompt.
+
+  - id: T999
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: high
+    objective: >-
+      Reconcile goal-owned child history, close non-persistent children, validate
+      terminal inventory, then mark the board done only after T080 acceptance.
+    dependencies:
+      - T080
+    constraints:
+      - "Parent-only lifecycle closeout."
+      - "Do not mark goal done before terminal cleanup and official checker pass."
+    expected_output:
+      - "ParentChildCloseoutReceipt"
+      - "Terminal lifecycle ready and confirm receipts"
+      - "full_outcome_complete: true"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      path: docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T999-parent-closeout.md
+      changed_files:
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/state.yaml
+        - docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T999-parent-closeout.md
+        - docs/plans/orcastrata-model-agnostic-agent-execution-v1.md
+      commands:
+        - cmd: "collaboration list and terminal no-op closeout"
+          status: pass
+        - cmd: "GoalBuddy official state checker"
+          status: pass
+        - cmd: "GoalBuddy stop checker"
+          status: pass
+        - cmd: "implementation plan validator"
+          status: pass
+      summary: >-
+        Parent reconciled all goal-owned child work. The final collaboration
+        inventory has no active or pending child. The installed 1.0.4 outcome
+        has independent Luna acceptance.
+      validation:
+        - "All visible goal-owned children are terminal"
+        - "No persistent child session was authorized or retained"
+      remaining_risk: >-
+        DeepSeek Pro and Grok 4.6 did not complete the bounded adversarial
+        prompt. The installed package is local and is not published.

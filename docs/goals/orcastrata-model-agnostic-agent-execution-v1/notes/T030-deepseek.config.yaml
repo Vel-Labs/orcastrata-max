@@ -1,0 +1,44 @@
+adapter_registry:
+  bindings:
+    binding_commandcode_e09a30d1febb87af1b24:
+      adapter_binding_sha256: "sha256:23ff61597daf2c22010bb392d83ad90f310046bfcfcb95c8b5e63969cf36f2c1"
+      adapter_id: "builtin.commandcode.v1"
+      adapter_registry_sha256: "sha256:407375f68874c0b74e6093cee9f8c79c6702e0ad7b519e5edb71aadd2c42e19d"
+      adapter_sha256: "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879"
+      adapter_type: "commandcode"
+      billing_observation: "unknown"
+      binding_id: "binding_commandcode_e09a30d1febb87af1b24"
+      concurrency_cap: 1
+      cost_observation: "unknown"
+      credential_reference:
+        kind: "host_managed"
+        opaque_id: "commandcode-default"
+        reference_sha256: "sha256:d0d3efa673338cd432c0a6ba0b6d1a5e0334da062a09fdd515018be6704f253f"
+      enabled: true
+      provider_input_sha256: "sha256:5fdc23f00d6e97c40ff9e57134681f628df334b49f89dbc80892ced3c0f69213"
+      qualification:
+        bound_adapter_binding_sha256: null
+        capability_sha256: null
+        certificate_sha256: null
+        evaluation_sha256: null
+        expires_at: null
+        fallback_allowed: false
+        issued_at: null
+        preflight_sha256: null
+        recall_sha256: null
+        recalled_at: null
+        retry_allowed: false
+        status: "configured"
+        ttl_seconds: null
+      route:
+        billing_basis: "subscription"
+        exact_model: "deepseek/deepseek-v4-pro"
+        independence_group: "commandcode_gateway"
+        provider: "Command Code"
+        reasoning: "provider_default"
+        route_id: "commandcode-subscription-deepseek-v4-pro"
+        route_name: "worker_deepseek_v4_pro"
+        runtime: "Command Code"
+      task_profile_sha256: "sha256:4240e13df91f448841567f570a81499daf799556ad21e6251abe08f60a8f033b"
+      token_cap: 12000
+      usage_observation: "unknown"

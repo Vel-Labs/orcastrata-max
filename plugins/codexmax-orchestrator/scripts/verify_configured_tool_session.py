@@ -35,6 +35,11 @@ TOOL_ADAPTERS = {
     "OpenCode": frozenset({"opencode_tool_loop", "opencode_qwopus"}),
     "Command Code": frozenset({"commandcode"}),
 }
+BINDING_ROUTE_FIELDS = frozenset({
+    "route_name", "provider", "exact_model", "route_id", "runtime",
+    "reasoning", "billing_basis", "independence_group",
+})
+TRANSPORT_IDENTITY_FIELDS = BINDING_ROUTE_FIELDS - {"exact_model"}
 COMMANDCODE_STATUS_ARGV = ("commandcode", "status", "--json")
 COMMANDCODE_MODELS_ARGV = ("commandcode", "--list-models")
 OPENCODE_PROVIDER_ARGV = ("opencode", "providers", "list")
@@ -94,7 +99,9 @@ def parse_request(text: str) -> tuple[str, str]:
         ord(character) < 32 and character not in "\t\n\r" for character in text
     ):
         raise ExplicitSelectionError("explicit_request_malformed")
-    if len(ROUTE_CLAUSE_RE.findall(text)) != 1:
+    if len(ROUTE_CLAUSE_RE.findall(text)) != 1 or len(
+        re.findall(r"\bthrough\s+(?:OpenCode|Command\s+Code)\b", text, re.IGNORECASE)
+    ) != 1:
         raise ExplicitSelectionError("explicit_request_malformed")
     if PERSISTENCE_REQUEST_RE.search(text):
         raise ExplicitSelectionError("persistence_approval_required")
@@ -148,15 +155,16 @@ def _configured_binding(effective_config: Mapping[str, Any], tool: str, model: s
     if binding.get("adapter_binding_sha256") is None or binding.get("adapter_sha256") is None:
         raise ExplicitSelectionError("requested_binding_unverifiable", binding_id)
     identity = binding["route"]
-    if identity.get("route_name") != route_name:
-        raise ExplicitSelectionError("requested_binding_route_mismatch", "route_name")
-    for left, right in (
-        ("exact_model", "exact_model"),
-        ("route_id", "route_id"), ("provider", "provider"),
-        ("runtime", "runtime"), ("billing_basis", "billing_basis"),
-    ):
-        if identity.get(left) != route.get(right):
-            raise ExplicitSelectionError("requested_binding_route_mismatch", left)
+    if set(identity) != BINDING_ROUTE_FIELDS:
+        raise ExplicitSelectionError("requested_binding_route_mismatch", "shape")
+    for field in sorted(TRANSPORT_IDENTITY_FIELDS):
+        route_field = "route_name" if field == "route_name" else field
+        expected = route_name if route_field == "route_name" else route.get(route_field)
+        if identity.get(field) != expected:
+            raise ExplicitSelectionError("requested_binding_route_mismatch", field)
+    # The binding is the model declaration. Clone that exact model onto the
+    # package-owned transport route without rewriting either source object.
+    route["exact_model"] = identity["exact_model"]
     return binding_id, binding, route
 
 
@@ -306,6 +314,7 @@ def compile_selection(
     effective_config: Mapping[str, Any],
     probe_runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
     timeout_seconds: int = 15,
+    session_probe: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not isinstance(task_id, str) or not task_id.strip():
         raise ExplicitSelectionError("task_id_invalid")
@@ -314,7 +323,7 @@ def compile_selection(
     tool, model = parse_request(request)
     binding_id, binding, route = _configured_binding(effective_config, tool, model)
     provider_id, model_token = _probe_identity(tool, route, model)
-    probe = probe_existing_session(
+    probe = dict(session_probe) if session_probe is not None else probe_existing_session(
         tool, provider_id, model_token,
         runner=probe_runner, timeout_seconds=timeout_seconds,
     )

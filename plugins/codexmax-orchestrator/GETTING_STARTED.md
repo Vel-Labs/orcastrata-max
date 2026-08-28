@@ -216,9 +216,52 @@ Codex. Orcastrata Max does not silently use another tool, model, route, or
 billing path.
 
 OpenCode and Command Code are the only public V1 exact external-tool surfaces.
-Claude, Grok, standalone MiniMax, and other host packages are future work. A
-provider name in configuration is only a candidate. It does not prove an
-installed, authenticated, or supported route.
+The exact model is data within an approved transport. For example, Command
+Code can expose compatible DeepSeek, MiniMax, or Grok models without a new
+source-code route for each model. A new transport still needs a package-owned
+adapter and qualification. A provider name in configuration is only a
+candidate. It does not prove an installed, authenticated, or eligible route.
+
+### Configure and run a model
+
+Ask Orcastrata to create an immutable binding candidate:
+
+```text
+Configure minimaxai/minimax-m3 through Command Code as an Orcastrata worker.
+Then run a read-only review with that exact model.
+```
+
+Orcastrata writes only model identity and package-controlled transport fields.
+It does not accept an executable, endpoint, URL, argv, environment, token, or
+secret from this request. The candidate starts as configured. A fresh session
+and exact-model probe must pass before the task gets authority or starts.
+
+For normal work, do not name a model:
+
+```text
+Use Orcastrata Max to review this change with a compatible available worker.
+```
+
+Automatic selection probes enabled candidates and starts one compatible
+route. It reports the exact invoked provider and model. It does not treat an
+ordered fallback list as fan-out.
+
+For an adversarial review, name the route set explicitly:
+
+```text
+Use DeepSeek Pro, MiniMax M3, and Grok 4.6 as separate adversarial reviewers.
+Give each the same frozen candidate and rubric. Continue the other lanes if
+one times out. Do not substitute or retry a failed lane.
+```
+
+Each lane gets a distinct task, evidence directory, artifact, and receipt.
+The Parent performs synthesis. A timed-out lane remains a timed-out lane.
+
+Controlled writes are narrower. V1 permits one existing regular file in a
+pre-created linked development worktree. A catch-all tool guard allows only
+the bound read-edit-read sequence. Orcastrata validates the exact resulting
+bytes and changed path, then returns a rollback receipt for Parent review.
+This lane does not grant shared-tree or protected-production write authority.
 
 ### Complete exact external-route example
 

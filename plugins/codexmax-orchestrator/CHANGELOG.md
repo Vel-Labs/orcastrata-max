@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.4 - 2026-08-28
+
+- Add declarative exact models over approved, package-owned transports. A new
+  model on a compatible transport no longer needs a source-code route.
+- Add installed task-scoped read execution and automatic compatible-route
+  selection with exact identity and no silent fallback.
+- Add explicit multi-model adversarial fan-out with one frozen input, isolated
+  lane evidence, and truthful partial-failure receipts.
+- Add one isolated development controlled-write lane. It uses a catch-all
+  Command Code guard, exact resulting bytes, one target, one attempt, a change
+  receipt, and a digest-bound rollback.
+- Add bounded provider timeouts and preserve unknown token, quota, cost, and
+  network values when a provider does not report them.
+
 ## 1.0.3 - 2026-08-26
 
 - Clarify that native Codex support is an Orcastrata-governed Parent path, not

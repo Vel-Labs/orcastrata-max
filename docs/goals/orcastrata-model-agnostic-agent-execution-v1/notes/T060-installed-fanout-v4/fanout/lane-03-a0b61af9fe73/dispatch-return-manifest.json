@@ -1,0 +1,310 @@
+{
+  "acceptance_authority": "Parent Codex",
+  "accepted": false,
+  "accounting_status": "unknown",
+  "applied_to_goalbuddy": false,
+  "applied_to_supervisor": false,
+  "artifact": null,
+  "attempts": [
+    {
+      "adapter": "commandcode",
+      "attempt_index": 1,
+      "cost": {
+        "reason": "provider_cost_not_reported",
+        "value": "unknown"
+      },
+      "cwd": ".",
+      "elapsed_time_ms": 90009,
+      "expected_response_identity": {
+        "actual_model": "xai/grok-4.6",
+        "actual_provider": "Command Code",
+        "declared_route": "worker_commandcode_model",
+        "fallback_used": false,
+        "retry_count": 0
+      },
+      "identity": {
+        "adapter_id": "commandcode",
+        "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+        "authority_scope": [
+          "."
+        ],
+        "billing": "subscription",
+        "browser_access": "no",
+        "citation_support": "no",
+        "commands_executable": "no",
+        "connector_access": "no",
+        "consequence_floor": "medium",
+        "expires_at": "2026-08-28T18:17:41.229560Z",
+        "independence_group": "commandcode_gateway",
+        "input_delivery": "paths_only",
+        "local_file_access": "read_only",
+        "model": "xai/grok-4.6",
+        "network_access": "provider_only",
+        "observed_at": "2026-08-28T18:12:41.229560Z",
+        "preflight_id": "task-scoped:T060-installed-adversarial-v4-lane-03-a0b61af9fe73",
+        "provider": "Command Code",
+        "quota_observability": "unknown",
+        "read_scope": [
+          "."
+        ],
+        "reasoning": "provider_default",
+        "route": "commandcode-subscription-exact-model",
+        "route_name": "worker_commandcode_model",
+        "runtime": "Command Code",
+        "source_access": "local_filesystem",
+        "token_limit": null,
+        "web_search_access": "no",
+        "write_access": "none",
+        "write_scope": []
+      },
+      "observation": null,
+      "outcome": "provider_failure",
+      "output_limit_stream": null,
+      "quota": {
+        "reason": "provider_quota_not_reported",
+        "value": "unknown"
+      },
+      "response_identity_validated": false,
+      "returncode": 130,
+      "route_name": "worker_commandcode_model",
+      "stderr": {
+        "bytes": 0,
+        "path": "docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T060-installed-fanout-v4/fanout/lane-03-a0b61af9fe73/attempt-001/stderr.bin",
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T060-installed-fanout-v4/fanout/lane-03-a0b61af9fe73/attempt-001/stdout.bin",
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": true,
+      "tokens": {
+        "reason": "provider_tokens_not_reported",
+        "value": "unknown"
+      }
+    }
+  ],
+  "dispatch_id": "task-scoped-T060-installed-adversarial-v4-lane-03-a0b61af9fe73-ec4ae36b3494",
+  "effective_config_sha256": "sha256:dc35aec83b27b750f6a5f9e9f72820e0d271e0dd18334d7e62f7b266b15b224e",
+  "execution_owner": "orcastrata_managed",
+  "external_call_performed": false,
+  "failure": {
+    "category": "provider_failure",
+    "detail": "hard_stop:single_attempt:provider_failure:timeout",
+    "retryable": false
+  },
+  "manifest_type": "DispatchReturnManifest",
+  "project_usage": {
+    "accounting_scope": "orcastrata_admitted_executions",
+    "accounting_status": "unknown",
+    "ledger": null,
+    "status": "not_initialized"
+  },
+  "proof_mode": "task_scoped_live",
+  "provider_change_receipt": null,
+  "provider_network_performed": "unknown",
+  "resolver_role": "worker",
+  "role_priority": {
+    "role_schema_version": 2,
+    "route_01": "worker_deepseek_v4_pro",
+    "route_02": "worker_luna_xhigh",
+    "route_03": "worker_minimax_m3_tool_loop",
+    "route_04": "worker_claude_code_sonnet_5",
+    "route_05": "worker_commandcode_model",
+    "route_06": "worker_codex_spark",
+    "task_profile": "semantic_worker_implementation"
+  },
+  "route_resolution": {
+    "actual_route": null,
+    "attempts": [
+      {
+        "attempt_index": 1,
+        "circuit_state": "open_failure_threshold",
+        "cost": {
+          "reason": "provider_cost_not_reported",
+          "value": "unknown"
+        },
+        "detail": "timeout",
+        "identity": {
+          "adapter_id": "commandcode",
+          "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+          "authority_scope": [
+            "."
+          ],
+          "billing": "subscription",
+          "browser_access": "no",
+          "citation_support": "no",
+          "commands_executable": "no",
+          "connector_access": "no",
+          "consequence_floor": "medium",
+          "expires_at": "2026-08-28T18:17:41.229560Z",
+          "independence_group": "commandcode_gateway",
+          "input_delivery": "paths_only",
+          "local_file_access": "read_only",
+          "model": "xai/grok-4.6",
+          "network_access": "provider_only",
+          "observed_at": "2026-08-28T18:12:41.229560Z",
+          "preflight_id": "task-scoped:T060-installed-adversarial-v4-lane-03-a0b61af9fe73",
+          "provider": "Command Code",
+          "quota_observability": "unknown",
+          "read_scope": [
+            "."
+          ],
+          "reasoning": "provider_default",
+          "route": "commandcode-subscription-exact-model",
+          "route_name": "worker_commandcode_model",
+          "runtime": "Command Code",
+          "source_access": "local_filesystem",
+          "token_limit": null,
+          "web_search_access": "no",
+          "write_access": "none",
+          "write_scope": []
+        },
+        "outcome": "provider_failure",
+        "quota": {
+          "reason": "provider_quota_not_reported",
+          "value": "unknown"
+        },
+        "route_name": "worker_commandcode_model",
+        "tokens": {
+          "reason": "provider_tokens_not_reported",
+          "value": "unknown"
+        },
+        "wall_time_ms": {
+          "reason": "wall_time_not_reported",
+          "value": "unknown"
+        }
+      }
+    ],
+    "capability_authority": null,
+    "considerations": [
+      {
+        "capability_authority": {
+          "approval_digest": null,
+          "authorized": true,
+          "cost_rank": 1,
+          "effort_rank": 1,
+          "escalation_approved": false,
+          "escalation_required": false,
+          "parent_cost_ceiling": 1,
+          "parent_effort_ceiling": 1,
+          "reasons": [],
+          "route_fingerprint": "eb53600c148bae1a5e4a053948b23bba2f1785dea2021964a2d1197d22cbfabf",
+          "route_name": "worker_commandcode_model",
+          "schema_version": 2,
+          "task_grant_sha256": "sha256:759a4d6dae97c2c94c410001ab592130c692a46c64898ad5537f3d019f716d5f"
+        },
+        "eligible": true,
+        "order": 1,
+        "preflight_id": "task-scoped:T060-installed-adversarial-v4-lane-03-a0b61af9fe73",
+        "reasons": [],
+        "route_name": "worker_commandcode_model"
+      }
+    ],
+    "controls": {
+      "circuit_breaker_threshold": 1,
+      "max_attempts_per_checkpoint": 1,
+      "max_attempts_per_route": 1,
+      "no_improvement_window": 1
+    },
+    "explicit_selection_sha256": "sha256:103b0a76a0e54fd266357876bda8439b91f09580e12f084a7b66c2c66198479a",
+    "external_call_performed": false,
+    "failed_preferred_route": {
+      "attempt_index": 1,
+      "circuit_state": "open_failure_threshold",
+      "cost": {
+        "reason": "provider_cost_not_reported",
+        "value": "unknown"
+      },
+      "detail": "timeout",
+      "identity": {
+        "adapter_id": "commandcode",
+        "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+        "authority_scope": [
+          "."
+        ],
+        "billing": "subscription",
+        "browser_access": "no",
+        "citation_support": "no",
+        "commands_executable": "no",
+        "connector_access": "no",
+        "consequence_floor": "medium",
+        "expires_at": "2026-08-28T18:17:41.229560Z",
+        "independence_group": "commandcode_gateway",
+        "input_delivery": "paths_only",
+        "local_file_access": "read_only",
+        "model": "xai/grok-4.6",
+        "network_access": "provider_only",
+        "observed_at": "2026-08-28T18:12:41.229560Z",
+        "preflight_id": "task-scoped:T060-installed-adversarial-v4-lane-03-a0b61af9fe73",
+        "provider": "Command Code",
+        "quota_observability": "unknown",
+        "read_scope": [
+          "."
+        ],
+        "reasoning": "provider_default",
+        "route": "commandcode-subscription-exact-model",
+        "route_name": "worker_commandcode_model",
+        "runtime": "Command Code",
+        "source_access": "local_filesystem",
+        "token_limit": null,
+        "web_search_access": "no",
+        "write_access": "none",
+        "write_scope": []
+      },
+      "outcome": "provider_failure",
+      "quota": {
+        "reason": "provider_quota_not_reported",
+        "value": "unknown"
+      },
+      "route_name": "worker_commandcode_model",
+      "tokens": {
+        "reason": "provider_tokens_not_reported",
+        "value": "unknown"
+      },
+      "wall_time_ms": {
+        "reason": "wall_time_not_reported",
+        "value": "unknown"
+      }
+    },
+    "failover_used": false,
+    "fallback_allowed": false,
+    "next_attempt": null,
+    "ordered_routes": [
+      "worker_commandcode_model"
+    ],
+    "preferred_route": "worker_commandcode_model",
+    "profile": "task_scoped_read_only",
+    "resolution_phase": "pre_dispatch",
+    "role": "worker",
+    "schema_version": 1,
+    "selected_route": null,
+    "status": "hard_stop",
+    "stop_reason": "hard_stop:single_attempt:provider_failure:timeout",
+    "task_id": "T060-installed-adversarial-v4-lane-03-a0b61af9fe73"
+  },
+  "schema_version": 1,
+  "selected_route": null,
+  "semantic_role": "worker",
+  "status": "hard_stop",
+  "supervisor_handoff": {
+    "bytes": 54059,
+    "path": "docs/goals/orcastrata-model-agnostic-agent-execution-v1/notes/T060-installed-fanout-v4/fanout/lane-03-a0b61af9fe73/supervisor-event-bundle.json",
+    "sha256": "sha256:e19fc2457eee973ef238c5838163348bf1acbb9e97087cf8f13604e13d137a01"
+  },
+  "usage": {
+    "cost": {
+      "reason": "provider_cost_not_reported",
+      "value": "unknown"
+    },
+    "quota": {
+      "reason": "provider_quota_not_reported",
+      "value": "unknown"
+    },
+    "tokens": {
+      "reason": "provider_tokens_not_reported",
+      "value": "unknown"
+    }
+  },
+  "work_status": "hard_stop"
+}

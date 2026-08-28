@@ -13,7 +13,11 @@ secret, token, provider transport, or control route.
 The eight cards and their SHA-256 digests are built into the package. Registry
 validation requires the exact complete card set, unique type/ID/digest values,
 and the code-owned root digest. User configuration may add or constrain only
-`bindings`; it cannot replace cards or registry identity.
+`bindings`; it cannot replace cards or registry identity. A binding may declare
+a new exact `route.exact_model` over an existing compatible Worker route. The
+route name remains the package-owned transport anchor. All other route identity
+fields remain package-owned. The candidate starts `configured` and requires
+fresh qualification.
 
 Configuration creates `configured`, never `qualified`. Static conformance and
 synthetic tests prove parser behavior only. Live qualification requires a
@@ -70,8 +74,9 @@ and observed output descriptor/path drift fail without a success receipt. The
 CLI never creates a parent directory or overwrites an unrelated configuration
 branch. Repeating the same preview produces byte-identical candidate output.
 
-The immutable selector is adapter type, Worker route, credential-reference
-kind, and opaque ID. Code derives the binding ID from that selector. Update
+The immutable selector is adapter type, Worker route, exact model when supplied,
+credential-reference kind, and opaque ID. Code derives the binding ID from that
+selector. Update
 changes only enabled, concurrency cap, or token cap; identity changes require
 remove followed by add. Every other identity, digest, configured qualification
 state, and unknown observation is rebuilt from package-owned cards, routes,

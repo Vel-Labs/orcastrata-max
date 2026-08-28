@@ -75,6 +75,15 @@ outcome. Provider availability is not a reason to delegate. A Worker must pass
 identity, capability, authority, privacy, billing, health, quota, and capacity
 checks. Unknown cost is not cheapest.
 
+For ordinary read-only work, when an independent external lane adds material
+value, use the package-owned automatic Worker selector. It considers enabled
+Command Code and OpenCode Worker bindings in package route order, probes each
+exact configured session, and starts at most one provider process. A probe
+denial may move to the next candidate. A started provider task never falls
+back. The selector does not accept a model, provider, executable, endpoint, or
+credential from the operator. Native workers remain valid and this is not
+global interception.
+
 Select from all configured and qualified routes. Require fresh identity,
 capability, authority, privacy, billing, health, quota, and capacity. Prefer
 useful diversity. Do not lock a semantic role to one model family. Route order
@@ -125,6 +134,23 @@ board truth; it does not dispatch providers or accept work.
   2. The change is one file or one tightly coupled change.
   3. No active journey conflict exists.
   4. No new external auxiliary fanout is needed.
+
+For an explicit adversarial comparison, use
+`scripts/run_adversarial_provider_fanout.py`. Supply one `--request` per exact
+model and the same candidate, prompt, and rubric for every lane. The command
+creates isolated task-scoped read-only assignments. It records rejected lanes,
+does not retry or substitute within a lane, and leaves synthesis to Parent.
+
+For one controlled development write canary, use
+`scripts/run_task_scoped_provider_write.py`. Supply the source repository, a
+separate linked Git worktree, one existing regular-file target, one exact
+configured Command Code model request, a bounded task prompt, a worktree-local
+configuration file, sibling evidence and artifact paths, and
+`--allow-provider-call`. It permits one attempt and no fallback. Parent must
+review the exact target diff and either accept it or use the retained rollback
+bytes. This lane does not authorize shared-tree, production, or T062 writes.
+The operator must pre-create the linked worktree. A failed or uncertain attempt
+retains its controls for forensic review. Start a new task in a fresh worktree.
   5. No install, credential, destructive, push, publish, or scope expansion is needed.
   6. Repository-native validation is known.
   7. Architecture and acceptance are unambiguous.

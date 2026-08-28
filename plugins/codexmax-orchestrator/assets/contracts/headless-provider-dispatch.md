@@ -13,6 +13,12 @@ for one assignment. Provider or validation failure is terminal for that
 dispatch: there is no retry, fallback, substitution, hedging, fanout, or load
 balancing.
 
+`isolated_development_live_write` is a separate task-scoped development lane.
+It is not `task_scoped_live`, protected `live`, shared-tree, production, or
+T062 authority. It requires one exact configured Command Code model, one
+separate linked Git worktree, one existing regular-file target, one complete
+guarded write grant, one provider attempt, and exact change reconciliation.
+
 Scheduler mode uses the additive `run-one` command. It requires a compiled
 `DispatchTaskEnvelope v1` and current scheduler lease binding, restricts the
 configured scheduler role profile to the exact leased route, and executes at
@@ -34,7 +40,7 @@ The strict JSON assignment has `schema_version: 1`, stable dispatch and
 Supervisor assignment/lane IDs, an explicit six-value `semantic_role`, a
 literal `prompt`, canonical repository-relative `working_directory`,
 `expected_artifact`, and `evidence_directory`, `proof_mode` (`simulated`,
-`task_scoped_live`, or `live`), a strict `response_schema`, an explicit dispatcher-owned
+`task_scoped_live`, `isolated_development_live_write`, or `live`), a strict `response_schema`, an explicit dispatcher-owned
 `dispatch_output_scope`, explicit authority facts, and a normal route packet. The dispatcher
 loads layered Codexmax configuration, calls the public `registry_for_role`
 helper, replaces the packet profile with the configured semantic-role profile,
@@ -50,6 +56,26 @@ uses the same one-attempt, response-identity, output-limit, timeout, no-fallback
 and retained-evidence rules as other dispatches. It does not use or claim the
 enterprise protected receiver. The `live` mode remains the protected receiver
 lane.
+
+Use `scripts/run_task_scoped_provider_write.py` for the installed development
+write canary. The command accepts no executable, argv, endpoint, credential,
+caller grant, callback, or replacement content. It derives deterministic
+canary bytes from the task ID and bounded prompt digest. Evidence and the
+result artifact stay in a sibling directory outside the worktree. The guarded
+read-write-read sequence may change only the exact target. The receipt always
+starts with `accepted_by_parent: false` and retains exact rollback bytes.
+The operator must create the linked worktree before the V1 runner starts.
+The runner does not create or delete that worktree. A failed or uncertain
+attempt retains its control files for forensic review. A new task requires a
+fresh linked worktree and fresh evidence paths.
+
+Use `scripts/run_task_scoped_provider_task.py` for the installed operator
+journey. The command requires `--workspace-config`, `--read-scope .`, and
+`--allow-provider-call`. It derives the task grant from the exact request,
+prompt digest, canonical repository root, repository-root read scope, output
+paths, subscription billing, and the explicit call flag. It does not accept a
+caller-supplied task-grant digest. Resolve the workspace configuration before
+assignment construction. Use the same effective configuration for dispatch.
 
 Scheduler Worker artifacts use `semantic_worker_artifact`, whose shipped route
 order contains only embedded-capable Flash, MiniMax, and Qwopus routes. The

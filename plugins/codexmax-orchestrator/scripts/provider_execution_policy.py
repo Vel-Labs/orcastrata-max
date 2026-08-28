@@ -28,6 +28,11 @@ SOURCE_DELIVERY = ("embedded_fact_pack", "paths", "local_filesystem")
 UNKNOWN = "unknown"
 
 COMMANDCODE_ROUTE_BINDINGS = MappingProxyType({
+    "worker_commandcode_model": MappingProxyType({
+        "route_id": None,
+        "model": None,
+        "runtime": "Command Code", "billing_basis": "subscription",
+    }),
     "worker_deepseek_v4_flash": MappingProxyType({
         "route_id": "commandcode-subscription-deepseek-v4-flash",
         "model": "deepseek/deepseek-v4-flash",
@@ -308,7 +313,18 @@ def validate_commandcode_scoped_write_grant(
     if row["schema_version"] != 1 or row["artifact_type"] != "CommandCodeScopedWriteGrant":
         raise ExecutionPolicyError("commandcode_guard_grant_invalid", "commandcode_scoped_write_grant")
     binding = COMMANDCODE_ROUTE_BINDINGS.get(row["route_name"])
-    if binding is None or row["route_id"] != binding["route_id"] or row["model"] != binding["model"]:
+    generic_binding = row["route_name"] == "worker_commandcode_model"
+    generic_identity_valid = (
+        generic_binding
+        and isinstance(row["route_id"], str)
+        and row["route_id"].startswith("commandcode-subscription-")
+        and isinstance(row["model"], str)
+        and bool(row["model"])
+    )
+    if binding is None or (
+        not generic_identity_valid
+        and (row["route_id"] != binding["route_id"] or row["model"] != binding["model"])
+    ):
         raise ExecutionPolicyError("commandcode_guard_route_binding_invalid", "commandcode_scoped_write_grant.route_name")
     expected = {
         "route_name": route_name, "model": model, "task_id": task_id,
@@ -513,6 +529,14 @@ def _harness(
 
 
 ADAPTER_HARNESS_CARDS: dict[str, dict[str, Any]] = {
+    "commandcode_model": _harness(
+        "commandcode_model", "commandcode", "Command Code", tool_loop="agentic",
+        write_transport="pretooluse_guarded_file_tools", command_transport="none",
+        reasoning=list(REASONING_LEVELS), verbosity=list(VERBOSITY_LEVELS),
+        context=list(CONTEXT_STRATEGIES), turns=20, seconds=1800,
+        turn_limit_outcome="execution_unknown_after_mutation",
+        disabled=["commands", "tools_all", "browser", "web_search", "connectors"],
+    ),
     "commandcode_deepseek_v4_pro": _harness(
         "commandcode_deepseek_v4_pro", "commandcode", "Command Code", tool_loop="agentic",
         write_transport="pretooluse_guarded_file_tools", command_transport="none", reasoning=list(REASONING_LEVELS),
@@ -583,6 +607,7 @@ ADAPTER_HARNESS_CARDS: dict[str, dict[str, Any]] = {
 
 
 ROUTE_HARNESS = {
+    "worker_commandcode_model": "commandcode_model",
     "worker_deepseek_v4_pro": "commandcode_deepseek_v4_pro",
     "worker_deepseek_v4_flash": "commandcode_deepseek_v4_flash",
     "worker_claude_sonnet_5": "claude_code_sonnet_5",

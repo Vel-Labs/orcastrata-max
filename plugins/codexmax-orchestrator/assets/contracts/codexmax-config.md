@@ -163,7 +163,8 @@ Run the resolver at `<plugin-root>/scripts/resolve_codexmax_config.py`, with
 - `adapter-binding add|update|remove` previews a deterministic dedicated
   adapter-only candidate at `--output`. `--write-new` creates only that absent
   path in an existing canonical parent directory. Add accepts a package-owned
-  adapter type and compatible Worker route, opaque reference kind/ID, enabled
+  adapter type and compatible Worker route, and may set `--exact-model` to
+  declare a new model over that approved transport. It also accepts an opaque reference kind/ID, enabled
   state, optional concurrency cap, and positive token cap. Update and remove
   require an explicit `--input`, create a distinct absent output, and leave the
   input byte-identical. Update accepts only the derived binding ID and mutable

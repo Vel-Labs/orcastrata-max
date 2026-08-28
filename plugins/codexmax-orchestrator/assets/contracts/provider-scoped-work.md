@@ -110,3 +110,29 @@ observed the read flow. T117 observed one exact write in an isolated governed
 task envelope. That observation does not qualify production writes. The route
 stays disabled until the protected receiver proves the complete final-result
 and reconciliation lifecycle.
+
+
+## Task-scoped canary writes
+
+The operator-facing development write seam is limited to one exact regular file in a separate canary worktree. The grant records the target and its exact before digest. The adapter may perform one provider attempt. Reconciliation rejects a missing change, a changed path outside the grant, or a before/after digest mismatch. The receipt starts with `accepted_by_parent: false`.
+
+Rollback restores the captured before bytes and verifies the original digest. This canary proof does not authorize a shared-tree write, protected production, or T062. The Parent must inspect and accept the actual diff separately.
+
+The operator-facing canary uses `isolated_development_live_write`. It requires
+an external linked Git worktree and one existing regular target. The runner
+derives the capability card, task intent, task grant, one-attempt binding,
+guard, settings, descriptor, assignment, state, and deterministic replacement
+bytes. The provider performs the edit. The runner accepts no mutation callback
+or caller-supplied authority.
+
+The dispatcher excludes Command Code control files from the user-change
+inventory only after it binds their initial digests. After execution, it
+revalidates each immutable control file and requires the exact terminal
+read-write-read state. It then requires the target to be the only changed user
+path. A drift, extra path, invalid result, or uncertain mutation stops without
+retry or fallback.
+
+The linked worktree is an explicit V1 operator prerequisite. The runner does
+not create it. A successful canary removes only its own control files after
+reconciliation. A failed or uncertain canary retains the controls and worktree
+for forensic review. Do not reuse that worktree for a new task.
