@@ -123,8 +123,28 @@ parity. It found no source change justified for the non-reproduced exit code 6.
 
 ## Remaining risk
 
-The candidate cannot score 10/10 until an authorized deployment replaces the
-active installed 1.1.0 plugin and a fresh Codex task proves that ordinary
-language loads this exact 1.1.1 package. Direct MiniMax and Grok CLI transports remain separate
-code-owned adapter work; current generic model selection is supported through
-the approved Command Code and OpenCode transports.
+The fresh external host task installed and enabled Orcastrata 1.1.1 from exact
+commit `11435a300c48c9eca1629eb42a9ee27448fe54a2`. It verified all 392 frozen
+payload files with no missing file or content drift. An ordinary-language
+`documenter` task selected Command Code 1.38.1 and
+`deepseek/deepseek-v4-flash`, made one successful call, validated identity, and
+used no retry or fallback. The returned content was `Orcastrata automatic
+routing accepted.` The operator supplied the external receipt paths; this
+workspace task did not open them because they are outside its permitted root.
+
+The strict cache verifier also reported nine generated `__pycache__` files as
+extras. They are not frozen payload files and do not change the 392-of-392
+content parity result. They remain installed cache hygiene, not a product or
+acceptance defect.
+
+The goal oracle is satisfied. Direct MiniMax and Grok CLI transports remain
+separate code-owned adapter work. They are outside the approved Command Code
+and OpenCode transport boundary and are not a blocker for this V1 goal.
+
+## Terminal closeout
+
+The fresh collaboration inventory contained the Parent plus three terminal
+non-persistent agent records: one interrupted and two completed. No child was
+active. No addressable desktop child task or persistent child session remained
+for archive or interruption. T999 therefore uses the compact zero-addressable-
+child receipt. Parent accepts the installed 1.1.1 outcome as complete.

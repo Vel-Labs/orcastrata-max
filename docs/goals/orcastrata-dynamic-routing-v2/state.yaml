@@ -7,7 +7,7 @@ goal:
   tranche: >-
     Consolidate provider execution, make automatic PM-led routing primary,
     add real isolated implementation, compact evidence, and prove the installed journey.
-  status: active
+  status: done
   oracle:
     signal: >-
       A normal natural-language task dynamically selects and executes a useful
@@ -64,7 +64,7 @@ agents:
   worker: installed
   judge: installed
 
-active_task: T060
+active_task: null
 
 tasks:
   - id: T010
@@ -206,15 +206,15 @@ tasks:
   - id: T060
     type: judge
     assignee: Judge
-    status: active
+    status: done
     objective: "Run clean package, installed, natural-language, live-provider, write, and rollback acceptance."
     dependencies: [T050]
     expected_output:
       - "Independent ACCEPT or REVISE verdict"
     receipt:
-      result: partial
-      decision: approved_candidate_pending_install
-      full_outcome_complete: false
+      result: done
+      decision: complete
+      full_outcome_complete: true
       changed_files:
         - docs/goals/orcastrata-dynamic-routing-v2/notes/final-acceptance.md
       commands:
@@ -224,16 +224,35 @@ tasks:
           status: pass
       summary: >-
         Installed 1.1.0 natural-language acceptance exposed a formatted model
-        catalog parsing defect. Luna accepted the 1.1.1 repair. It parses 62
-        current model rows, passes 63 tests and immutable package parity, and
-        completed one live source automatic task. Fresh installed 1.1.1 proof
-        remains required.
+        catalog parsing defect. Luna accepted the 1.1.1 repair. A fresh host
+        then installed exact commit 11435a3, verified all 392 payload files,
+        and completed one ordinary-language documenter route through Command
+        Code 1.38.1 and DeepSeek Flash with exact identity and no fallback.
 
   - id: T999
     type: pm
     assignee: PM
-    status: queued
+    status: done
     objective: "Close child inventory and goal state after final acceptance."
     dependencies: [T060]
     expected_output:
       - "Terminal lifecycle receipt"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      outcome_integrated: true
+      task_transition_complete: true
+      changed_files:
+        - docs/goals/orcastrata-dynamic-routing-v2/state.yaml
+        - docs/goals/orcastrata-dynamic-routing-v2/notes/final-acceptance.md
+      commands:
+        - command: "collaboration.list_agents"
+          status: pass
+        - command: "node /Users/steven/Workspace/40_Code/infrastructure/goalbuddy/goalbuddy/scripts/check-goal-state.mjs docs/goals/orcastrata-dynamic-routing-v2/state.yaml"
+          status: pass
+      summary: >-
+        Fresh inventory found the Parent, one interrupted child record, and two
+        completed child records. No active child, addressable desktop child
+        task, or persistent child session remained. Parent accepted the exact
+        installed 1.1.1 host journey and closed the goal.
