@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 - 2026-09-01
+
+- Add native `/orcastrata-*` commands as thin aliases over the existing public
+  skills. Keep all `codexmax-*` skill IDs for compatibility.
+- Add trusted `SessionStart` and `SubagentStart` hooks that inject bounded
+  Parent and worker context without repository reads, state mutation, provider
+  calls, or scheduling.
+
 ## 1.1.1 - 2026-08-28
 
 - Parse the formatted Command Code 1.38.1 model catalog as model rows instead

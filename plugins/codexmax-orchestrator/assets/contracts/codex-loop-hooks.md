@@ -1,15 +1,27 @@
-# Codex Loop Hook Adapter Contract
+# Codex Hook Contracts
+
+## Installed Context Hook
+
+The plugin manifest installs `hooks/hooks.json`. `SessionStart` and
+`SubagentStart` call `hooks/orcastrata_context.py`. The program reads one host
+event from stdin and returns bounded `additionalContext`. It does not read the
+repository, write state, call a provider, schedule work, or execute the loop
+adapter below. Malformed and unsupported events return an empty JSON object.
+
+Source validation proves the hook shape. Package validation proves inclusion.
+An isolated installation proves discovery. Only an explicit hash-bound trust
+decision followed by a fresh host event proves live activation.
+
+## Source-Fixture Loop Adapter
 
 ## Proof Boundary
 
-This contract defines local source and fixture behavior only. It does not
-install or activate a Codex hook, read or write user Codex configuration,
-schedule work, or prove that Codex Desktop currently exposes a compatible hook
-transport. The authorized workspace contains advisory design references for
-`SessionStart`, `UserPromptSubmit`, `PostToolUse`, and `Stop`, but no verified
-installed host schema. These names are therefore a fixed mock-source
-vocabulary; any unavailable or differently named host event is unsupported,
-not silently simulated.
+The remainder of this contract defines local source and fixture behavior for
+`scripts/codex_loop_hook.py` only. That adapter does not install or activate a
+hook, read or write user Codex configuration, or schedule work. Its
+`SessionStart`, `UserPromptSubmit`, `PostToolUse`, and `Stop` names remain a
+fixed mock-source vocabulary; unavailable or differently named source events
+are unsupported and are not silently simulated.
 
 ## Supported Source Mapping
 

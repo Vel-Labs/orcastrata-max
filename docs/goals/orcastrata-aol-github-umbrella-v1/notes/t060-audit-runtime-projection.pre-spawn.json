@@ -1,0 +1,35 @@
+{
+  "dispatch_performed": false,
+  "dispatch_receipt": {
+    "approval_reference": null,
+    "child_task_id": "T060-A01",
+    "dispatch_status": "projected_not_dispatched",
+    "effective_fork_turns": "all",
+    "exact_model": "gpt-5.6-terra",
+    "fallback": "forbidden",
+    "ledger_schema_version": 1,
+    "native_agent_type": "codex_auditor",
+    "projection_status": "ready",
+    "provider_dispatch": false,
+    "reasoning_effort": "xhigh",
+    "requested_fork_turns": "all",
+    "requested_native_agent_type": "codex_auditor",
+    "route_authority": "operator-authorized independent read-only audit for T060",
+    "route_id": "native-codex-auditor",
+    "route_rotation_policy": "forbidden",
+    "runtime_child_id": null,
+    "runtime_child_id_status": "pending_spawn",
+    "runtime_surface": "codex_collaboration",
+    "selection_mode": "fixed_native",
+    "semantic_role": "auditor",
+    "special_route_required": true
+  },
+  "provider_dispatch": false,
+  "reason": "fixed_native_identity_matches_route",
+  "schema_version": 1,
+  "spawn_projection": {
+    "agent_type": "codex_auditor",
+    "fork_turns": "all"
+  },
+  "status": "ready"
+}

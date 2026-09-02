@@ -1,0 +1,33 @@
+{
+  "artifact_type": "orcastrata_github_issue_live_receipt_v1",
+  "command_count": 4,
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_called": true,
+    "github_mutated": true,
+    "live_execution_available": true,
+    "simulation_only": false
+  },
+  "effect_id": "sha256:2346f47f212a487813868edc9b3f6e8df80c38ea40265ee6cab86f371ec83091",
+  "issue": {
+    "node_id": "I_kwDOUAjBns8AAAABPRNu3A",
+    "number": 5,
+    "url": "https://github.com/Vel-Labs/orcastrata-max/issues/5"
+  },
+  "mutation_attempted": true,
+  "outcome": "created",
+  "prepare_receipt_sha256": "sha256:9a66928554acb93b2a642b005f59b92d97399858e28f48b4f8f337d08d2ff3cc",
+  "reconcile_required": false,
+  "schema_version": 1,
+  "status": "bound",
+  "target": {
+    "host": "github.com",
+    "repository": "Vel-Labs/orcastrata-max"
+  },
+  "verified_identity": {
+    "permission": "ADMIN",
+    "username": "velcrafting"
+  }
+}

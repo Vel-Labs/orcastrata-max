@@ -1,0 +1,324 @@
+version: 2
+
+goal:
+  title: "Orcastrata Standalone GitHub Umbrella Workflow V1"
+  slug: orcastrata-aol-github-umbrella-v1
+  kind: implementation
+  tranche: "Prepare the standalone open-source Orcastrata GitHub umbrella workflow."
+  status: active
+  oracle:
+    signal: >-
+      An authorized test repository completes the standalone umbrella-to-merge
+      journey with current Orcastrata, GoalBuddy, WorkGraph, GitHub, and audit receipts.
+    cadence: "after each implementation milestone and final independent audit"
+    final_proof: >-
+      Focused contract tests, fake-gh behavioral tests, isolated real-gh read-only
+      proof, authorized test-repository canaries, reconciliation proof, PR lifecycle
+      proof, umbrella audit, and guarded merge proof.
+  intake:
+    original_request: >-
+      Plan and adversarially review GitHub umbrella execution for open-source
+      Orcastrata, then give closed-source AOL a separate integration handoff.
+    interpreted_outcome: >-
+      Produce a decision-complete standalone Orcastrata plan and a distinct AOL
+      consumer handoff without implementing external effects.
+    input_shape: ordinary_language
+    audience: "Orcastrata implementers and AOL integration owners"
+    authority: >-
+      standing_t050b_through_t999_for_github.com_Vel-Labs_orcastrata-max_with_exact_repository_write_pr_and_guarded_merge_scope
+    proof_type: behavioral
+    completion_proof: >-
+      Corrected plan, separate AOL handoff, exact identity and repository permission
+      receipt, synchronized GitHub artifacts, guarded PR lifecycle, standalone
+      dogfood, independent audit, and terminal board closeout.
+    likely_misfire: "Make Orcastrata depend on AOL or let gh authentication imply mutation authority."
+    blind_spots_considered:
+      - "Orcastrata is an independent open-source product"
+      - "AOL is a closed-source downstream product"
+      - "Local inherited gh authentication"
+      - "GitHub as synchronized surface rather than sole canonical truth"
+      - "Context growth across umbrella, issue, PR, and audit scopes"
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  pm_routes_safe_successors: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: T060
+
+tasks:
+  - id: T010
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Freeze, adversarially review, correct, and validate the standalone plan."
+    dependencies: []
+    allowed_files:
+      - docs/goals/orcastrata-aol-github-umbrella-v1/
+    expected_output:
+      - "Reviewed Orcastrata implementation plan, AOL handoff, and provider receipts"
+    verify:
+      - "python3 plugins/codexmax-orchestrator/scripts/validate_implementation_plan.py --repo-root . --plan docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md --state docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml"
+    receipt:
+      result: done
+      decision: revise
+      full_outcome_complete: false
+      summary: >-
+        Grok 4.6 and MiniMax M3 returned REVISE. DeepSeek V4 Pro failed exact
+        identity verification before a provider call. The Parent retained the
+        useful transport, idempotency, worker-scope, and audit findings. After
+        operator correction, the Parent split standalone Orcastrata implementation
+        from the downstream AOL product handoff. No provider reviewed this split.
+
+  - id: T020
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Obtain operator approval for one exact Orcastrata implementation tranche."
+    dependencies:
+      - T010
+    expected_output:
+      - "Execution authority packet or an unchanged prepared board"
+    receipt:
+      result: done
+      decision: proceed_t030
+      full_outcome_complete: false
+      summary: >-
+        The operator said proceed after reviewing the corrected standalone plan.
+        Authority covers T030 source implementation and read-only local validation.
+        It does not authorize GitHub writes, AOL changes, credential access, or
+        a live repository call without an exact operator-bound repository.
+
+  - id: T030
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Implement credential-blind local gh capability discovery and read operations."
+    dependencies:
+      - T020
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_github_cli_read.py
+    expected_output:
+      - "Narrow structured read operations bound to an operator-approved repository"
+    verify:
+      - "python3 -m unittest tests.test_github_cli_read"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "Any write-capable gh operation is required."
+      - "The adapter would inspect credentials or accept an arbitrary command, endpoint, environment, or repository URL."
+      - "A live GitHub read lacks an exact operator-bound host and owner/repository."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+        - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - tests/test_github_cli_read.py
+      commands:
+        - command: "python3 -m unittest tests.test_github_cli_read tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/github_cli_read.py < operator-bound probe request"
+          status: pass
+      summary: >-
+        Source, focused tests, consumer tests, release parity, independent audit,
+        official GoalBuddy validation, and the operator-bound live read passed.
+        The exact target was github.com/Vel-Labs/orcastrata-max. No GitHub or local
+        state was mutated and Orcastrata did not read credentials.
+
+  - id: T040
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Implement umbrella and dependency projection through existing WorkGraph and GoalBuddy contracts."
+    dependencies:
+      - T030
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/github_umbrella_projection.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-umbrella-projection-v1.md
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_github_umbrella_projection.py
+    expected_output:
+      - "Deterministic umbrella preview and canonical Orcastrata run state"
+    verify:
+      - "python3 -m unittest tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "The projection would create a second board or mutate GoalBuddy."
+      - "The projection would call gh, GitHub, a provider, or a network service."
+      - "A packet lacks scope, acceptance, validation, dependency, or stop information."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - plugins/codexmax-orchestrator/assets/contracts/github-umbrella-projection-v1.md
+        - plugins/codexmax-orchestrator/scripts/github_umbrella_projection.py
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - tests/test_github_umbrella_projection.py
+      commands:
+        - command: "python3 -m unittest tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+      summary: >-
+        The deterministic WorkGraph and GoalBuddy projection passed focused,
+        consumer, package, official-board, and independent audit gates. The
+        projection has no GitHub, provider, credential, or board mutation path.
+
+  - id: T050
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Implement idempotent issue creation and current-state reconciliation through gh."
+    dependencies:
+      - T040
+    expected_output:
+      - "Credential-blind live prepare, observe, reconcile, create, and unknown-outcome receipts for the exact repository"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/github_issue_effect.py
+      - plugins/codexmax-orchestrator/scripts/github_issue_live.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-issue-effect-v1.md
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_github_issue_effect.py
+      - tests/test_github_issue_live.py
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-execution-receipt.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-projection-source.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-projection-receipt.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-effects/
+    verify:
+      - "python3 -m unittest tests.test_github_issue_live tests.test_github_issue_effect tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "The current gh username or exact repository WRITE or ADMIN permission cannot be confirmed."
+      - "A replay could create a duplicate issue or multiple marker matches would not fail closed."
+      - "The effect targets any repository other than github.com/Vel-Labs/orcastrata-max."
+      - "The implementation would add PR, branch, close, merge, schedule, provider, credential, or AOL behavior to T050."
+      - "An external result is unknown and cannot be reconciled before retry."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - plugins/codexmax-orchestrator/assets/contracts/github-issue-effect-v1.md
+        - plugins/codexmax-orchestrator/scripts/github_issue_live.py
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - tests/test_github_issue_live.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-execution-receipt.json
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-projection-source.json
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-projection-receipt.json
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-effects/
+      commands:
+        - command: "python3 -m unittest tests.test_github_issue_live tests.test_github_issue_effect tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+        - command: "github_issue_live.py apply and reconcile for umbrella plus ten child prepares"
+          status: pass
+      summary: >-
+        The exact identity and ADMIN permission passed. The refreshed ten-item
+        WorkGraph and GoalBuddy projection produced eleven persisted prepares.
+        Independent pre-write audit accepted the no-retry live gate. Issues 1
+        through 11 were created serially and reconciled without duplicates or
+        unknown outcomes.
+
+  - id: T060
+    type: worker
+    assignee: Worker
+    status: active
+    objective: "Implement bounded issue workers, branch guards, PR monitoring, and repair routing."
+    dependencies:
+      - T050
+    expected_output:
+      - "Issue-to-PR execution with bounded context and no merge authority"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+      - tests/test_github_pr_lifecycle.py
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-worker-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-audit-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-audit-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-pr-lifecycle-receipt.json
+    verify:
+      - "python3 -m unittest tests.test_github_pr_lifecycle tests.test_github_cli_read tests.test_github_issue_live tests.test_orcastrata_native_interface"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "The fresh WorkGraph item is not ready or its lease conflicts, expires, or changes."
+      - "The exact repository, base, branch, issue, worktree, or authenticated identity differs from the bound packet."
+      - "The diff contains a path outside the worker allowlist or branch ownership overlaps another worker."
+      - "A force push, merge, schedule, arbitrary gh command, credential access, external provider, AOL change, or unrelated GitHub object is required."
+      - "A pull-request create outcome is unknown and cannot be reconciled before retry."
+      - "CI or review findings require work outside the same lease, branch, and file scope."
+
+  - id: T070
+    type: judge
+    assignee: Judge
+    status: queued
+    objective: "Implement scoped audit and the distinct read-only /orcastrata-audit-full command."
+    dependencies:
+      - T050
+    expected_output:
+      - "Independent issue, PR, and umbrella verdict receipts"
+
+  - id: T080
+    type: worker
+    assignee: Worker
+    status: queued
+    objective: "Implement optional explicit guarded merge and unknown-outcome recovery."
+    dependencies:
+      - T060
+      - T070
+    expected_output:
+      - "User-confirmed merge with current-state gates and no auto-merge"
+
+  - id: T090
+    type: judge
+    assignee: Judge
+    status: queued
+    objective: "Run standalone consumer, security, package, and end-to-end dogfood acceptance."
+    dependencies:
+      - T080
+    expected_output:
+      - "Independent ACCEPT, REVISE, or BLOCKED verdict"
+
+  - id: T999
+    type: pm
+    assignee: PM
+    status: queued
+    objective: "Integrate final evidence, clean child lifecycle state, and close the board."
+    dependencies:
+      - T090
+    expected_output:
+      - "Terminal lifecycle receipt and accepted final state"

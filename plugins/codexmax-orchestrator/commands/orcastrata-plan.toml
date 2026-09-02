@@ -1,0 +1,2 @@
+description = "Build a validated Orcastrata implementation plan"
+prompt = "Invoke $codexmax-orchestrator:codexmax-plan for this request: {{args}}"

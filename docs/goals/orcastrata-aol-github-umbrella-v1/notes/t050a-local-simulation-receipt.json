@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "artifact_type": "OrcastrataGithubUmbrellaT050ALocalSimulationReceipt",
+  "task_id": "T050",
+  "tranche": "T050A",
+  "status": "candidate_complete",
+  "decision": "pass_local_simulation",
+  "full_outcome_complete": false,
+  "source": {
+    "script": {
+      "path": "plugins/codexmax-orchestrator/scripts/github_issue_effect.py",
+      "sha256": "050a8ea1b6bb82409fa3b60bc6afa3da38b3e0e2d81381732f30758d3d4dc349"
+    },
+    "contract": {
+      "path": "plugins/codexmax-orchestrator/assets/contracts/github-issue-effect-v1.md",
+      "sha256": "ca76949e8a9d3149261c6d4399d0374604a002f2cc0242fe716b75640e7f725c"
+    },
+    "tests": {
+      "path": "tests/test_github_issue_effect.py",
+      "sha256": "cfaa97feed27bce2b1415a81e7bac4a6c6273c37ded67b0604857a7e5ce7ac73"
+    },
+    "package_manifest_sha256": "f35c2d2b9d506696124054ccf55ab7291644005fb9e7ff1e813bca4623a741b1"
+  },
+  "sample_simulation": {
+    "stable_id": "orcastrata:umbrella:v1:4c1976d74adbe2d13bef",
+    "prepare_sha256": "sha256:6316caa01089e7ae61589440eb1b033fbe18634248ac6038b6dbefea9310d79a",
+    "payload_sha256": "sha256:655b63fc8c135c8ade1479ddcdd43f2f5ecb7f7f032889741db1e328b57ffd19",
+    "effect_id": "sha256:18c3fc5bd90f1559378ca3d94ac2b8ea213f0f2ce78ad4d51bbe4fc28098f717",
+    "outcome": "simulated_created",
+    "command_count": 2
+  },
+  "validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_issue_effect tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface",
+      "result": "pass_25_tests"
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator",
+      "result": "pass_410_files"
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/validate_implementation_plan.py --repo-root . --plan docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md --state docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml --goalbuddy-checker /Users/steven/Workspace/40_Code/infrastructure/goalbuddy/goalbuddy/scripts/check-goal-state.mjs",
+      "result": "valid_10_tasks_t050_active_zero_errors_zero_warnings"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "independent_audit": {
+    "initial_verdict": "needs_revision",
+    "findings_repaired": [
+      "effect_id_payload_identity",
+      "existing_issue_label_drift"
+    ],
+    "final_verdict": "pass_local_only_t050a",
+    "remaining_material_findings": []
+  },
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_called": false,
+    "github_mutated": false,
+    "live_execution_available": false,
+    "simulation_only": true
+  },
+  "next_gate": "T050B requires a separate live authority packet, fresh GoalBuddy snapshot, exact preview, and immediate reconciliation before any GitHub issue effect."
+}

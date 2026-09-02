@@ -1,0 +1,2 @@
+description = "Close Orcastrata execution and lifecycle state"
+prompt = "Invoke $codexmax-orchestrator:codexmax-closeout for this request: {{args}}"

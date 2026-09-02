@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_t060_pr_lifecycle_receipt_v1",
+  "task_id": "T060",
+  "status": "candidate_complete",
+  "decision": "local_candidate_accepted_live_pr_pending",
+  "worker": {
+    "child_task_id": "T060-W01",
+    "runtime_child_id": "/root/t060_pr_lifecycle_worker",
+    "repair_task_id": "T060-W01-R01",
+    "runtime_surface": "codex_collaboration",
+    "provider_dispatch": false
+  },
+  "audit": {
+    "child_task_id": "T060-A01",
+    "runtime_child_id": "/root/t060_independent_audit",
+    "initial_verdict": "REVISE",
+    "final_verdict": "ACCEPT",
+    "live_effect_performed": false
+  },
+  "changed_files": [
+    "plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py",
+    "plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md",
+    "tests/test_github_pr_lifecycle.py"
+  ],
+  "validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_pr_lifecycle tests.test_github_cli_read tests.test_github_issue_live tests.test_orcastrata_native_interface",
+      "status": "pass",
+      "tests": 27
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator",
+      "status": "pass",
+      "file_count": 413,
+      "release_manifest_sha256": "d68556fee2190043a77e3bc72e4df5c7d70aa6d3fdf543d2c774bbe93b3046f1"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "live_pull_request": null,
+  "merge_performed": false,
+  "proof_boundary": "Local fake-runner, consumer, package-parity, and independent-audit proof. The first live pull-request observation is still required before T060 acceptance."
+}

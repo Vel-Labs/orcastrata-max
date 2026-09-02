@@ -48,6 +48,10 @@ codex plugin marketplace remove codexmax-orchestrator --json
 Start a new Codex task after installation so the host reloads its skill
 inventory.
 
+The plugin includes native `/orcastrata-*` commands and lifecycle hooks. Review
+and trust the installed hook when Codex requests it. Trust is bound to the
+installed hook hash, so a changed package can require trust again.
+
 The first conversation uses the currently installed package. It does not need
 to search old plugin caches, reports, goals, archives, or memory. If Codex shows
 an older package or an ambiguous skill identity, use the normal update or
@@ -59,6 +63,12 @@ Ask for the result you want:
 
 ```text
 Use Orcastrata Max to fix the import bug and verify the user-visible result.
+```
+
+The equivalent native command is:
+
+```text
+/orcastrata-orchestrate fix the import bug and verify the user-visible result
 ```
 
 If automatic selection is unavailable, use:

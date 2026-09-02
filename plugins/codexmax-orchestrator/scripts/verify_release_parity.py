@@ -18,7 +18,7 @@ from typing import Any
 
 SCHEMA_VERSION = 1
 PACKAGE_NAME = "codexmax-orchestrator"
-CANDIDATE_VERSION = "1.1.1"
+CANDIDATE_VERSION = "1.2.0"
 T001_INVENTORY_SHA256 = "c4134153b8ab9868ac9104cce5b8f975bd18c954f75523bb5ecc4cd6a45c973d"
 RELEASE_STATUS = {
     "installed": False,

@@ -1,0 +1,318 @@
+{
+  "acceptance_authority": "Parent Codex",
+  "accepted": false,
+  "accounting_status": "unaccounted",
+  "applied_to_goalbuddy": false,
+  "applied_to_supervisor": false,
+  "artifact": {
+    "bytes": 7662,
+    "path": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/result.json",
+    "sha256": "sha256:4c8beb75d37266c58f9cd400f602a13602a2d15a6fd92a9e50937dd9e5a5857c"
+  },
+  "attempts": [
+    {
+      "adapter": "commandcode",
+      "attempt_index": 1,
+      "cost": {
+        "reason": "provider_cost_not_reported",
+        "value": "unknown"
+      },
+      "cwd": ".",
+      "elapsed_time_ms": 257701,
+      "expected_response_identity": {
+        "actual_model": "xai/grok-4.6",
+        "actual_provider": "Command Code",
+        "declared_route": "worker_commandcode_model",
+        "fallback_used": false,
+        "retry_count": 0
+      },
+      "identity": {
+        "adapter_id": "commandcode",
+        "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+        "authority_scope": [
+          "."
+        ],
+        "billing": "subscription",
+        "browser_access": "no",
+        "citation_support": "no",
+        "commands_executable": "no",
+        "connector_access": "no",
+        "consequence_floor": "medium",
+        "expires_at": "2026-09-01T21:35:05.887473Z",
+        "independence_group": "commandcode_gateway",
+        "input_delivery": "paths_only",
+        "local_file_access": "read_only",
+        "model": "xai/grok-4.6",
+        "network_access": "provider_only",
+        "observed_at": "2026-09-01T21:30:05.887473Z",
+        "preflight_id": "task-scoped:orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73",
+        "provider": "Command Code",
+        "quota_observability": "unknown",
+        "read_scope": [
+          "."
+        ],
+        "reasoning": "provider_default",
+        "route": "commandcode-subscription-exact-model",
+        "route_name": "worker_commandcode_model",
+        "runtime": "Command Code",
+        "source_access": "local_filesystem",
+        "token_limit": null,
+        "web_search_access": "no",
+        "write_access": "none",
+        "write_scope": []
+      },
+      "observation": null,
+      "outcome": "success",
+      "output_limit_stream": null,
+      "quota": {
+        "reason": "provider_quota_not_reported",
+        "value": "unknown"
+      },
+      "response_identity_validated": true,
+      "returncode": 0,
+      "route_name": "worker_commandcode_model",
+      "stderr": {
+        "bytes": 0,
+        "path": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/attempt-001/stderr.bin",
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 7662,
+        "path": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/attempt-001/stdout.bin",
+        "sha256": "sha256:4c8beb75d37266c58f9cd400f602a13602a2d15a6fd92a9e50937dd9e5a5857c"
+      },
+      "timed_out": false,
+      "tokens": {
+        "reason": "provider_tokens_not_reported",
+        "value": "unknown"
+      }
+    }
+  ],
+  "dispatch_id": "task-scoped-orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73-aaefbb931ab3",
+  "effective_config_sha256": "sha256:0b01ab840c969f71c48f8f3a30f4e8a6229c743e2b017bd453922b43189b4b8d",
+  "execution_owner": "orcastrata_managed",
+  "external_call_performed": true,
+  "failure": null,
+  "manifest_type": "DispatchReturnManifest",
+  "project_usage": {
+    "accounting_scope": "orcastrata_admitted_executions",
+    "accounting_status": "unaccounted",
+    "ledger": null,
+    "status": "not_initialized"
+  },
+  "proof_mode": "task_scoped_live",
+  "provider_change_receipt": null,
+  "provider_network_performed": "unknown",
+  "resolver_role": "worker",
+  "role_priority": {
+    "role_schema_version": 2,
+    "route_01": "worker_deepseek_v4_pro",
+    "route_02": "worker_luna_xhigh",
+    "route_03": "worker_minimax_m3_tool_loop",
+    "route_04": "worker_claude_code_sonnet_5",
+    "route_05": "worker_commandcode_model",
+    "route_06": "worker_codex_spark",
+    "task_profile": "semantic_worker_implementation"
+  },
+  "route_resolution": {
+    "actual_route": {
+      "adapter_id": "commandcode",
+      "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+      "attempt_index": 1,
+      "authority_scope": [
+        "."
+      ],
+      "billing": "subscription",
+      "browser_access": "no",
+      "citation_support": "no",
+      "commands_executable": "no",
+      "connector_access": "no",
+      "consequence_floor": "medium",
+      "cost": {
+        "reason": "provider_cost_not_reported",
+        "value": "unknown"
+      },
+      "expires_at": "2026-09-01T21:35:05.887473Z",
+      "independence_group": "commandcode_gateway",
+      "input_delivery": "paths_only",
+      "local_file_access": "read_only",
+      "model": "xai/grok-4.6",
+      "network_access": "provider_only",
+      "observed_at": "2026-09-01T21:30:05.887473Z",
+      "preflight_id": "task-scoped:orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73",
+      "provider": "Command Code",
+      "quota": {
+        "reason": "provider_quota_not_reported",
+        "value": "unknown"
+      },
+      "quota_observability": "unknown",
+      "read_scope": [
+        "."
+      ],
+      "reasoning": "provider_default",
+      "route": "commandcode-subscription-exact-model",
+      "route_name": "worker_commandcode_model",
+      "runtime": "Command Code",
+      "source_access": "local_filesystem",
+      "token_limit": null,
+      "tokens": {
+        "reason": "provider_tokens_not_reported",
+        "value": "unknown"
+      },
+      "wall_time_ms": {
+        "reason": "wall_time_not_reported",
+        "value": "unknown"
+      },
+      "web_search_access": "no",
+      "write_access": "none",
+      "write_scope": []
+    },
+    "attempts": [
+      {
+        "attempt_index": 1,
+        "circuit_state": "closed",
+        "cost": {
+          "reason": "provider_cost_not_reported",
+          "value": "unknown"
+        },
+        "detail": "completed",
+        "identity": {
+          "adapter_id": "commandcode",
+          "adapter_sha256": "sha256:11017af7192cb7d5c22c27b4550c3c50b1a409e72789ded0059954c4173ba879",
+          "authority_scope": [
+            "."
+          ],
+          "billing": "subscription",
+          "browser_access": "no",
+          "citation_support": "no",
+          "commands_executable": "no",
+          "connector_access": "no",
+          "consequence_floor": "medium",
+          "expires_at": "2026-09-01T21:35:05.887473Z",
+          "independence_group": "commandcode_gateway",
+          "input_delivery": "paths_only",
+          "local_file_access": "read_only",
+          "model": "xai/grok-4.6",
+          "network_access": "provider_only",
+          "observed_at": "2026-09-01T21:30:05.887473Z",
+          "preflight_id": "task-scoped:orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73",
+          "provider": "Command Code",
+          "quota_observability": "unknown",
+          "read_scope": [
+            "."
+          ],
+          "reasoning": "provider_default",
+          "route": "commandcode-subscription-exact-model",
+          "route_name": "worker_commandcode_model",
+          "runtime": "Command Code",
+          "source_access": "local_filesystem",
+          "token_limit": null,
+          "web_search_access": "no",
+          "write_access": "none",
+          "write_scope": []
+        },
+        "outcome": "success",
+        "quota": {
+          "reason": "provider_quota_not_reported",
+          "value": "unknown"
+        },
+        "route_name": "worker_commandcode_model",
+        "tokens": {
+          "reason": "provider_tokens_not_reported",
+          "value": "unknown"
+        },
+        "wall_time_ms": {
+          "reason": "wall_time_not_reported",
+          "value": "unknown"
+        }
+      }
+    ],
+    "capability_authority": {
+      "approval_digest": null,
+      "authorized": true,
+      "cost_rank": 1,
+      "effort_rank": 1,
+      "escalation_approved": false,
+      "escalation_required": false,
+      "parent_cost_ceiling": 1,
+      "parent_effort_ceiling": 1,
+      "reasons": [],
+      "route_fingerprint": "eb53600c148bae1a5e4a053948b23bba2f1785dea2021964a2d1197d22cbfabf",
+      "route_name": "worker_commandcode_model",
+      "schema_version": 2,
+      "task_grant_sha256": "sha256:5726cddfb4bb71dbc459f9a676b34ba08686cb0c2fa335f7a57ec8faee0b9383"
+    },
+    "considerations": [
+      {
+        "capability_authority": {
+          "approval_digest": null,
+          "authorized": true,
+          "cost_rank": 1,
+          "effort_rank": 1,
+          "escalation_approved": false,
+          "escalation_required": false,
+          "parent_cost_ceiling": 1,
+          "parent_effort_ceiling": 1,
+          "reasons": [],
+          "route_fingerprint": "eb53600c148bae1a5e4a053948b23bba2f1785dea2021964a2d1197d22cbfabf",
+          "route_name": "worker_commandcode_model",
+          "schema_version": 2,
+          "task_grant_sha256": "sha256:5726cddfb4bb71dbc459f9a676b34ba08686cb0c2fa335f7a57ec8faee0b9383"
+        },
+        "eligible": true,
+        "order": 1,
+        "preflight_id": "task-scoped:orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73",
+        "reasons": [],
+        "route_name": "worker_commandcode_model"
+      }
+    ],
+    "controls": {
+      "circuit_breaker_threshold": 1,
+      "max_attempts_per_checkpoint": 1,
+      "max_attempts_per_route": 1,
+      "no_improvement_window": 1
+    },
+    "explicit_selection_sha256": "sha256:6920d18a3945718d2fc65e1c00d85bf6fd0fa29b3153056319a0e17bf1e1e399",
+    "external_call_performed": false,
+    "failed_preferred_route": null,
+    "failover_used": false,
+    "fallback_allowed": false,
+    "next_attempt": null,
+    "ordered_routes": [
+      "worker_commandcode_model"
+    ],
+    "preferred_route": "worker_commandcode_model",
+    "profile": "task_scoped_read_only",
+    "resolution_phase": "pre_dispatch",
+    "role": "worker",
+    "schema_version": 1,
+    "selected_route": "worker_commandcode_model",
+    "status": "selected",
+    "stop_reason": "selected_eligible_route",
+    "task_id": "orcastrata-aol-github-umbrella-v1-t010-r2-lane-01-a0b61af9fe73"
+  },
+  "schema_version": 1,
+  "selected_route": "worker_commandcode_model",
+  "semantic_role": "worker",
+  "status": "selected",
+  "supervisor_handoff": {
+    "bytes": 55033,
+    "path": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/supervisor-event-bundle.json",
+    "sha256": "sha256:d90fd591a45d7498b5142caaa3ed131c2bc15440c569b7564cc9bf6a36fb6014"
+  },
+  "usage": {
+    "cost": {
+      "reason": "provider_cost_not_reported",
+      "value": "unknown"
+    },
+    "quota": {
+      "reason": "provider_quota_not_reported",
+      "value": "unknown"
+    },
+    "tokens": {
+      "reason": "provider_tokens_not_reported",
+      "value": "unknown"
+    }
+  },
+  "work_status": "selected"
+}

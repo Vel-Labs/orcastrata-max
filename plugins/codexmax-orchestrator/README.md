@@ -37,6 +37,12 @@ After installation, start a new Codex task and ask for the work you want:
 Use Orcastrata Max to improve this project's onboarding and verify the result.
 ```
 
+Or use the native command:
+
+```text
+/orcastrata-orchestrate improve this project's onboarding and verify the result
+```
+
 Native Codex works without another account or configuration file. If needed,
 invoke the compatibility skill directly:
 
@@ -93,18 +99,27 @@ extra file access.
 Orcastrata Max does not read, copy, refresh, or store provider credentials.
 Authentication remains in the provider tool that you configured.
 
-## Main Skills
+## Native Commands
 
-| Need | Compatibility invocation |
+| Need | Native command |
 | --- | --- |
-| Run work | `$codexmax-orchestrator:codexmax-orchestrate` |
-| Explore first | `$codexmax-orchestrator:codexmax-discover` |
-| Inspect setup | `$codexmax-orchestrator:codexmax-config` |
-| Choose a route | `$codexmax-orchestrator:codexmax-route` |
-| Audit a result | `$codexmax-orchestrator:codexmax-verify` |
+| Run work | `/orcastrata-orchestrate` |
+| Explore first | `/orcastrata-discover` |
+| Build a plan | `/orcastrata-plan` |
+| Inspect setup | `/orcastrata-config` |
+| Choose a route | `/orcastrata-route` |
+| Compile an assignment | `/orcastrata-assignment` |
+| Supervise workers | `/orcastrata-supervise` |
+| Audit a result | `/orcastrata-audit` |
+| Close execution | `/orcastrata-closeout` |
+| Run an accepted loop | `/orcastrata-loop` |
 
-The package also includes planning, assignment, supervision, closeout, and loop
-skills for advanced workflows.
+The existing `$codexmax-orchestrator:codexmax-*` skill IDs remain supported.
+
+The plugin also loads concise Parent and worker context through native
+`SessionStart` and `SubagentStart` hooks. Codex must trust the installed hook
+hash before it can run. Source checks and package installation do not prove
+that live activation occurred.
 
 ## Support Matrix
 

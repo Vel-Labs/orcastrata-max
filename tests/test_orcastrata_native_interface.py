@@ -1,0 +1,74 @@
+import ast
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tomllib
+import unittest
+
+
+ROOT = Path(__file__).parents[1]
+PLUGIN = ROOT / "plugins/codexmax-orchestrator"
+COMMANDS = {
+    "orcastrata-assignment": "codexmax-assignment",
+    "orcastrata-orchestrate": "codexmax-orchestrate",
+    "orcastrata-discover": "codexmax-discover",
+    "orcastrata-plan": "codexmax-plan",
+    "orcastrata-route": "codexmax-route",
+    "orcastrata-supervise": "codexmax-supervise",
+    "orcastrata-audit": "codexmax-verify",
+    "orcastrata-closeout": "codexmax-closeout",
+    "orcastrata-config": "codexmax-config",
+    "orcastrata-loop": "codexmax-loop",
+}
+
+
+class OrcastrataNativeInterfaceTests(unittest.TestCase):
+    def test_commands_are_thin_aliases_to_existing_skills(self):
+        paths = sorted((PLUGIN / "commands").glob("*.toml"))
+        self.assertEqual([path.stem for path in paths], sorted(COMMANDS))
+        for path in paths:
+            command = tomllib.loads(path.read_text(encoding="utf-8"))
+            prompt = command["prompt"]
+            tokens = [word for word in prompt.split() if word.startswith("$codexmax-orchestrator:")]
+            self.assertEqual(tokens, [f"$codexmax-orchestrator:{COMMANDS[path.stem]}"])
+            self.assertIn("{{args}}", prompt)
+            self.assertTrue((PLUGIN / "skills" / COMMANDS[path.stem] / "SKILL.md").is_file())
+
+    def test_manifest_wires_the_native_hook(self):
+        manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["hooks"], "./hooks/hooks.json")
+        hooks = json.loads((PLUGIN / "hooks/hooks.json").read_text(encoding="utf-8"))["hooks"]
+        self.assertEqual(set(hooks), {"SessionStart", "SubagentStart"})
+        self.assertTrue(all("$PLUGIN_ROOT/hooks/orcastrata_context.py" in item["hooks"][0]["command"] for rows in hooks.values() for item in rows))
+
+    def test_hook_is_bounded_event_specific_and_stdlib_only(self):
+        script = PLUGIN / "hooks/orcastrata_context.py"
+        imports = {
+            alias.name.split(".")[0]
+            for node in ast.walk(ast.parse(script.read_text(encoding="utf-8")))
+            if isinstance(node, ast.Import)
+            for alias in node.names
+        }
+        self.assertEqual(imports, {"json", "sys"})
+        for event in ("SessionStart", "SubagentStart"):
+            run = subprocess.run(
+                [sys.executable, str(script)],
+                input=json.dumps({"hook_event_name": event}),
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output = json.loads(run.stdout)
+            specific = output["hookSpecificOutput"]
+            self.assertEqual(specific["hookEventName"], event)
+            self.assertLessEqual(len(run.stdout.encode("utf-8")), 512)
+        malformed = subprocess.run(
+            [sys.executable, str(script)], input="not-json", text=True,
+            capture_output=True, check=True,
+        )
+        self.assertEqual(json.loads(malformed.stdout), {})
+
+
+if __name__ == "__main__":
+    unittest.main()

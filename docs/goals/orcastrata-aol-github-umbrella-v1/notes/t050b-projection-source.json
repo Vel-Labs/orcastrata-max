@@ -1,0 +1,751 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_github_umbrella_projection_source_v1",
+  "target": {
+    "host": "github.com",
+    "repository": "Vel-Labs/orcastrata-max"
+  },
+  "workgraph": {
+    "schema_version": 1,
+    "graph_id": "orcastrata-aol-github-umbrella-v1",
+    "evidence": [
+      {
+        "id": "EV-T010",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/adversarial-review-receipt.md",
+        "digest": "unknown",
+        "state": "observed",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T020",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+        "digest": "unknown",
+        "state": "observed",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T030",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t030-live-read-receipt.json",
+        "digest": "unknown",
+        "state": "observed",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T040",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t040-projection-receipt.json",
+        "digest": "unknown",
+        "state": "observed",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T050",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t050b-execution-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T060",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-pr-lifecycle-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T070",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-full-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T080",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-guarded-merge-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T090",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-acceptance-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      },
+      {
+        "id": "EV-T999",
+        "kind": "receipt",
+        "locator": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t999-parent-closeout-receipt.json",
+        "digest": "unknown",
+        "state": "expected",
+        "claim_ids": [],
+        "authority_effect": "none",
+        "acceptance_effect": "none"
+      }
+    ],
+    "work_items": [
+      {
+        "id": "T010",
+        "kind": "decision",
+        "objective": "Review and correct the standalone Orcastrata GitHub umbrella plan.",
+        "status": "candidate_complete",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/"
+          ],
+          "write": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/"
+          ]
+        },
+        "done_condition": "The corrected plan, separate AOL handoff, board, manifest, and review receipt validate.",
+        "validation": [
+          {
+            "id": "VAL-T010",
+            "kind": "command",
+            "instruction": "Run the implementation-plan, GoalBuddy, manifest, JSON, and diff checks.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [],
+          "related_to": [],
+          "produces": [
+            "EV-T010"
+          ],
+          "consumes": []
+        },
+        "owner_role": "Parent",
+        "expected_artifacts": [
+          "EV-T010"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop if the correction changes provider evidence or grants unrecorded authority."
+      },
+      {
+        "id": "T020",
+        "kind": "decision",
+        "objective": "Record the exact implementation authority and repository boundary.",
+        "status": "candidate_complete",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+            "docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md"
+          ],
+          "write": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+            "docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md"
+          ]
+        },
+        "done_condition": "The exact repository, granted actions, and forbidden actions are recorded.",
+        "validation": [
+          {
+            "id": "VAL-T020",
+            "kind": "command",
+            "instruction": "Run the GoalBuddy checker and implementation-plan validator.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T010"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T020"
+          ],
+          "consumes": [
+            "EV-T010"
+          ]
+        },
+        "owner_role": "Parent",
+        "expected_artifacts": [
+          "EV-T020"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on an ambiguous repository, host, write scope, or checkout."
+      },
+      {
+        "id": "T030",
+        "kind": "ticket",
+        "objective": "Implement credential-blind local GitHub capability and read operations.",
+        "status": "candidate_complete",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "plugins/codexmax-orchestrator/scripts/github_cli_read.py",
+            "plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md"
+          ],
+          "write": [
+            "plugins/codexmax-orchestrator/scripts/github_cli_read.py",
+            "plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md",
+            "tests/test_github_cli_read.py"
+          ]
+        },
+        "done_condition": "Closed credential-blind reads work for the exact repository and emit bounded receipts.",
+        "validation": [
+          {
+            "id": "VAL-T030",
+            "kind": "command",
+            "instruction": "Run GitHub-read, native-interface, release-parity, and exact-repository read checks.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T020"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T030"
+          ],
+          "consumes": [
+            "EV-T020"
+          ]
+        },
+        "owner_role": "Worker",
+        "expected_artifacts": [
+          "EV-T030"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on credential access, shell text, write symbols, or identity ambiguity."
+      },
+      {
+        "id": "T040",
+        "kind": "ticket",
+        "objective": "Project GoalBuddy and WorkGraph truth into a deterministic GitHub umbrella preview.",
+        "status": "candidate_complete",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+            "plugins/codexmax-orchestrator/scripts/workgraph_goalbuddy_adapter.py"
+          ],
+          "write": [
+            "plugins/codexmax-orchestrator/scripts/github_umbrella_projection.py",
+            "plugins/codexmax-orchestrator/assets/contracts/github-umbrella-projection-v1.md",
+            "tests/test_github_umbrella_projection.py"
+          ]
+        },
+        "done_condition": "One valid dependency graph and byte-stable preview exist without GitHub or GoalBuddy mutation.",
+        "validation": [
+          {
+            "id": "VAL-T040",
+            "kind": "command",
+            "instruction": "Run projection, GitHub-read, native-interface, release-parity, GoalBuddy, and audit checks.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T030"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T040"
+          ],
+          "consumes": [
+            "EV-T030"
+          ]
+        },
+        "owner_role": "Worker",
+        "expected_artifacts": [
+          "EV-T040"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop if projection requires a new truth store or incompatible schema."
+      },
+      {
+        "id": "T050",
+        "kind": "ticket",
+        "objective": "Create and reconcile Orcastrata-managed GitHub issues without duplicates.",
+        "status": "active",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "T040 projection receipt",
+            "Exact repository issue state",
+            "Verified local gh identity and permission"
+          ],
+          "write": [
+            "plugins/codexmax-orchestrator/scripts/github_issue_effect.py",
+            "plugins/codexmax-orchestrator/scripts/github_issue_live.py",
+            "plugins/codexmax-orchestrator/assets/contracts/github-issue-effect-v1.md",
+            "tests/test_github_issue_effect.py",
+            "tests/test_github_issue_live.py",
+            "Orcastrata-managed issues in github.com/Vel-Labs/orcastrata-max"
+          ]
+        },
+        "done_condition": "Prepare, observe, create, and reconcile behavior prevents duplicates and resolves unknown outcomes.",
+        "validation": [
+          {
+            "id": "VAL-T050",
+            "kind": "command",
+            "instruction": "Run fake-gh faults, consumers, release parity, independent audit, and an idempotent exact-repository canary.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T040"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T050"
+          ],
+          "consumes": [
+            "EV-T040"
+          ]
+        },
+        "owner_role": "Worker",
+        "expected_artifacts": [
+          "EV-T050"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on identity or permission failure, multiple marker matches, transport drift, or an unreconciled unknown effect."
+      },
+      {
+        "id": "T060",
+        "kind": "ticket",
+        "objective": "Run bounded issue workers with branch, path, push, pull-request, and repair guards.",
+        "status": "blocked",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "T050 issue identities",
+            "Dependency-ready WorkGraph items",
+            "Owned branch and pull-request state"
+          ],
+          "write": [
+            "T060-approved worker, branch, PR, repair, receipt, contract, and test files",
+            "Board-owned branches and pull requests in github.com/Vel-Labs/orcastrata-max"
+          ]
+        },
+        "done_condition": "Disjoint workers produce reviewable pull requests without scope or merge violations.",
+        "validation": [
+          {
+            "id": "VAL-T060",
+            "kind": "command",
+            "instruction": "Run packet, lease, path, branch, PR-state, failure-routing, package, and dogfood checks.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T050"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T060"
+          ],
+          "consumes": [
+            "EV-T050"
+          ]
+        },
+        "owner_role": "Worker",
+        "expected_artifacts": [
+          "EV-T060"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on path overlap, branch drift, force push, dependency change, or a repeated failure signature."
+      },
+      {
+        "id": "T070",
+        "kind": "audit",
+        "objective": "Implement the distinct read-only /orcastrata-audit-full umbrella verdict.",
+        "status": "blocked",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "T050 issue state",
+            "Frozen acceptance criteria",
+            "Current verify and pull-request receipts"
+          ],
+          "write": [
+            "T070-approved audit-full command, skill, schema, documentation, receipt, and tests"
+          ]
+        },
+        "done_condition": "The command returns correct ACCEPT, REVISE, or BLOCKED verdicts without replacing Parent acceptance.",
+        "validation": [
+          {
+            "id": "VAL-T070",
+            "kind": "command",
+            "instruction": "Run focused audit fixtures, package validation, and independent review.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T050"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T070"
+          ],
+          "consumes": [
+            "EV-T050"
+          ]
+        },
+        "owner_role": "Auditor",
+        "expected_artifacts": [
+          "EV-T070"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop if audit-full gains write authority or replaces Parent acceptance."
+      },
+      {
+        "id": "T080",
+        "kind": "ticket",
+        "objective": "Merge board-created pull requests one at a time through fresh guarded gates.",
+        "status": "blocked",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "Accepted T060 and T070 receipts",
+            "Fresh pull-request SHA, dependency, CI, review, scope, and audit state"
+          ],
+          "write": [
+            "T080-approved merge, reconciliation, recovery, receipt, contract, and tests",
+            "One board-created pull request at a time in github.com/Vel-Labs/orcastrata-max"
+          ]
+        },
+        "done_condition": "Each merge occurs once only when current bindings and all required gates pass.",
+        "validation": [
+          {
+            "id": "VAL-T080",
+            "kind": "command",
+            "instruction": "Run stale-state and unknown-outcome tests plus exact-repository guarded merge canaries.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T060",
+            "T070"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T080"
+          ],
+          "consumes": [
+            "EV-T060",
+            "EV-T070"
+          ]
+        },
+        "owner_role": "Worker",
+        "expected_artifacts": [
+          "EV-T080"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on stale SHA, dependency drift, conflict, failed CI, review, scope, audit, or unreconciled outcome."
+      },
+      {
+        "id": "T090",
+        "kind": "audit",
+        "objective": "Run independent standalone Orcastrata package and workflow dogfood acceptance.",
+        "status": "blocked",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "T080 candidate",
+            "Repository source and tests",
+            "Installed isolated package",
+            "Exact-repository workflow evidence"
+          ],
+          "write": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-acceptance-receipt.json",
+            "Isolated local installation target"
+          ]
+        },
+        "done_condition": "An independent receipt returns ACCEPT, REVISE, or BLOCKED from package, security, consumer, and end-to-end proof.",
+        "validation": [
+          {
+            "id": "VAL-T090",
+            "kind": "command",
+            "instruction": "Run focused checks, the justified full suite, package install, real command journey, and adversarial review.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T080"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T090"
+          ],
+          "consumes": [
+            "EV-T080"
+          ]
+        },
+        "owner_role": "Auditor",
+        "expected_artifacts": [
+          "EV-T090"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Stop on a product defect, credential exposure, external-scope breach, or unapproved effect."
+      },
+      {
+        "id": "T999",
+        "kind": "checkpoint",
+        "objective": "Integrate final evidence, clean child lifecycle state, and close the board.",
+        "status": "blocked",
+        "clarity_tier": "bounded",
+        "scope": {
+          "read": [
+            "Accepted T090 receipt",
+            "Authoritative board history",
+            "Fresh child-task inventory"
+          ],
+          "write": [
+            "docs/goals/orcastrata-aol-github-umbrella-v1/"
+          ]
+        },
+        "done_condition": "Child inventory is clean, goal status is done, active_task is null, and final validators pass.",
+        "validation": [
+          {
+            "id": "VAL-T999",
+            "kind": "command",
+            "instruction": "Run Terminal Lifecycle, GoalBuddy, stop, plan, and manifest checks.",
+            "expected_result": "All selected checks pass."
+          }
+        ],
+        "relationships": {
+          "parent_of": [],
+          "blocked_by": [
+            "T090"
+          ],
+          "related_to": [],
+          "produces": [
+            "EV-T999"
+          ],
+          "consumes": [
+            "EV-T090"
+          ]
+        },
+        "owner_role": "Parent",
+        "expected_artifacts": [
+          "EV-T999"
+        ],
+        "retry_policy": {
+          "max_attempts": 2,
+          "no_improvement_window": 2
+        },
+        "stop_rule": "Keep T999 active while cleanup, authority, or final proof is incomplete."
+      }
+    ]
+  },
+  "presentation": {
+    "umbrella": {
+      "acceptance_criteria": [
+        "All dependency-ready items complete with canonical receipts.",
+        "GitHub effects remain exact-repository, idempotent, and reconciled.",
+        "Each board-created pull request passes fresh merge gates.",
+        "Standalone package dogfood and T999 closeout pass."
+      ],
+      "labels": [
+        "enhancement"
+      ],
+      "non_goals": [
+        "AOL source or runtime integration",
+        "External model providers",
+        "Schedules or auto-merge",
+        "Deployment or release publication",
+        "Repository settings or secrets"
+      ],
+      "outcome": "Complete the standalone issue-to-PR-to-guarded-merge journey while GoalBuddy remains canonical.",
+      "title": "Orcastrata standalone GitHub umbrella workflow v1"
+    },
+    "issues": [
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Plugin implementation",
+          "AOL source changes",
+          "GitHub mutation"
+        ],
+        "title": "Review and correct the standalone Orcastrata plan",
+        "work_item_id": "T010"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Credential inspection",
+          "Authority inferred from authentication",
+          "Another repository"
+        ],
+        "title": "Record exact implementation authority",
+        "work_item_id": "T020"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "GitHub writes",
+          "Credential inspection",
+          "Arbitrary commands"
+        ],
+        "title": "Implement credential-blind GitHub reads",
+        "work_item_id": "T030"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "A second board",
+          "GitHub effects",
+          "A new graph engine"
+        ],
+        "title": "Project GoalBuddy work into a GitHub umbrella",
+        "work_item_id": "T040"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Pull requests",
+          "Merge",
+          "Schedules",
+          "AOL"
+        ],
+        "title": "Create and reconcile Orcastrata-managed issues",
+        "work_item_id": "T050"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Merge authority",
+          "Force push",
+          "Schedules",
+          "Shared branch ownership"
+        ],
+        "title": "Run bounded issue workers and PR lifecycle",
+        "work_item_id": "T060"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "GitHub mutation",
+          "Worker repair",
+          "Merge",
+          "AOL Assurance"
+        ],
+        "title": "Implement /orcastrata-audit-full",
+        "work_item_id": "T070"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Auto-merge",
+          "Scheduled merge",
+          "Force push",
+          "Unrelated pull requests"
+        ],
+        "title": "Merge board-created pull requests through fresh gates",
+        "work_item_id": "T080"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Product repair",
+          "Deployment",
+          "Release publication",
+          "AOL implementation"
+        ],
+        "title": "Run standalone Orcastrata dogfood acceptance",
+        "work_item_id": "T090"
+      },
+      {
+        "labels": [
+          "enhancement"
+        ],
+        "non_goals": [
+          "Product repair",
+          "New external effects",
+          "Release publication"
+        ],
+        "title": "Close the Orcastrata umbrella lifecycle",
+        "work_item_id": "T999"
+      }
+    ]
+  }
+}

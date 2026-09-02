@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "artifact_type": "OrcastrataGithubUmbrellaT040Receipt",
+  "task_id": "T040",
+  "status": "candidate_complete",
+  "decision": "pass_local_projection",
+  "full_outcome_complete": false,
+  "source": {
+    "script": {
+      "path": "plugins/codexmax-orchestrator/scripts/github_umbrella_projection.py",
+      "sha256": "e47efddff429a0799d89c253c6af4c37f15a6095e3afa0af679a2bdee9409f01"
+    },
+    "contract": {
+      "path": "plugins/codexmax-orchestrator/assets/contracts/github-umbrella-projection-v1.md",
+      "sha256": "c6bbfd296fecfd80a89d9dd84c4044129866e439351cdfe9e746e7b3a2bf1851"
+    },
+    "tests": {
+      "path": "tests/test_github_umbrella_projection.py",
+      "sha256": "3efe1d0cde06088ebb029898664179d51652d1d4bf0cfee6074e88cc68fe3539"
+    },
+    "package_manifest_sha256": "71b02a91db4c937364e27c7bbfd6cb76976270657594a192ea4259d230bc279b"
+  },
+  "sample_projection": {
+    "graph_sha256": "sha256:33e2610843b2e2a97eca6f2bbe379aaa4ec45ceb47fda7756d23ee2e97631f3d",
+    "projection_sha256": "sha256:f9e3ca2790e45f3e051c8eba2c43b720966139427ffb80d08c86ecb45affa45c",
+    "issue_count": 2
+  },
+  "validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_umbrella_projection tests.test_github_cli_read tests.test_orcastrata_native_interface",
+      "result": "pass_18_tests"
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator",
+      "result": "pass_408_files"
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/validate_implementation_plan.py --repo-root . --plan docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md --state docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml --goalbuddy-checker /Users/steven/Workspace/40_Code/infrastructure/goalbuddy/goalbuddy/scripts/check-goal-state.mjs",
+      "result": "valid_10_tasks_t040_active_zero_errors_zero_warnings"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "independent_audit": {
+    "initial_verdict": "needs_revision",
+    "findings_repaired": [
+      "case_insensitive_repository_identity",
+      "real_goalbuddy_snapshot_round_trip"
+    ],
+    "final_verdict": "pass",
+    "remaining_material_findings": []
+  },
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "github_called": false,
+    "github_mutated": false,
+    "goalbuddy_mutated": false,
+    "network_used": false,
+    "provider_called": false
+  },
+  "next_gate": "T050 requires separate GitHub issue-write authority and a fresh GoalBuddy snapshot plus reconciliation immediately before effect."
+}

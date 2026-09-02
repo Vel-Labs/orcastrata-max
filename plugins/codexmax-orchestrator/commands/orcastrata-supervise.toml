@@ -1,0 +1,2 @@
+description = "Supervise bounded Orcastrata workers"
+prompt = "Invoke $codexmax-orchestrator:codexmax-supervise for this request: {{args}}"

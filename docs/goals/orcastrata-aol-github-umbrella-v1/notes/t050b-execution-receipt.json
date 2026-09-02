@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "artifact_type": "OrcastrataGithubBoardExecutionReceipt",
+  "plan_id": "orcastrata-aol-github-umbrella-v1",
+  "task_id": "T050",
+  "phase": "live_issues_created_and_reconciled",
+  "recorded_at": "2026-09-02T03:57:08Z",
+  "candidate": {
+    "repository": "github.com/Vel-Labs/orcastrata-max",
+    "branch": "codex/orcastrata-dynamic-routing-v2",
+    "head": "1ea368d38fdde239660f41a3aa146cb018d16d2d"
+  },
+  "standing_authority": {
+    "range": "T050B_through_T999",
+    "source": "operator_instruction_2026-09-02",
+    "exact_repository": "github.com/Vel-Labs/orcastrata-max",
+    "external_providers": false,
+    "schedules": false,
+    "auto_merge": false,
+    "force_push": false,
+    "release_publication": false,
+    "aol_source": false
+  },
+  "credential_blind_preflight": {
+    "gh_host": "github.com",
+    "username": "velcrafting",
+    "repository": "Vel-Labs/orcastrata-max",
+    "viewer_permission": "ADMIN",
+    "repository_archived": false,
+    "repository_disabled": false,
+    "default_branch": "main",
+    "credential_material_inspected": false,
+    "credential_material_changed": false,
+    "status": "pass"
+  },
+  "remote_reconciliation": {
+    "recorded_at": "2026-09-02T04:09:27Z",
+    "query_scope": "exact_repository_body_markers",
+    "marker_prefix": "orcastrata:",
+    "total_matches": 0,
+    "status": "pass_no_existing_managed_items"
+  },
+  "projection": {
+    "source": "t050b-projection-source.json",
+    "receipt": "t050b-projection-receipt.json",
+    "board_sha256": "sha256:a1d1b1edd1fcd43ecd0f11824858e4f2f09eb7667d6ae6f5267e920a134f0940",
+    "projection_sha256": "sha256:a5457f719c9bec960f33729734549bb2981acbdf83f5b9eebf9180f27612a690",
+    "work_item_count": 10,
+    "prepare_receipt_count": 11,
+    "status": "pass"
+  },
+  "validation": {
+    "focused_and_consumer_tests": "pass_32",
+    "implementation_plan_and_goalbuddy": "pass_no_errors_or_warnings",
+    "git_diff_check": "pass",
+    "release_parity": "pass_411_files",
+    "release_manifest_sha256": "10ad7119992f49d227f74a75c7db4b67c040936096f43e161b9eb63708f6a2d4",
+    "independent_pre_write_audit": "accept"
+  },
+  "effects": {
+    "github_reads_performed": true,
+    "github_writes_performed": true,
+    "local_repository_mutated": true,
+    "credentials_accessed_by_orcastrata": false
+  },
+  "commands": [
+    {
+      "command": "gh api --hostname github.com --method GET user --jq .login",
+      "status": "pass",
+      "recorded_output": "velcrafting"
+    },
+    {
+      "command": "gh api --hostname github.com --method GET repos/Vel-Labs/orcastrata-max --jq <bounded repository fields>",
+      "status": "pass",
+      "recorded_output": {
+        "full_name": "Vel-Labs/orcastrata-max",
+        "viewer_permission": "ADMIN",
+        "archived": false,
+        "disabled": false,
+        "default_branch": "main"
+      }
+    }
+  ],
+  "live_result": {
+    "umbrella_issue": 1,
+    "child_issues": {
+      "T010": 2,
+      "T020": 3,
+      "T030": 4,
+      "T040": 5,
+      "T050": 6,
+      "T060": 7,
+      "T070": 8,
+      "T080": 9,
+      "T090": 10,
+      "T999": 11
+    },
+    "created_count": 11,
+    "reconciled_count": 11,
+    "unknown_count": 0,
+    "duplicate_count": 0,
+    "aggregate_marker_matches": 11,
+    "status": "pass"
+  },
+  "next_gate": "Activate T060, freeze exact worker and PR lifecycle scopes, and keep T070 read-only until its single-writer turn."
+}

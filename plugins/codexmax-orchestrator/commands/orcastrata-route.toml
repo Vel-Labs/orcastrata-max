@@ -1,0 +1,2 @@
+description = "Select or verify an exact inference route"
+prompt = "Invoke $codexmax-orchestrator:codexmax-route for this request: {{args}}"

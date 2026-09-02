@@ -134,6 +134,31 @@ board truth; it does not dispatch providers or accept work.
 
 ## Route The Work
 
+For an explicit read-only GitHub request, use
+`scripts/github_cli_read.py`. Require the operator to supply the exact lowercase
+host and `owner/repository`. Never infer repository authority from Git remotes
+or the current directory. The adapter may use only its closed read operations.
+It cannot create, update, comment, push, schedule, or merge.
+
+For a GitHub umbrella preview, use
+`scripts/github_umbrella_projection.py` with a validated WorkGraph document and
+the existing GoalBuddy snapshot receipt. Presentation metadata may add titles,
+labels, and non-goals only. The projection is local and deterministic. It never
+calls GitHub or creates a second board.
+
+For T050A issue-effect validation, use `scripts/github_issue_effect.py`. Its CLI
+can prepare a checksum-bound issue packet but cannot execute `gh`.
+`simulateApply` requires an injected fake runner and always reports a
+simulation-only effect boundary. Do not treat this as GitHub write authority or
+live issue proof.
+
+For an explicitly authorized T050B canary, persist the prepare receipt first.
+Then use `scripts/github_issue_live.py` with an absolute effect-state path and
+the exact operator-bound host, repository, and expected local `gh` username.
+The wrapper verifies current `WRITE` or `ADMIN` permission and active repository
+state. A prior started or unknown effect reconciles only and cannot POST again.
+The wrapper does not grant authority or acceptance.
+
 For ordinary bounded work, inspect repository instructions and use `direct`
 only when all eight fast-path criteria are true:
 

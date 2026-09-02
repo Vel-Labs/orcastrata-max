@@ -1,0 +1,2 @@
+description = "Compile a bounded Orcastrata worker assignment"
+prompt = "Invoke $codexmax-orchestrator:codexmax-assignment for this request: {{args}}"

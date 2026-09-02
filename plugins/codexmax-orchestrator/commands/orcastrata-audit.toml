@@ -1,0 +1,2 @@
+description = "Audit completed work against its evidence"
+prompt = "Invoke $codexmax-orchestrator:codexmax-verify for this request: {{args}}"

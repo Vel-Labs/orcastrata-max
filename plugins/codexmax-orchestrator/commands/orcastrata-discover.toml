@@ -1,0 +1,2 @@
+description = "Discover evidence-backed project directions"
+prompt = "Invoke $codexmax-orchestrator:codexmax-discover for this request: {{args}}"
