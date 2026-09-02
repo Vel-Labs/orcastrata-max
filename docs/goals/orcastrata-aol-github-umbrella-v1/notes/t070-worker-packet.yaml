@@ -1,0 +1,32 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T070
+child_task_id: T070-W01
+attempt_id: T070-W01-A01
+objective: >-
+  Add the distinct read-only /orcastrata-audit-full entry by composing the
+  existing focused verify skill with umbrella, issue, PR, scope, freshness,
+  and dependency evidence.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+read_first:
+  - plugins/codexmax-orchestrator/skills/codexmax-verify/SKILL.md
+  - plugins/codexmax-orchestrator/commands/orcastrata-audit.toml
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md
+write_scope:
+  - plugins/codexmax-orchestrator/commands/orcastrata-audit-full.toml
+  - plugins/codexmax-orchestrator/skills/codexmax-audit-full/SKILL.md
+  - tests/test_orcastrata_native_interface.py
+acceptance:
+  - Preserve /orcastrata-audit as the focused verify entry.
+  - The new command is read-only and returns advisory ACCEPT, REVISE, or BLOCKED with typed findings and exact evidence freshness.
+  - It composes existing GoalBuddy, WorkGraph, GitHub-read, receipt, and package checks. It does not add a second audit engine or script.
+  - It never repairs, mutates, merges, comments, schedules, calls providers, touches AOL, or grants Parent acceptance.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_orcastrata_native_interface
+forbidden_actions:
+  - Any other writable file, network or live effect, GitHub or Git mutation, credential access, provider, AOL, schedule, merge, comment, board update, or acceptance claim.
+stop_if:
+  - A script, dependency, schema, or fourth writable file is required.
+  - The full audit cannot remain a thin composition of current read-only evidence surfaces.

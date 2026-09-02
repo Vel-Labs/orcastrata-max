@@ -50,8 +50,11 @@ When the operator starts with `Use model X through tool Y`, with or without one
 bounded task suffix, follow the
 [Explicit Tool And Model Routing Contract](../../assets/contracts/explicit-tool-model-routing.md).
 V1 accepts OpenCode and Command Code. Preserve the exact tool and model text.
-Verify one configured binding, the existing tool session, and the exact model.
-Then show the task-local route preview.
+For Command Code, use an enabled saved binding when one exists. If no binding
+exists, declare the exact model on the package-owned generic Command Code
+transport for this task only. Verify the existing session and exact model
+before dispatch. Never bypass an existing disabled binding. OpenCode still
+requires a configured provider binding. Then show the task-local route preview.
 
 Do not log in, handle credentials, or substitute a tool, model, route, provider,
 or billing path. Confirm task authority, privacy, quota, and billing. A mismatch
@@ -74,6 +77,18 @@ integration, and final acceptance. Use the fewest lanes that can change the
 outcome. Provider availability is not a reason to delegate. A Worker must pass
 identity, capability, authority, privacy, billing, health, quota, and capacity
 checks. Unknown cost is not cheapest.
+
+For ordinary read-only work, when an independent external lane adds material
+value, use `scripts/run_automatic_provider_task.py`. Infer one semantic role
+from the task: `planner`, `architect`, `worker`, `tester`, `documenter`, or
+`auditor`. Do not ask the operator to select a model. The selector first probes
+enabled saved bindings in package role order. It can then inspect the fixed
+Command Code model catalog and create in-memory bindings on the generic
+Command Code transport. It records the exact selected model and does not save
+the discovery. A probe denial can move to the next candidate. A started task
+never falls back. The selector accepts no executable, endpoint, credential, or
+arbitrary transport from the operator. Native workers remain valid. This is
+not global interception outside the loaded skill.
 
 Select from all configured and qualified routes. Require fresh identity,
 capability, authority, privacy, billing, health, quota, and capacity. Prefer
@@ -119,20 +134,64 @@ board truth; it does not dispatch providers or accept work.
 
 ## Route The Work
 
-- For ordinary bounded work, inspect repository instructions and use `direct`
-  only when all eight fast-path criteria are true:
-  1. The scope is bounded and low risk.
-  2. The change is one file or one tightly coupled change.
-  3. No active journey conflict exists.
-  4. No new external auxiliary fanout is needed.
-  5. No install, credential, destructive, push, publish, or scope expansion is needed.
-  6. Repository-native validation is known.
-  7. Architecture and acceptance are unambiguous.
-  8. Existing authority covers the complete change.
-  Otherwise use `guided_plan`. Do not open `guided-journey.md` for first-use
-  orientation or a clear direct candidate. Load the full Guided Journey
-  Contract only for `guided_plan`, `resume`, `waiting_external`, an unresolved
-  active-state conflict, or an advanced request.
+For an explicit read-only GitHub request, use
+`scripts/github_cli_read.py`. Require the operator to supply the exact lowercase
+host and `owner/repository`. Never infer repository authority from Git remotes
+or the current directory. The adapter may use only its closed read operations.
+It cannot create, update, comment, push, schedule, or merge.
+
+For a GitHub umbrella preview, use
+`scripts/github_umbrella_projection.py` with a validated WorkGraph document and
+the existing GoalBuddy snapshot receipt. Presentation metadata may add titles,
+labels, and non-goals only. The projection is local and deterministic. It never
+calls GitHub or creates a second board.
+
+For T050A issue-effect validation, use `scripts/github_issue_effect.py`. Its CLI
+can prepare a checksum-bound issue packet but cannot execute `gh`.
+`simulateApply` requires an injected fake runner and always reports a
+simulation-only effect boundary. Do not treat this as GitHub write authority or
+live issue proof.
+
+For an explicitly authorized T050B canary, persist the prepare receipt first.
+Then use `scripts/github_issue_live.py` with an absolute effect-state path and
+the exact operator-bound host, repository, and expected local `gh` username.
+The wrapper verifies current `WRITE` or `ADMIN` permission and active repository
+state. A prior started or unknown effect reconciles only and cannot POST again.
+The wrapper does not grant authority or acceptance.
+
+For ordinary bounded work, inspect repository instructions and use `direct`
+only when all eight fast-path criteria are true:
+
+1. The scope is bounded and low risk.
+2. The change is one file or one tightly coupled change.
+3. No active journey conflict exists.
+4. No external fan-out is needed.
+5. No install, credential, destructive, push, publish, or scope expansion is needed.
+6. Repository-native validation is known.
+7. Architecture and acceptance are unambiguous.
+8. Existing authority covers the complete change.
+
+Otherwise use `guided_plan`. Load the full Guided Journey Contract only for
+`guided_plan`, `resume`, `waiting_external`, an unresolved active-state
+conflict, or an advanced request.
+
+For an explicit adversarial comparison, use
+`scripts/run_adversarial_provider_fanout.py`. Supply one `--request` per exact
+model and the same candidate, prompt, and rubric for every lane. Each lane has
+one task-scoped read-only assignment. The controller records rejected lanes,
+does not retry or substitute, and leaves synthesis to Parent.
+
+For real implementation, use
+`scripts/run_isolated_provider_implementation.py`. The provider has read-only
+authority and returns a unified diff. Orcastrata validates the patch against
+the exact existing-file allowlist, applies it in a separate linked Git
+worktree, runs only Parent-authorized exact validation argument arrays, and
+writes a change and rollback receipt outside the worktree. The provider never
+receives repository write or shell authority. Parent acceptance starts false.
+
+Keep `scripts/run_task_scoped_provider_write.py` only as the fixed Command Code
+write-canary regression. Do not present the canary as general implementation.
+Neither path authorizes shared-tree, production, or T062 writes.
 - Discovery: `$codexmax-orchestrator:codexmax-discover`. Discovery never grants write authority.
 - For a feature implementation plan, use `$codexmax-orchestrator:codexmax-plan`.
 - If the operator says `make this a loop`:

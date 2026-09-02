@@ -36,7 +36,10 @@ def _load_module(name: str, path: Path):
     return module
 
 
-def _adapter_evidence(route_name: str, route: dict[str, Any]) -> dict[str, str]:
+def _adapter_evidence(
+    route_name: str, route: dict[str, Any],
+    explicit_selection: dict[str, Any] | None = None,
+) -> dict[str, str]:
     path = PLUGIN_ROOT / "scripts" / "run_headless_provider_dispatch.py"
     try:
         metadata = path.lstat()
@@ -55,10 +58,20 @@ def _adapter_evidence(route_name: str, route: dict[str, Any]) -> dict[str, str]:
         source_bytes = path.read_bytes()
     except Exception as error:
         raise ResolutionError("adapter_identity_unresolved", route_name) from error
+    adapter_sha256 = "sha256:" + hashlib.sha256(source_bytes).hexdigest()
+    if explicit_selection is not None:
+        card = _config.ADAPTER_REGISTRY.APPROVED_ADAPTER_CARDS.get(adapter_id)
+        if (
+            explicit_selection.get("adapter_type") != adapter_id
+            or not isinstance(card, dict)
+            or explicit_selection.get("adapter_sha256") != card.get("adapter_sha256")
+        ):
+            raise ResolutionError("explicit_selection_adapter_mismatch", route_name)
+        adapter_sha256 = explicit_selection["adapter_sha256"]
     return {
         "route_name": route_name,
         "adapter_id": adapter_id,
-        "adapter_sha256": "sha256:" + hashlib.sha256(source_bytes).hexdigest(),
+        "adapter_sha256": adapter_sha256,
     }
 
 
@@ -419,9 +432,42 @@ def _route_capability_decision(
     if not isinstance(row, dict):
         return {"authorized": False, "reasons": ["route_capability_policy_missing"]}
     fingerprint = _config.route_identity_fingerprint(route)
+    base_route = _config.ROUTE_DEFAULTS.get(route_name)
+    selection = packet.get("explicit_selection")
+    transport_fields = {
+        "route_kind", "provider", "route_id", "runtime", "reasoning",
+        "billing_basis", "availability", "health", "authentication",
+        "identity_status", "capability_status", "quota_observability",
+        "source_access", "input_delivery",
+        "commands_executable", "local_file_access", "browser_access",
+        "web_search_access", "connector_access", "write_access",
+        "recommended_role", "consequence_floor", "independence_group",
+        "identity_evidence", "capability_evidence", "escalation_policy",
+    }
+    selection_matches = isinstance(selection, dict) and all((
+        selection.get("route_name") == route_name,
+        selection.get("requested_model") == route.get("exact_model"),
+        selection.get("provider") == route.get("provider"),
+        selection.get("route_id") == route.get("route_id"),
+        selection.get("runtime") == route.get("runtime"),
+        selection.get("billing_basis") == route.get("billing_basis"),
+    ))
+    transport_matches = isinstance(base_route, dict) and all(
+        route.get(field) == base_route.get(field) for field in transport_fields
+    )
+    package_row_matches = (
+        isinstance(base_route, dict)
+        and row.get("route_fingerprint") == _config.route_identity_fingerprint(base_route)
+    )
+    explicit_generic_identity = bool(
+        selection_matches and transport_matches and package_row_matches
+        and base_route.get("exact_model") == "unknown"
+        and route.get("exact_model") not in {"unknown", "unverified", ""}
+    )
     if row["route_fingerprint"] != fingerprint:
-        reasons.append("route_capability_fingerprint_mismatch")
-    if row["identity_binding"] != "complete":
+        if not (selection_matches and transport_matches and package_row_matches):
+            reasons.append("route_capability_fingerprint_mismatch")
+    if row["identity_binding"] != "complete" and not explicit_generic_identity:
         reasons.append("route_capability_identity_incomplete")
 
     effort_rank = row["effort_rank"]
@@ -567,7 +613,26 @@ def _eligibility_reasons(
             )
         )
     )
-    if preflight["quota"] != "available" and not unknown_quota_exception:
+    task_scoped_unknown_quota = (
+        preflight["quota"] == "unknown"
+        and packet.get("profile") == "task_scoped_read_only"
+        and isinstance(packet.get("explicit_selection"), dict)
+        and packet["explicit_selection"].get("route_name") == route_name
+        and route["billing_basis"] == "subscription"
+        and preflight["billing"] == "subscription"
+        and packet["allowed_billing"] == ["subscription"]
+        and packet["resolution_phase"] == "pre_dispatch"
+        and all(
+            packet["controls"][field] == 1
+            for field in (
+                "max_attempts_per_checkpoint", "max_attempts_per_route",
+                "circuit_breaker_threshold", "no_improvement_window",
+            )
+        )
+    )
+    if preflight["quota"] != "available" and not (
+        unknown_quota_exception or task_scoped_unknown_quota
+    ):
         reasons.append("quota_not_available")
     if preflight["credential_access_required"] is not False:
         reasons.append("credential_access_required")
@@ -920,7 +985,10 @@ def resolve_worker_route(raw_packet: Any) -> dict[str, Any]:
         if reasons:
             continue
 
-        adapter_evidence = _adapter_evidence(route_name, route) if packet["resolution_phase"] == "pre_dispatch" else None
+        adapter_evidence = (
+            _adapter_evidence(route_name, route, selection)
+            if packet["resolution_phase"] == "pre_dispatch" else None
+        )
         identity = _identity_snapshot(route_name, route, preflight, adapter_evidence)
         route_outcomes = packet["attempt_results"].get(route_name)
         if not isinstance(route_outcomes, list) or not route_outcomes:

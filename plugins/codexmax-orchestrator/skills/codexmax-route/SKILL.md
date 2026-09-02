@@ -79,6 +79,14 @@ uses the separately allowlisted fake-adapter flags defined by the package-local
 `../../assets/contracts/headless-provider-dispatch.md`; it is not live
 qualification.
 
+For the installed, read-only operator journey, use
+`scripts/run_task_scoped_provider_task.py`. Give it one exact model/tool
+request, the repository workspace configuration, a bounded prompt,
+`--read-scope .`, and `--allow-provider-call`. It derives the closed task grant
+from that operator invocation. It composes the fixed session probe and the
+`task_scoped_live` dispatcher. It does not accept transport details,
+caller-supplied grant digests, or credentials. It never falls back.
+
 Treat the named task profile as the accepted minimum requirement set. Packet
 requirements may be equal or stricter, but must not remove required source
 access, commands, writes, browser, search, connector, consequence, billing, or
@@ -215,3 +223,8 @@ The standalone scheduler is locally fake-qualified only. Do not claim live
 authentication, CLI compatibility, quota, provider use, model spreading, cost,
 or allowance. Direct provider repository writes and hedging remain disabled;
 unknown remains unknown.
+For explicit multi-model review, treat each exact model request as a separate
+route assignment. Do not use the worker priority list as fan-out. Use the
+adversarial fan-out controller when the operator provides a frozen candidate
+and rubric. Preserve one evidence directory per lane and report missing or
+rejected lanes without substituting another model.

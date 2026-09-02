@@ -48,6 +48,10 @@ codex plugin marketplace remove codexmax-orchestrator --json
 Start a new Codex task after installation so the host reloads its skill
 inventory.
 
+The plugin includes native `/orcastrata-*` commands and lifecycle hooks. Review
+and trust the installed hook when Codex requests it. Trust is bound to the
+installed hook hash, so a changed package can require trust again.
+
 The first conversation uses the currently installed package. It does not need
 to search old plugin caches, reports, goals, archives, or memory. If Codex shows
 an older package or an ambiguous skill identity, use the normal update or
@@ -59,6 +63,12 @@ Ask for the result you want:
 
 ```text
 Use Orcastrata Max to fix the import bug and verify the user-visible result.
+```
+
+The equivalent native command is:
+
+```text
+/orcastrata-orchestrate fix the import bug and verify the user-visible result
 ```
 
 If automatic selection is unavailable, use:
@@ -187,9 +197,12 @@ Use one exact tool-and-model clause. A second route clause fails. A request to
 save, remember, persist, or make the pairing a default also stops for separate
 approval.
 
-Orcastrata Max checks the configured connection to the tool and verifies the
-existing session and exact model. It does not read credentials, start login,
-refresh authentication, or create a profile.
+Orcastrata Max checks the tool and verifies the existing session and exact
+model. For Command Code, a model that has no saved binding can use an in-memory
+binding on the package-owned generic transport. This does not save a profile.
+An existing disabled binding remains disabled. OpenCode requires a saved
+provider binding. Orcastrata does not read credentials, start login, or refresh
+authentication.
 
 Before dispatch, you receive a preview like this:
 
@@ -216,9 +229,57 @@ Codex. Orcastrata Max does not silently use another tool, model, route, or
 billing path.
 
 OpenCode and Command Code are the only public V1 exact external-tool surfaces.
-Claude, Grok, standalone MiniMax, and other host packages are future work. A
-provider name in configuration is only a candidate. It does not prove an
-installed, authenticated, or supported route.
+The exact model is data within an approved transport. For example, Command
+Code can expose compatible DeepSeek, MiniMax, or Grok models without a new
+source-code route for each model. A new transport still needs a package-owned
+adapter and qualification. A provider name in configuration is only a
+candidate. It does not prove an installed, authenticated, or eligible route.
+
+### Configure and run a model
+
+Ask Orcastrata to create an immutable binding candidate:
+
+```text
+Configure minimaxai/minimax-m3 through Command Code as an Orcastrata worker.
+Then run a read-only review with that exact model.
+```
+
+Orcastrata uses only model identity and package-controlled transport fields.
+It does not accept an executable, endpoint, URL, argv, environment, token, or
+secret from this request. The default declaration is task-local. A fresh
+session and exact-model probe must pass before the task gets authority or
+starts. Ask separately if you want to save the pairing.
+
+For normal work, do not name a model:
+
+```text
+Use Orcastrata Max to review this change with a compatible available worker.
+```
+
+Automatic selection uses the task role. It probes enabled candidates first.
+It can then inspect the fixed Command Code model catalog and create temporary
+generic-transport candidates. It starts one compatible route and reports the
+exact provider and model. It does not save discovery or treat an ordered list
+as fan-out.
+
+For an adversarial review, name the route set explicitly:
+
+```text
+Use DeepSeek Pro, MiniMax M3, and Grok 4.6 as separate adversarial reviewers.
+Give each the same frozen candidate and rubric. Continue the other lanes if
+one times out. Do not substitute or retry a failed lane.
+```
+
+Each lane gets a distinct task, evidence directory, artifact, and receipt.
+The Parent performs synthesis. A timed-out lane remains a timed-out lane.
+
+Implementation uses a pre-created linked development worktree. The provider
+reads the task and returns a unified diff. It receives no repository write or
+shell authority. Orcastrata validates the patch against an exact allowlist of
+existing regular files, applies it, runs exact Parent-authorized validation
+commands, and returns a durable rollback receipt. The older one-file
+read-edit-read path remains a fixed security canary only. Neither lane grants
+shared-tree or protected-production write authority.
 
 ### Complete exact external-route example
 

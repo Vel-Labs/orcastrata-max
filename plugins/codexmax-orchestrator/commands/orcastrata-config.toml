@@ -1,0 +1,2 @@
+description = "Inspect or configure Orcastrata"
+prompt = "Invoke $codexmax-orchestrator:codexmax-config for this request: {{args}}"

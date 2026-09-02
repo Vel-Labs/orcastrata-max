@@ -1,0 +1,36 @@
+{
+  "artifact_type": "orcastrata_github_issue_effect_receipt_v1",
+  "command_count": 0,
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_called": false,
+    "github_mutated": false,
+    "live_execution_available": false,
+    "simulation_only": true
+  },
+  "operation": "prepare",
+  "prepare_sha256": "sha256:861e826362dcfb33275b1462d8d091a637ef297fa99d3e2cadc5a6b0b1a27d50",
+  "prepared": {
+    "board_sha256": "sha256:a1d1b1edd1fcd43ecd0f11824858e4f2f09eb7667d6ae6f5267e920a134f0940",
+    "body": "<!-- orcastrata:issue:v1:ce104dd6fe6c4994301d -->\n\n## Outcome\nRun bounded issue workers with branch, path, push, pull-request, and repair guards.\n\n## Scope\nRead:\n- T050 issue identities\n- Dependency-ready WorkGraph items\n- Owned branch and pull-request state\n\nWrite:\n- T060-approved worker, branch, PR, repair, receipt, contract, and test files\n- Board-owned branches and pull requests in github.com/Vel-Labs/orcastrata-max\n\n## Non-goals\n- Merge authority\n- Force push\n- Schedules\n- Shared branch ownership\n\n## Acceptance criteria\n- Disjoint workers produce reviewable pull requests without scope or merge violations.\n\n## Validation\n- `VAL-T060` — Run packet, lease, path, branch, PR-state, failure-routing, package, and dogfood checks. → All selected checks pass.\n\n## Dependencies\n- T050\n\n## Stop condition\nStop on path overlap, branch drift, force push, dependency change, or a repeated failure signature.\n\n## Orcastrata state\n- Work item: `T060`\n- GoalBuddy status: `queued`",
+    "effect_id": "sha256:7027bded443ab14a5cd5a829331351ace3568cc2ca0693b2f8f3577f959a237b",
+    "graph_id": "orcastrata-aol-github-umbrella-v1",
+    "item_kind": "issue",
+    "labels": [
+      "enhancement"
+    ],
+    "payload_sha256": "sha256:ab1c159ec07166e64324cca9387d00d2c25215d3bdf559c3e42cb95c0d8a3a4e",
+    "projection_sha256": "sha256:a5457f719c9bec960f33729734549bb2981acbdf83f5b9eebf9180f27612a690",
+    "stable_id": "orcastrata:issue:v1:ce104dd6fe6c4994301d",
+    "target": {
+      "host": "github.com",
+      "repository": "Vel-Labs/orcastrata-max"
+    },
+    "title": "Run bounded issue workers and PR lifecycle",
+    "work_item_id": "T060"
+  },
+  "schema_version": 1,
+  "status": "prepared"
+}

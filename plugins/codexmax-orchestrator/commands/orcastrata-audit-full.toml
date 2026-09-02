@@ -1,0 +1,2 @@
+description = "Audit the full Orcastrata umbrella workflow without mutation"
+prompt = "Invoke $codexmax-orchestrator:codexmax-audit-full for this request: {{args}}"

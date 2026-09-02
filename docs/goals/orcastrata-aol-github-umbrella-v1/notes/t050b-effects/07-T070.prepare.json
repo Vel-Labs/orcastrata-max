@@ -1,0 +1,36 @@
+{
+  "artifact_type": "orcastrata_github_issue_effect_receipt_v1",
+  "command_count": 0,
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_called": false,
+    "github_mutated": false,
+    "live_execution_available": false,
+    "simulation_only": true
+  },
+  "operation": "prepare",
+  "prepare_sha256": "sha256:fb5c8ab6d214df1a574f8db27f8884c849ec4dcb49ecff316346d7c33b960f4c",
+  "prepared": {
+    "board_sha256": "sha256:a1d1b1edd1fcd43ecd0f11824858e4f2f09eb7667d6ae6f5267e920a134f0940",
+    "body": "<!-- orcastrata:issue:v1:4ff30468e12ca80d52f7 -->\n\n## Outcome\nImplement the distinct read-only /orcastrata-audit-full umbrella verdict.\n\n## Scope\nRead:\n- T050 issue state\n- Frozen acceptance criteria\n- Current verify and pull-request receipts\n\nWrite:\n- T070-approved audit-full command, skill, schema, documentation, receipt, and tests\n\n## Non-goals\n- GitHub mutation\n- Worker repair\n- Merge\n- AOL Assurance\n\n## Acceptance criteria\n- The command returns correct ACCEPT, REVISE, or BLOCKED verdicts without replacing Parent acceptance.\n\n## Validation\n- `VAL-T070` — Run focused audit fixtures, package validation, and independent review. → All selected checks pass.\n\n## Dependencies\n- T050\n\n## Stop condition\nStop if audit-full gains write authority or replaces Parent acceptance.\n\n## Orcastrata state\n- Work item: `T070`\n- GoalBuddy status: `queued`",
+    "effect_id": "sha256:ebb1a7eddfa662ec652047e8ee3731263f3dd39eef7590bfe83261103c5289c4",
+    "graph_id": "orcastrata-aol-github-umbrella-v1",
+    "item_kind": "issue",
+    "labels": [
+      "enhancement"
+    ],
+    "payload_sha256": "sha256:f66f72ea160e3a0a04df54f141473373a0e110117ce2f1bc90c5ff00591f357f",
+    "projection_sha256": "sha256:a5457f719c9bec960f33729734549bb2981acbdf83f5b9eebf9180f27612a690",
+    "stable_id": "orcastrata:issue:v1:4ff30468e12ca80d52f7",
+    "target": {
+      "host": "github.com",
+      "repository": "Vel-Labs/orcastrata-max"
+    },
+    "title": "Implement /orcastrata-audit-full",
+    "work_item_id": "T070"
+  },
+  "schema_version": 1,
+  "status": "prepared"
+}

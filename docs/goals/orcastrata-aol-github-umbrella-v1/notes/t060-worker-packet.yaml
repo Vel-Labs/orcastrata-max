@@ -1,0 +1,60 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T060
+child_task_id: T060-W01
+attempt_id: T060-W01-A01
+objective: >-
+  Implement the smallest closed PR-lifecycle seam that reuses existing
+  WorkGraph readiness and leases, GitHub reads, assignment packets, and repair routing.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+dependencies:
+  - T050 accepted
+  - fresh T060 scope validated by the official GoalBuddy checker
+read_first:
+  - plugins/codexmax-orchestrator/scripts/workgraph_dependencies.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/scripts/github_issue_live.py
+  - plugins/codexmax-orchestrator/scripts/assess_execution_continuity.py
+  - plugins/codexmax-orchestrator/skills/codexmax-assignment/SKILL.md
+  - docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml
+read_scope:
+  - plugins/codexmax-orchestrator/
+  - tests/
+  - docs/goals/orcastrata-aol-github-umbrella-v1/
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+  - tests/test_github_pr_lifecycle.py
+expected_artifacts:
+  - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+  - tests/test_github_pr_lifecycle.py
+acceptance:
+  - Reuse WorkGraph leases and existing GitHub command execution; do not add a second registry or generic command runner.
+  - Bind one exact repository, issue, base, head branch, worktree, lease, and allowed path set.
+  - Permit only exact branch creation, exact-path staging, commit, non-force push, PR create or reconciliation, and read-only PR observation.
+  - Persist state before a PR create effect and reconcile every unknown outcome before any retry.
+  - Return bounded ready-for-audit or repair receipts. Never merge or comment.
+self_test:
+  - python3 -m unittest tests.test_github_pr_lifecycle
+  - python3 -m unittest tests.test_github_pr_lifecycle tests.test_github_cli_read tests.test_github_issue_live tests.test_orcastrata_native_interface
+independent_tester: Parent plus a later read-only auditor
+retry_cap: 2
+wall_time_minutes: 45
+correction_route: Parent issues a fresh same-scope repair packet
+forbidden_actions:
+  - Modify GoalBuddy, WorkGraph, plan, receipts, manifests, skills, commands, hooks, or package docs.
+  - Run network commands or live GitHub effects.
+  - Access credentials or change authentication.
+  - Merge, force push, rewrite history, schedule, deploy, publish, call external providers, touch AOL, or target another repository.
+  - Infer Parent acceptance or complete T060, T999, or the goal.
+stop_if:
+  - Existing reusable seams cannot enforce the required lease, branch, path, or unknown-outcome boundary.
+  - The implementation requires a fourth writable source or test file.
+  - Tests expose a conflict with current T030 through T050 contracts.
+result_required:
+  - Changed files and exact commands with exit status.
+  - Reuse decisions and proof boundary.
+  - Tests not run and remaining risks.
+  - Requested state must be candidate_complete, needs_revision, needs_parent_repair, or waiting_external.

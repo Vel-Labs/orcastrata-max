@@ -177,6 +177,28 @@ sets these values to false:
 Parent Codex reviews the referenced files, diffs, tests, audit receipt, and
 route identity before a separate application or board decision.
 
+## Explicit operator fan-out
+
+`run_adversarial_provider_fanout.py` is the simple operator entry point for a
+bounded read-only adversarial review. The operator supplies a unique list of
+exact model requests, one frozen candidate, one frozen prompt, and one frozen
+rubric. The controller creates one task-scoped assignment per request. It uses
+unique task IDs, evidence directories, and expected artifact paths.
+
+The controller invokes each lane once. It does not interpret package route
+priority as fan-out. It does not substitute a model or tool, retry a lane, or
+perform synthesis. A terminal failure in one lane is recorded and the next
+explicit lane still runs. The aggregate receipt reports each exact request,
+the frozen-input digest, call and completion state, and
+`parent_synthesis_required: true`. Parent Codex alone may compare or accept
+the lane artifacts.
+
+This entry point does not expand provider authority. Each lane still requires
+the existing task-scoped provider-call grant and exact session preflight. Its
+provider receipts are live proof only when the underlying single-lane runner
+reaches a real provider process; injected test runners prove controller
+behavior only.
+
 Before a live lane can become a candidate, the exact composed executor reloads
 the task state, quality receipt, schedule manifest, and reconciliation. It
 verifies each descriptor and digest. It recomputes reconciliation with

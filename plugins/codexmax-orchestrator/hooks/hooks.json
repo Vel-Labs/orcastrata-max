@@ -1,0 +1,30 @@
+{
+  "description": "Load bounded Orcastrata Parent and worker context.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$PLUGIN_ROOT/hooks/orcastrata_context.py\"",
+            "timeout": 5,
+            "statusMessage": "Loading Orcastrata context..."
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$PLUGIN_ROOT/hooks/orcastrata_context.py\"",
+            "timeout": 5,
+            "statusMessage": "Loading Orcastrata worker context..."
+          }
+        ]
+      }
+    ]
+  }
+}

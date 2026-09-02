@@ -1,0 +1,2 @@
+description = "Run an accepted bounded Orcastrata loop"
+prompt = "Invoke $codexmax-orchestrator:codexmax-loop for this request: {{args}}"

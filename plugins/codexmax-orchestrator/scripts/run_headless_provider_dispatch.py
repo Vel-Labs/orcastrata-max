@@ -410,10 +410,12 @@ def _require_assignment(value: dict[str, Any], root: Path) -> dict[str, Any]:
     for field in ("dispatch_id", "supervisor_assignment_id", "supervisor_lane_id", "prompt"):
         if not isinstance(value.get(field), str) or not value[field]:
             raise DispatchError("invalid_assignment", f"{field} must be a non-empty string")
-    if value.get("proof_mode") not in {"simulated", "live", "task_scoped_live"}:
+    if value.get("proof_mode") not in {
+        "simulated", "live", "task_scoped_live", "isolated_development_live_write",
+    }:
         raise DispatchError(
             "invalid_assignment",
-            "proof_mode must be simulated, live, or task_scoped_live",
+            "proof_mode must be simulated, live, task_scoped_live, or isolated_development_live_write",
         )
     authority = value.get("authority")
     authority_fields = {
@@ -2119,8 +2121,11 @@ def _validate_single_attempt_binding(
     return binding
 
 
-def _workspace_snapshot(workspace: Path, root: Path) -> tuple[dict[str, str], str]:
+def _workspace_snapshot(
+    workspace: Path, root: Path, *, excluded_paths: set[str] | None = None,
+) -> tuple[dict[str, str], str]:
     """Return a symlink-free regular-file snapshot for write reconciliation."""
+    excluded = excluded_paths or set()
     files: dict[str, str] = {}
     for current, directories, names in os.walk(workspace, followlinks=False):
         base = Path(current)
@@ -2131,10 +2136,13 @@ def _workspace_snapshot(workspace: Path, root: Path) -> tuple[dict[str, str], st
                 raise DispatchError("workspace_symlink_escape", path.relative_to(root).as_posix())
         for name in names:
             path = base / name
+            relative = path.relative_to(root).as_posix()
+            if relative in excluded:
+                continue
             info = path.lstat()
             if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
                 raise DispatchError("workspace_file_unsafe", path.relative_to(root).as_posix())
-            files[path.relative_to(root).as_posix()] = _sha256(path.read_bytes())
+            files[relative] = _sha256(path.read_bytes())
     return files, _provider_work.canonical_digest(files)
 
 
@@ -2142,6 +2150,7 @@ def _scoped_write_context(
     *, task_envelope: dict[str, Any] | None, identity: dict[str, Any], route_name: str,
     root: Path, binding: dict[str, Any] | None, execution_time: str | None,
     execution_profile: dict[str, Any] | None = None,
+    exclude_commandcode_controls: bool = False,
 ) -> dict[str, Any] | None:
     if not isinstance(task_envelope, dict) or task_envelope.get("mutation_mode") != "scoped_write":
         return None
@@ -2327,12 +2336,22 @@ def _scoped_write_context(
             raise DispatchError("grok_guard_target_not_granted", "target_path")
         if _sha256(target.read_bytes()) != grok_guard["before_sha256"]:
             raise DispatchError("grok_guard_before_drift", "before_sha256")
-    before, tree = _workspace_snapshot(workspace, root)
+    control_paths: set[str] = set()
+    if commandcode_guard is not None and exclude_commandcode_controls:
+        control_paths = {
+            (workspace / ".commandcode/hooks/scoped-write-guard.py").relative_to(root).as_posix(),
+            (workspace / ".commandcode/settings.json").relative_to(root).as_posix(),
+            (workspace / ".commandcode/scoped-write-descriptor.json").relative_to(root).as_posix(),
+            (workspace / ".commandcode/runtime-state.json").relative_to(root).as_posix(),
+            (workspace / "assignment.md").relative_to(root).as_posix(),
+        }
+    before, tree = _workspace_snapshot(workspace, root, excluded_paths=control_paths)
     if tree != grant["base_tree_sha256"] or provider_work.get("observed_base_tree_sha256") != tree:
         raise DispatchError("stale_base_tree", "provider_work.observed_base_tree_sha256")
     return {
         "card": card, "grant": grant, "authority": authority, "workspace": workspace,
-        "before": before, "commandcode_guard": commandcode_guard,
+        "before": before, "control_paths": control_paths,
+        "commandcode_guard": commandcode_guard,
         "claude_guard": claude_guard, "grok_guard": grok_guard,
     }
 
@@ -2342,7 +2361,10 @@ def _reconcile_scoped_write(
 ) -> tuple[dict[str, Any], bytes]:
     after, result_tree = (
         _backend_snapshot(context, root) if "execution_root" in context
-        else _workspace_snapshot(context["workspace"], root)
+        else _workspace_snapshot(
+            context["workspace"], root,
+            excluded_paths=set(context.get("control_paths", set())),
+        )
     )
     before = context["before"]
     changed = sorted(path for path in set(before) | set(after) if before.get(path) != after.get(path))
@@ -2390,6 +2412,39 @@ def _reconcile_scoped_write(
     )
     data = (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode()
     return receipt, data
+
+
+def _revalidate_isolated_commandcode_controls(context: dict[str, Any]) -> None:
+    """Verify immutable guard files and the terminal read-write-read state."""
+    guard = context.get("commandcode_guard")
+    if not isinstance(guard, dict):
+        raise DispatchError("commandcode_guard_required", "isolated development write")
+    workspace = context["workspace"]
+    immutable = {
+        "guard_sha256": workspace / ".commandcode/hooks/scoped-write-guard.py",
+        "settings_sha256": workspace / ".commandcode/settings.json",
+        "descriptor_sha256": workspace / ".commandcode/scoped-write-descriptor.json",
+        "assignment_sha256": workspace / "assignment.md",
+    }
+    for field, path in immutable.items():
+        try:
+            info = path.lstat()
+        except OSError as exc:
+            raise DispatchError("commandcode_guard_artifact_missing", field) from exc
+        if path.is_symlink() or not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise DispatchError("commandcode_guard_artifact_identity_invalid", field)
+        if _sha256(path.read_bytes()) != guard[field]:
+            raise DispatchError("commandcode_guard_artifact_drift", field)
+    state_path = workspace / ".commandcode/runtime-state.json"
+    try:
+        state_info = state_path.lstat()
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise DispatchError("commandcode_guard_state_invalid", "state_sha256") from exc
+    if state_path.is_symlink() or not stat.S_ISREG(state_info.st_mode) or state_info.st_nlink != 1:
+        raise DispatchError("commandcode_guard_state_invalid", "state_sha256")
+    if state != {"attempt_id": guard["attempt_id"], "session_id": guard["session_id"], "index": 3}:
+        raise DispatchError("commandcode_guard_sequence_incomplete", "runtime-state.json")
 
 
 def _backend_snapshot(context: dict[str, Any], root: Path) -> tuple[dict[str, str], str]:
@@ -2625,6 +2680,11 @@ def run_dispatch(
             "task_scoped_provider_call_not_authorized",
             "task_scoped_live requires --allow-provider-call",
         )
+    if assignment["proof_mode"] == "isolated_development_live_write" and not allow_provider_call:
+        raise DispatchError(
+            "task_scoped_provider_call_not_authorized",
+            "isolated_development_live_write requires --allow-provider-call",
+        )
     bound_route = None
     if single_attempt_binding is not None:
         binding = _validate_single_attempt_binding(
@@ -2713,11 +2773,19 @@ def run_dispatch(
                 "task_scoped_live_write_forbidden",
                 "task_scoped_live is read-only; scoped writes require a protected receiver",
             )
+        if assignment["proof_mode"] == "isolated_development_live_write" and not scoped_requested:
+            raise DispatchError(
+                "isolated_development_write_required",
+                "isolated_development_live_write requires scoped_write",
+            )
         start_time = execution_clock() if scoped_requested and execution_clock is not None else execution_time
         scoped_context = _scoped_write_context(
             task_envelope=task_envelope, identity=identity, route_name=route_name,
             root=root, binding=single_attempt_binding,
             execution_time=start_time, execution_profile=execution_profile,
+            exclude_commandcode_controls=(
+                assignment["proof_mode"] == "isolated_development_live_write"
+            ),
         )
         backend_context = None
         if scoped_context is not None and assignment["proof_mode"] == "simulated":
@@ -2781,7 +2849,9 @@ def run_dispatch(
             break
 
         authority_ok = all(assignment["authority"].values()) and allow_provider_call
-        if assignment["proof_mode"] in {"live", "task_scoped_live"} and not authority_ok:
+        if assignment["proof_mode"] in {
+            "live", "task_scoped_live", "isolated_development_live_write",
+        } and not authority_ok:
             outcome = {
                 "outcome": "authority_violation",
                 "detail": "live mode requires packet authority and --allow-provider-call",
@@ -2871,7 +2941,9 @@ def run_dispatch(
                     provider_network_performed = "unknown"
             else:
                 result = _capture(argv, execution_cwd, capture_deadline, stdout_limit, stderr_limit)
-            if assignment["proof_mode"] in {"live", "task_scoped_live"}:
+            if assignment["proof_mode"] in {
+                "live", "task_scoped_live", "isolated_development_live_write",
+            }:
                 provider_network_performed = "unknown"
         except MiniMaxObservationPending as exc:
             result = exc.result
@@ -2919,7 +2991,9 @@ def run_dispatch(
                 "cost": _unknown("provider_not_started"),
             }
             outcome_detail = f"spawn_failure:{type(spawn_failure).__name__}"
-        if assignment["proof_mode"] in {"live", "task_scoped_live"} and (
+        if assignment["proof_mode"] in {
+            "live", "task_scoped_live", "isolated_development_live_write",
+        } and (
             (normalized_outcome == "success" and artifact_bytes is not None)
             or structured_observation is not None
             or minimax_final_pending is not None
@@ -2962,7 +3036,31 @@ def run_dispatch(
                     "cost": _unknown("observation_pending"),
                 }
                 outcome_detail = "observation_pending:no_retry"
-        if scoped_context is not None and backend_context is not None:
+        if (
+            scoped_context is not None
+            and assignment["proof_mode"] == "isolated_development_live_write"
+        ):
+            _revalidate_isolated_commandcode_controls(scoped_context)
+            current, _ = _workspace_snapshot(
+                scoped_context["workspace"], root,
+                excluded_paths=set(scoped_context.get("control_paths", set())),
+            )
+            changed = current != scoped_context["before"]
+            if normalized_outcome != "success" or artifact_bytes is None:
+                if changed:
+                    raise DispatchError(
+                        "execution_unknown",
+                        "isolated development write changed the worktree without a valid result; retry forbidden",
+                    )
+            else:
+                receipt, change_data = _reconcile_scoped_write(
+                    scoped_context, root=root, accounting=accounting,
+                    elapsed_ms=result["elapsed_time_ms"],
+                )
+                change_path = evidence / "provider-change-receipt.json"
+                _atomic_write(change_path, change_data)
+                provider_change_receipt_descriptor = _descriptor(change_path, root, change_data)
+        elif scoped_context is not None and backend_context is not None:
             change_data = _complete_scoped_attempt(
                 context=scoped_context, backend=backend_context, scheduler=scheduler_lease_adapter,
                 binding=binding, clock=execution_clock, root=root, outcome=normalized_outcome,

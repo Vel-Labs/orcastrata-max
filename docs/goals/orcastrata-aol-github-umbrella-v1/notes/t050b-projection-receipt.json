@@ -1,0 +1,167 @@
+{
+  "artifact_type": "orcastrata_github_umbrella_projection_receipt_v1",
+  "canonical_state": {
+    "active_task": "T050",
+    "board_sha256": "sha256:a1d1b1edd1fcd43ecd0f11824858e4f2f09eb7667d6ae6f5267e920a134f0940",
+    "owner": "GoalBuddy"
+  },
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "github_called": false,
+    "github_mutated": false,
+    "goalbuddy_mutated": false,
+    "network_used": false,
+    "provider_called": false
+  },
+  "graph_id": "orcastrata-aol-github-umbrella-v1",
+  "graph_sha256": "sha256:dfe292197813d93da6f4aea0f9e8fd821201f5c205b1ea284abebcf89f374245",
+  "preview": {
+    "issues": [
+      {
+        "body": "<!-- orcastrata:issue:v1:e5ca2cd737094430857e -->\n\n## Outcome\nReview and correct the standalone Orcastrata GitHub umbrella plan.\n\n## Scope\nRead:\n- docs/goals/orcastrata-aol-github-umbrella-v1/\n\nWrite:\n- docs/goals/orcastrata-aol-github-umbrella-v1/\n\n## Non-goals\n- Plugin implementation\n- AOL source changes\n- GitHub mutation\n\n## Acceptance criteria\n- The corrected plan, separate AOL handoff, board, manifest, and review receipt validate.\n\n## Validation\n- `VAL-T010` \u2014 Run the implementation-plan, GoalBuddy, manifest, JSON, and diff checks. \u2192 All selected checks pass.\n\n## Dependencies\n- None\n\n## Stop condition\nStop if the correction changes provider evidence or grants unrecorded authority.\n\n## Orcastrata state\n- Work item: `T010`\n- GoalBuddy status: `done`",
+        "dependencies": [],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:e5ca2cd737094430857e",
+        "title": "Review and correct the standalone Orcastrata plan",
+        "work_item_id": "T010"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:1084481986a3cf27ebdc -->\n\n## Outcome\nRecord the exact implementation authority and repository boundary.\n\n## Scope\nRead:\n- docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml\n- docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md\n\nWrite:\n- docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml\n- docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md\n\n## Non-goals\n- Credential inspection\n- Authority inferred from authentication\n- Another repository\n\n## Acceptance criteria\n- The exact repository, granted actions, and forbidden actions are recorded.\n\n## Validation\n- `VAL-T020` \u2014 Run the GoalBuddy checker and implementation-plan validator. \u2192 All selected checks pass.\n\n## Dependencies\n- T010\n\n## Stop condition\nStop on an ambiguous repository, host, write scope, or checkout.\n\n## Orcastrata state\n- Work item: `T020`\n- GoalBuddy status: `done`",
+        "dependencies": [
+          "T010"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:1084481986a3cf27ebdc",
+        "title": "Record exact implementation authority",
+        "work_item_id": "T020"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:4ef30adbb08055048b46 -->\n\n## Outcome\nImplement credential-blind local GitHub capability and read operations.\n\n## Scope\nRead:\n- plugins/codexmax-orchestrator/scripts/github_cli_read.py\n- plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md\n\nWrite:\n- plugins/codexmax-orchestrator/scripts/github_cli_read.py\n- plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md\n- tests/test_github_cli_read.py\n\n## Non-goals\n- GitHub writes\n- Credential inspection\n- Arbitrary commands\n\n## Acceptance criteria\n- Closed credential-blind reads work for the exact repository and emit bounded receipts.\n\n## Validation\n- `VAL-T030` \u2014 Run GitHub-read, native-interface, release-parity, and exact-repository read checks. \u2192 All selected checks pass.\n\n## Dependencies\n- T020\n\n## Stop condition\nStop on credential access, shell text, write symbols, or identity ambiguity.\n\n## Orcastrata state\n- Work item: `T030`\n- GoalBuddy status: `done`",
+        "dependencies": [
+          "T020"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:4ef30adbb08055048b46",
+        "title": "Implement credential-blind GitHub reads",
+        "work_item_id": "T030"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:57e3d72e6bfd56bef86f -->\n\n## Outcome\nProject GoalBuddy and WorkGraph truth into a deterministic GitHub umbrella preview.\n\n## Scope\nRead:\n- docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml\n- plugins/codexmax-orchestrator/scripts/workgraph_goalbuddy_adapter.py\n\nWrite:\n- plugins/codexmax-orchestrator/scripts/github_umbrella_projection.py\n- plugins/codexmax-orchestrator/assets/contracts/github-umbrella-projection-v1.md\n- tests/test_github_umbrella_projection.py\n\n## Non-goals\n- A second board\n- GitHub effects\n- A new graph engine\n\n## Acceptance criteria\n- One valid dependency graph and byte-stable preview exist without GitHub or GoalBuddy mutation.\n\n## Validation\n- `VAL-T040` \u2014 Run projection, GitHub-read, native-interface, release-parity, GoalBuddy, and audit checks. \u2192 All selected checks pass.\n\n## Dependencies\n- T030\n\n## Stop condition\nStop if projection requires a new truth store or incompatible schema.\n\n## Orcastrata state\n- Work item: `T040`\n- GoalBuddy status: `done`",
+        "dependencies": [
+          "T030"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:57e3d72e6bfd56bef86f",
+        "title": "Project GoalBuddy work into a GitHub umbrella",
+        "work_item_id": "T040"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:ff7e990eb637b82543dd -->\n\n## Outcome\nCreate and reconcile Orcastrata-managed GitHub issues without duplicates.\n\n## Scope\nRead:\n- T040 projection receipt\n- Exact repository issue state\n- Verified local gh identity and permission\n\nWrite:\n- plugins/codexmax-orchestrator/scripts/github_issue_effect.py\n- plugins/codexmax-orchestrator/scripts/github_issue_live.py\n- plugins/codexmax-orchestrator/assets/contracts/github-issue-effect-v1.md\n- tests/test_github_issue_effect.py\n- tests/test_github_issue_live.py\n- Orcastrata-managed issues in github.com/Vel-Labs/orcastrata-max\n\n## Non-goals\n- Pull requests\n- Merge\n- Schedules\n- AOL\n\n## Acceptance criteria\n- Prepare, observe, create, and reconcile behavior prevents duplicates and resolves unknown outcomes.\n\n## Validation\n- `VAL-T050` \u2014 Run fake-gh faults, consumers, release parity, independent audit, and an idempotent exact-repository canary. \u2192 All selected checks pass.\n\n## Dependencies\n- T040\n\n## Stop condition\nStop on identity or permission failure, multiple marker matches, transport drift, or an unreconciled unknown effect.\n\n## Orcastrata state\n- Work item: `T050`\n- GoalBuddy status: `active`",
+        "dependencies": [
+          "T040"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": true,
+        "stable_id": "orcastrata:issue:v1:ff7e990eb637b82543dd",
+        "title": "Create and reconcile Orcastrata-managed issues",
+        "work_item_id": "T050"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:ce104dd6fe6c4994301d -->\n\n## Outcome\nRun bounded issue workers with branch, path, push, pull-request, and repair guards.\n\n## Scope\nRead:\n- T050 issue identities\n- Dependency-ready WorkGraph items\n- Owned branch and pull-request state\n\nWrite:\n- T060-approved worker, branch, PR, repair, receipt, contract, and test files\n- Board-owned branches and pull requests in github.com/Vel-Labs/orcastrata-max\n\n## Non-goals\n- Merge authority\n- Force push\n- Schedules\n- Shared branch ownership\n\n## Acceptance criteria\n- Disjoint workers produce reviewable pull requests without scope or merge violations.\n\n## Validation\n- `VAL-T060` \u2014 Run packet, lease, path, branch, PR-state, failure-routing, package, and dogfood checks. \u2192 All selected checks pass.\n\n## Dependencies\n- T050\n\n## Stop condition\nStop on path overlap, branch drift, force push, dependency change, or a repeated failure signature.\n\n## Orcastrata state\n- Work item: `T060`\n- GoalBuddy status: `queued`",
+        "dependencies": [
+          "T050"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:ce104dd6fe6c4994301d",
+        "title": "Run bounded issue workers and PR lifecycle",
+        "work_item_id": "T060"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:4ff30468e12ca80d52f7 -->\n\n## Outcome\nImplement the distinct read-only /orcastrata-audit-full umbrella verdict.\n\n## Scope\nRead:\n- T050 issue state\n- Frozen acceptance criteria\n- Current verify and pull-request receipts\n\nWrite:\n- T070-approved audit-full command, skill, schema, documentation, receipt, and tests\n\n## Non-goals\n- GitHub mutation\n- Worker repair\n- Merge\n- AOL Assurance\n\n## Acceptance criteria\n- The command returns correct ACCEPT, REVISE, or BLOCKED verdicts without replacing Parent acceptance.\n\n## Validation\n- `VAL-T070` \u2014 Run focused audit fixtures, package validation, and independent review. \u2192 All selected checks pass.\n\n## Dependencies\n- T050\n\n## Stop condition\nStop if audit-full gains write authority or replaces Parent acceptance.\n\n## Orcastrata state\n- Work item: `T070`\n- GoalBuddy status: `queued`",
+        "dependencies": [
+          "T050"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:4ff30468e12ca80d52f7",
+        "title": "Implement /orcastrata-audit-full",
+        "work_item_id": "T070"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:ebee0651fe3c8115ff59 -->\n\n## Outcome\nMerge board-created pull requests one at a time through fresh guarded gates.\n\n## Scope\nRead:\n- Accepted T060 and T070 receipts\n- Fresh pull-request SHA, dependency, CI, review, scope, and audit state\n\nWrite:\n- T080-approved merge, reconciliation, recovery, receipt, contract, and tests\n- One board-created pull request at a time in github.com/Vel-Labs/orcastrata-max\n\n## Non-goals\n- Auto-merge\n- Scheduled merge\n- Force push\n- Unrelated pull requests\n\n## Acceptance criteria\n- Each merge occurs once only when current bindings and all required gates pass.\n\n## Validation\n- `VAL-T080` \u2014 Run stale-state and unknown-outcome tests plus exact-repository guarded merge canaries. \u2192 All selected checks pass.\n\n## Dependencies\n- T060\n- T070\n\n## Stop condition\nStop on stale SHA, dependency drift, conflict, failed CI, review, scope, audit, or unreconciled outcome.\n\n## Orcastrata state\n- Work item: `T080`\n- GoalBuddy status: `queued`",
+        "dependencies": [
+          "T060",
+          "T070"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:ebee0651fe3c8115ff59",
+        "title": "Merge board-created pull requests through fresh gates",
+        "work_item_id": "T080"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:e698e48c1cc19b4a9bf1 -->\n\n## Outcome\nRun independent standalone Orcastrata package and workflow dogfood acceptance.\n\n## Scope\nRead:\n- T080 candidate\n- Repository source and tests\n- Installed isolated package\n- Exact-repository workflow evidence\n\nWrite:\n- docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-acceptance-receipt.json\n- Isolated local installation target\n\n## Non-goals\n- Product repair\n- Deployment\n- Release publication\n- AOL implementation\n\n## Acceptance criteria\n- An independent receipt returns ACCEPT, REVISE, or BLOCKED from package, security, consumer, and end-to-end proof.\n\n## Validation\n- `VAL-T090` \u2014 Run focused checks, the justified full suite, package install, real command journey, and adversarial review. \u2192 All selected checks pass.\n\n## Dependencies\n- T080\n\n## Stop condition\nStop on a product defect, credential exposure, external-scope breach, or unapproved effect.\n\n## Orcastrata state\n- Work item: `T090`\n- GoalBuddy status: `queued`",
+        "dependencies": [
+          "T080"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:e698e48c1cc19b4a9bf1",
+        "title": "Run standalone Orcastrata dogfood acceptance",
+        "work_item_id": "T090"
+      },
+      {
+        "body": "<!-- orcastrata:issue:v1:59ab25fc72ddb6298516 -->\n\n## Outcome\nIntegrate final evidence, clean child lifecycle state, and close the board.\n\n## Scope\nRead:\n- Accepted T090 receipt\n- Authoritative board history\n- Fresh child-task inventory\n\nWrite:\n- docs/goals/orcastrata-aol-github-umbrella-v1/\n\n## Non-goals\n- Product repair\n- New external effects\n- Release publication\n\n## Acceptance criteria\n- Child inventory is clean, goal status is done, active_task is null, and final validators pass.\n\n## Validation\n- `VAL-T999` \u2014 Run Terminal Lifecycle, GoalBuddy, stop, plan, and manifest checks. \u2192 All selected checks pass.\n\n## Dependencies\n- T090\n\n## Stop condition\nKeep T999 active while cleanup, authority, or final proof is incomplete.\n\n## Orcastrata state\n- Work item: `T999`\n- GoalBuddy status: `queued`",
+        "dependencies": [
+          "T090"
+        ],
+        "labels": [
+          "enhancement"
+        ],
+        "ready": false,
+        "stable_id": "orcastrata:issue:v1:59ab25fc72ddb6298516",
+        "title": "Close the Orcastrata umbrella lifecycle",
+        "work_item_id": "T999"
+      }
+    ],
+    "umbrella": {
+      "body": "<!-- orcastrata:umbrella:v1:cf3334d313c0a746a99e -->\n\n## Outcome\nComplete the standalone issue-to-PR-to-guarded-merge journey while GoalBuddy remains canonical.\n\n## Acceptance criteria\n- All dependency-ready items complete with canonical receipts.\n- GitHub effects remain exact-repository, idempotent, and reconciled.\n- Each board-created pull request passes fresh merge gates.\n- Standalone package dogfood and T999 closeout pass.\n\n## Non-goals\n- AOL source or runtime integration\n- External model providers\n- Schedules or auto-merge\n- Deployment or release publication\n- Repository settings or secrets\n\n## Work items\n- [ ] `T010` \u2014 Review and correct the standalone Orcastrata plan\n- [ ] `T020` \u2014 Record exact implementation authority\n- [ ] `T030` \u2014 Implement credential-blind GitHub reads\n- [ ] `T040` \u2014 Project GoalBuddy work into a GitHub umbrella\n- [ ] `T050` \u2014 Create and reconcile Orcastrata-managed issues\n- [ ] `T060` \u2014 Run bounded issue workers and PR lifecycle\n- [ ] `T070` \u2014 Implement /orcastrata-audit-full\n- [ ] `T080` \u2014 Merge board-created pull requests through fresh gates\n- [ ] `T090` \u2014 Run standalone Orcastrata dogfood acceptance\n- [ ] `T999` \u2014 Close the Orcastrata umbrella lifecycle\n\n## Dependency order\n- `T020` blocked by `T010`\n- `T030` blocked by `T020`\n- `T040` blocked by `T030`\n- `T050` blocked by `T040`\n- `T060` blocked by `T050`\n- `T070` blocked by `T050`\n- `T080` blocked by `T060`, `T070`\n- `T090` blocked by `T080`\n- `T999` blocked by `T090`",
+      "labels": [
+        "enhancement"
+      ],
+      "stable_id": "orcastrata:umbrella:v1:cf3334d313c0a746a99e",
+      "title": "Orcastrata standalone GitHub umbrella workflow v1"
+    }
+  },
+  "projection_sha256": "sha256:a5457f719c9bec960f33729734549bb2981acbdf83f5b9eebf9180f27612a690",
+  "schema_version": 1,
+  "status": "ok",
+  "target": {
+    "host": "github.com",
+    "repository": "Vel-Labs/orcastrata-max"
+  }
+}

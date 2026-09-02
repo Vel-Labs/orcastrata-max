@@ -1,0 +1,2 @@
+description = "Run Parent-owned Orcastrata work"
+prompt = "Invoke $codexmax-orchestrator:codexmax-orchestrate for this request: {{args}}"

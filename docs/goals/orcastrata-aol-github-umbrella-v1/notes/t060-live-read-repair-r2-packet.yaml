@@ -1,0 +1,22 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T060
+child_task_id: T060-W01-R03
+attempt_id: T060-W01-A04
+objective: "Replace the unsupported gh slurp-plus-jq combination with bounded JSON-Lines metadata pagination."
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - tests/test_github_cli_read.py
+confirmed_failure:
+  code: gh_command_failed
+  diagnostic: "gh api does not support --slurp together with --jq."
+changed_strategy:
+  - Use fixed GET plus --paginate and a fixed jq projection that emits one compact metadata object per line.
+  - Parse each complete JSON line with the existing duplicate-key and field validators.
+  - Keep the 512 KiB process limit. More than 100 normalized rows sets possibly_more and returns only the first 100.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+forbidden_actions:
+  - Any other writable file, GitHub mutation, arbitrary command, credential access, output-limit increase, provider, merge, AOL, or acceptance claim.
+stop_if:
+  - JSON-Lines output cannot preserve escaped filenames or pagination completeness within the existing process limit.

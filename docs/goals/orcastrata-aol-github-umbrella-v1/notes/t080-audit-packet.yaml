@@ -1,0 +1,28 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T080
+child_task_id: T080-A01
+attempt_id: T080-A01-A01
+objective: >-
+  Audit the guarded-merge candidate as a read-only trust-boundary review before
+  any live GitHub observation or merge effect.
+lane_mode: read_only
+runtime_surface: codex_collaboration
+read_first:
+  - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-worker-packet.yaml
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_guarded_merge.py
+  - tests/test_github_cli_read.py
+questions:
+  - Does an unknown merge outcome remain reconcile-required under every later PR drift, failure, closed, merged, or stale-gate observation?
+  - Does the seam prove dependencies and independent audit from canonical evidence, or only trust caller-supplied fields?
+  - Can branch protection or repository rulesets produce a false pass rather than a safe failure?
+  - Are exact identity, permission, repository, PR marker, SHA, scope, checks, reviews, conflict, and one-effect guarantees closed and tested?
+  - Can caller-selected paths, command fields, environment, credentials, merge methods, or arbitrary gh behavior enter the effect?
+forbidden_actions:
+  - Any file write, network, GitHub or Git effect, board mutation, acceptance mutation, credential access, provider, AOL, schedule, deployment, release, or merge.
+result:
+  - Return ACCEPT, REVISE, or BLOCKED with typed findings, exact file and line evidence, required repair, and proof boundary.

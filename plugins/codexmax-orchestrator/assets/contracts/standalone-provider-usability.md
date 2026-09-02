@@ -33,6 +33,26 @@ current integrated candidate's arbitrary write usability.
    paths, and compact telemetry.
 8. Let Parent accept, revise, or reject the result before board integration.
 
+The installed operator seam for this read-only journey is:
+
+```sh
+python3 <plugin-root>/scripts/run_task_scoped_provider_task.py \
+  --repo-root <repository> \
+  --workspace-config <repository>/codexmax.adapters.yaml \
+  --request 'Use <exact model> through <Command Code|OpenCode>' \
+  --task-id <task-id> \
+  --prompt '<bounded task prompt>' --read-scope . \
+  --allow-provider-call
+```
+
+The seam performs the fixed session and model probe, compiles one exact
+selection, derives the closed task grant from the operator invocation, binds a
+fixed repository-root read-only profile, and runs one `task_scoped_live`
+attempt. It accepts no free-form grant digest, executable, argv, endpoint,
+environment, token, secret, or credential input. It has no fallback. The
+current lane enforces repository-root read access. It does not claim a narrower
+read boundary.
+
 ## Truth Rules
 
 - A requested model or route is not an observed identity unless the runtime

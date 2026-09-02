@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_t070_audit_full_receipt_v1",
+  "task_id": "T070",
+  "status": "accepted",
+  "decision": "approved",
+  "implementation_worker": {
+    "child_task_id": "T070-W01",
+    "runtime_child_id": "/root/t070_audit_full_worker",
+    "runtime_surface": "codex_collaboration",
+    "provider_dispatch": false
+  },
+  "independent_audit": {
+    "child_task_id": "T070-A01",
+    "runtime_child_id": "/root/t070_audit_full_review",
+    "initial_verdict": "REVISE",
+    "final_verdict": "ACCEPT",
+    "live_effect_performed": false
+  },
+  "changed_files": [
+    "plugins/codexmax-orchestrator/commands/orcastrata-audit-full.toml",
+    "plugins/codexmax-orchestrator/skills/codexmax-audit-full/SKILL.md",
+    "plugins/codexmax-orchestrator/scripts/github_cli_read.py",
+    "plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md",
+    "plugins/codexmax-orchestrator/.codex-plugin/plugin.json",
+    "plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json",
+    "tests/test_github_cli_read.py",
+    "tests/test_orcastrata_native_interface.py"
+  ],
+  "validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface",
+      "status": "pass",
+      "tests": 30
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator",
+      "status": "pass",
+      "file_count": 415,
+      "tree_sha256": "c8a224fc92ca5d683ac17b6432a7e10975a158eb54d89476dbc0e27b24ccd406",
+      "release_manifest_sha256": "5141c4e06c704d857f8804119918929c1068982bec97e00e3abeb840f6e4cbc2"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "live_read_evidence": {
+    "managed_issues": {
+      "numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "marker_count_per_issue": 1,
+      "status": "current_at_observation"
+    },
+    "pull_request": {
+      "number": 12,
+      "observed_head_sha": "f453025e2b0f99e4de08e75e83898081b4b90d44",
+      "review_state": "COMMENTED",
+      "total_changed_paths": 157,
+      "filenames_sha256": "sha256:a14860848329c032f91084e96acb8590a7d22b9bd65cd78e1a7676e78b76f15f",
+      "local_scope_digest_match": true
+    }
+  },
+  "merge_performed": false,
+  "proof_boundary": "The distinct /orcastrata-audit-full surface is read-only and advisory. T070 acceptance does not accept PR 12 for merge. T080 must read required-review policy, CI, exact SHAs, scope, dependencies, conflict state, and independent-audit evidence fresh. COMMENTED is not approval evidence."
+}

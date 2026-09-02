@@ -39,6 +39,18 @@ task, task-grant digest, effective config, adapter, binding, and exact route.
 The resolver requires a single-route profile and forbids fallback. The
 selection does not grant authority. See `explicit-tool-model-routing.md`.
 
+Automatic Worker selection is the model-agnostic counterpart for ordinary
+read-only work. It accepts no model or provider name from the operator. It
+considers only enabled bindings for package-owned Command Code or OpenCode
+Worker transports supported by the fixed session verifier. It orders those
+bindings by the effective Worker role priority and package ordinal ranks, then
+probes each exact configured model. A probe denial may advance to the next
+candidate because no provider process started. After selection, the task has
+one route and one provider-attempt budget; a started attempt never falls back.
+The receipt records every considered candidate and separates configured,
+probed, selected, called, completed, rejected, and usage states. This lane is
+not global interception and does not replace native Worker execution.
+
 ## Versions
 
 - Codexmax configuration schema: `3`.
@@ -237,6 +249,13 @@ records. Current routing uses Claude Code, `mmx`, and Grok CLI respectively.
 DeepSeek V4 Pro and Flash remain Command Code subscription routes. They share
 provider-session authentication and provider concurrency. Exact model
 entitlement, route capacity, identity, and capability remain per-model checks.
+
+The package-owned `worker_commandcode_model` route is the generic Command Code
+transport for a configured exact model. It keeps provider, runtime, billing,
+and transport fixed while the binding supplies the exact model identity. An
+explicit fan-out may use this route for DeepSeek, MiniMax, and Grok when the
+fresh session probe confirms each exact model. The route is not permission to
+invent a model, endpoint, executable, or provider.
 
 Luna is the default low-cost fallback after the task's preferred specialist.
 This rule applies to substantial implementation, review, test, document, and

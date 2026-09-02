@@ -21,12 +21,19 @@ card denies the requested capability.
 Behavior resolution follows `provider-flexible-execution.md`. Reasoning,
 verbosity, context, token, turn, latency, and cost controls are not authority.
 
-## Native route ownership
+## Transport ownership
 
 - DeepSeek V4 Pro and DeepSeek V4 Flash use Command Code.
 - Claude Sonnet uses Claude Code. Command Code is prohibited for this route.
-- MiniMax uses `mmx`. Command Code is prohibited for this route.
-- Grok 4.5 and Grok 4.6 use Grok CLI. Command Code is prohibited for these routes.
+- The named MiniMax route uses `mmx`.
+- The named Grok 4.5 and Grok 4.6 routes use Grok CLI.
+
+The package-owned generic Command Code route is a separate transport identity.
+It can carry an exact model that the existing Command Code session exposes.
+This does not turn the generic route into the named MiniMax or Grok CLI route.
+The receipt must identify Command Code as provider and runtime. It must retain
+the exact model selector. A task-local model declaration never authorizes a
+new executable, endpoint, provider account, or persistent binding.
 
 The runtime, provider, exact model, route ID, subscription billing basis, and
 host identity must match the fresh qualification. No adapter may substitute a
@@ -110,3 +117,51 @@ observed the read flow. T117 observed one exact write in an isolated governed
 task envelope. That observation does not qualify production writes. The route
 stays disabled until the protected receiver proves the complete final-result
 and reconciliation lifecycle.
+
+
+## Task-scoped canary writes
+
+The operator-facing development write seam is limited to one exact regular file in a separate canary worktree. The grant records the target and its exact before digest. The adapter may perform one provider attempt. Reconciliation rejects a missing change, a changed path outside the grant, or a before/after digest mismatch. The receipt starts with `accepted_by_parent: false`.
+
+Rollback restores the captured before bytes and verifies the original digest. This canary proof does not authorize a shared-tree write, protected production, or T062. The Parent must inspect and accept the actual diff separately.
+
+The operator-facing canary uses `isolated_development_live_write`. It requires
+an external linked Git worktree and one existing regular target. The runner
+derives the capability card, task intent, task grant, one-attempt binding,
+guard, settings, descriptor, assignment, state, and deterministic replacement
+bytes. The provider performs the edit. The runner accepts no mutation callback
+or caller-supplied authority.
+
+The dispatcher excludes Command Code control files from the user-change
+inventory only after it binds their initial digests. After execution, it
+revalidates each immutable control file and requires the exact terminal
+read-write-read state. It then requires the target to be the only changed user
+path. A drift, extra path, invalid result, or uncertain mutation stops without
+retry or fallback.
+
+The linked worktree is an explicit V1 operator prerequisite. The runner does
+not create it. A successful canary removes only its own control files after
+reconciliation. A failed or uncertain canary retains the controls and worktree
+for forensic review. Do not reuse that worktree for a new task.
+
+## Read-only patch implementation
+
+General implementation does not extend the canary or give the provider write
+tools. The provider receives repository read authority and returns one unified
+diff. Orcastrata applies the diff after the provider process ends.
+
+The operator supplies a separate linked Git worktree and an exact allowlist of
+existing regular files. Each file binds its before digest and maximum byte
+size. V1 rejects file creation, deletion, rename, binary patches, path
+traversal, symlinks, hard links, drift, and changes outside the allowlist.
+
+Validation runs after patch application. Each command is an exact argument
+array selected by Parent. The executable must be on the package allowlist.
+Shell strings, redirects, pipes, executable paths, and inline interpreter code
+are prohibited. A validation failure preserves the diff and rollback evidence.
+
+The receipt records exact changed paths, before and after digests, validation
+results, provider identity, and unknown usage. It starts with
+`accepted_by_parent: false`. Rollback verifies every current after digest and
+restores the retained before bytes. This development path does not authorize
+shared-tree, production, publishing, or T062 mutation.

@@ -1,0 +1,31 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T080
+child_task_id: T080-W01-R03
+predecessor_attempt_id: T080-W01-R02
+strategy_change: >-
+  Delete the incomplete classic-protection parser. V1 rejects any active
+  classic branch protection as unsupported. Applicable branch rules remain the
+  only modeled policy surface.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_guarded_merge.py
+  - tests/test_github_cli_read.py
+acceptance:
+  - If the exact branch reports protected true, fail with a stable unsupported-policy error before any merge effect.
+  - Do not read or parse the classic protection endpoint.
+  - Continue to parse the applicable branch-rules endpoint and fail closed on every unmodeled rule.
+  - Replace permissive classic fixtures with one protected-branch rejection test and preserve all other repaired gates.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/github_guarded_merge.py plugins/codexmax-orchestrator/scripts/github_cli_read.py plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md tests/test_github_guarded_merge.py tests/test_github_cli_read.py
+forbidden_actions:
+  - Any other file write, network or live effect, Git or board mutation, acceptance claim, credential access, arbitrary gh, provider, AOL, schedule, deployment, or release.
+stop_if:
+  - The redesign retains a path that can treat active classic protection as an empty policy.
+  - The current exact repository uses classic protection during the later live gate; that is a Parent BLOCKED outcome, not a reason to weaken V1.

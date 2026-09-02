@@ -1,0 +1,258 @@
+version: 2
+
+goal:
+  title: "Orcastrata Dynamic Routing V2"
+  slug: orcastrata-dynamic-routing-v2
+  kind: implementation
+  tranche: >-
+    Consolidate provider execution, make automatic PM-led routing primary,
+    add real isolated implementation, compact evidence, and prove the installed journey.
+  status: done
+  oracle:
+    signal: >-
+      A normal natural-language task dynamically selects and executes a useful
+      exact worker without requiring the user to name it, while exact overrides,
+      fan-out, writes, receipts, and safety boundaries remain correct.
+    cadence: "after each milestone and final audit"
+    final_proof: >-
+      Focused and consumer tests, clean package parity, workspace-local clean
+      install, live provider journeys, real isolated implementation, rollback,
+      and independent audit.
+  intake:
+    original_request: >-
+      Make Orcastrata dynamically route useful worker execution during normal
+      conversation without requiring the user to choose worker models.
+    interpreted_outcome: >-
+      Deliver a lean installed runtime where the Parent decides delegation and
+      the router selects exact eligible workers, while exact overrides remain available.
+    input_shape: ordinary_language
+    audience: "Orcastrata operators"
+    authority: approved
+    proof_type: behavioral
+    completion_proof: >-
+      A fresh installed natural-language task delegates without a named worker,
+      completes useful work, reports the exact invoked route, and preserves all
+      exact override, fan-out, write, rollback, and failure boundaries.
+    likely_misfire: >-
+      Add more policy and receipts without proving the ordinary conversation path.
+    blind_spots_considered:
+      - "Skill guidance versus deterministic host invocation"
+      - "Read-only canary versus real implementation"
+      - "Fresh task-local preflight versus persistent qualification"
+      - "Automatic selection quality versus static priority"
+      - "Raw evidence volume versus durable proof"
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  pm_routes_safe_successors: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: null
+
+tasks:
+  - id: T010
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Freeze the 10/10 oracle, current defects, compatibility boundary, and successor plan."
+    dependencies: []
+    expected_output:
+      - "Accepted architecture and deletion map"
+      - "Characterization test plan"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      summary: >-
+        Froze the dynamic-routing oracle, isolated a clean successor worktree,
+        mapped the main design defects, and passed the 40-test baseline.
+
+  - id: T020
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Consolidate exact, automatic, and fan-out execution behind one service."
+    dependencies: [T010]
+    expected_output:
+      - "One execution service and thin compatibility wrappers"
+      - "Truthful compact receipts"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/provider_task_execution.py
+      - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/run_adversarial_provider_fanout.py
+      - tests/test_provider_task_execution.py
+      - tests/test_task_scoped_provider_task.py
+      - tests/test_adversarial_provider_fanout.py
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/provider_task_execution.py
+        - plugins/codexmax-orchestrator/scripts/run_task_scoped_provider_task.py
+        - plugins/codexmax-orchestrator/scripts/run_adversarial_provider_fanout.py
+        - tests/test_provider_task_execution.py
+        - tests/test_task_scoped_provider_task.py
+        - tests/test_adversarial_provider_fanout.py
+      commands:
+        - command: "python3 -B -m unittest tests.test_provider_task_execution tests.test_task_scoped_provider_task tests.test_adversarial_provider_fanout -q"
+          status: pass
+      summary: >-
+        Consolidated the shared lifecycle behind provider_task_execution.py,
+        removed duplicate facade imports, and preserved exact start and identity truth.
+
+  - id: T030
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Make PM-led dynamic routing the primary normal-task path."
+    dependencies: [T020]
+    expected_output:
+      - "Task requirement classification and eligible-route selection"
+      - "Natural-language skill path with no required worker model"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/run_automatic_provider_task.py
+      - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+      - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+      - plugins/codexmax-orchestrator/GETTING_STARTED.md
+      - plugins/codexmax-orchestrator/assets/contracts/explicit-tool-model-routing.md
+      - tests/test_automatic_provider_task.py
+      - tests/test_installed_provider_task_journey.py
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/run_automatic_provider_task.py
+        - plugins/codexmax-orchestrator/scripts/resolve_worker_route.py
+        - plugins/codexmax-orchestrator/skills/codexmax-orchestrate/SKILL.md
+        - plugins/codexmax-orchestrator/GETTING_STARTED.md
+        - plugins/codexmax-orchestrator/assets/contracts/explicit-tool-model-routing.md
+        - tests/test_automatic_provider_task.py
+        - tests/test_installed_provider_task_journey.py
+      commands:
+        - command: "python3 -B -m unittest tests.test_automatic_provider_task tests.test_installed_provider_task_journey -q"
+          status: pass
+      summary: >-
+        Added role-led automatic discovery and in-memory Command Code model
+        bindings. Live no-model routing selected DeepSeek Flash and completed.
+
+  - id: T040
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Add real isolated existing-file implementation and Parent-run validation."
+    dependencies: [T020]
+    expected_output:
+      - "Bounded multi-file implementation mode"
+      - "Exact diff, validation, and rollback receipts"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/provider_patch_application.py
+      - plugins/codexmax-orchestrator/scripts/run_isolated_provider_implementation.py
+      - plugins/codexmax-orchestrator/assets/contracts/provider-scoped-work.md
+      - tests/test_provider_patch_application.py
+      - tests/test_isolated_provider_implementation.py
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/provider_patch_application.py
+        - plugins/codexmax-orchestrator/scripts/run_isolated_provider_implementation.py
+        - plugins/codexmax-orchestrator/assets/contracts/provider-scoped-work.md
+        - tests/test_provider_patch_application.py
+        - tests/test_isolated_provider_implementation.py
+      commands:
+        - command: "python3 -B -m unittest tests.test_provider_patch_application tests.test_isolated_provider_implementation -q"
+          status: pass
+      summary: >-
+        Added read-only patch authoring, exact existing-file validation,
+        Parent-run command validation, durable evidence, and verified rollback.
+
+  - id: T050
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Remove superseded evidence and duplicate contracts after consumer checks."
+    dependencies: [T030, T040]
+    expected_output:
+      - "Reduced source and evidence footprint"
+      - "Preserved compatibility and final proof"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      summary: >-
+        Removed the unreferenced 84-file 1.0.4 goal packet and compacted fan-out
+        and implementation receipts while retaining recovery in Git history.
+
+  - id: T060
+    type: judge
+    assignee: Judge
+    status: done
+    objective: "Run clean package, installed, natural-language, live-provider, write, and rollback acceptance."
+    dependencies: [T050]
+    expected_output:
+      - "Independent ACCEPT or REVISE verdict"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      changed_files:
+        - docs/goals/orcastrata-dynamic-routing-v2/notes/final-acceptance.md
+      commands:
+        - command: "python3 -B -m unittest discover -s tests -p 'test_*.py' -q"
+          status: pass
+        - command: "python3 scripts/verify_release_parity.py verify --source-root plugins/codexmax-orchestrator --stage-leaf .package-stage/codexmax-orchestrator/1.1.1/9e694a4c598b417db21ad90c1911a2845df161d922e4a811b84326732e78149c"
+          status: pass
+      summary: >-
+        Installed 1.1.0 natural-language acceptance exposed a formatted model
+        catalog parsing defect. Luna accepted the 1.1.1 repair. A fresh host
+        then installed exact commit 11435a3, verified all 392 payload files,
+        and completed one ordinary-language documenter route through Command
+        Code 1.38.1 and DeepSeek Flash with exact identity and no fallback.
+
+  - id: T999
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Close child inventory and goal state after final acceptance."
+    dependencies: [T060]
+    expected_output:
+      - "Terminal lifecycle receipt"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      outcome_integrated: true
+      task_transition_complete: true
+      changed_files:
+        - docs/goals/orcastrata-dynamic-routing-v2/state.yaml
+        - docs/goals/orcastrata-dynamic-routing-v2/notes/final-acceptance.md
+      commands:
+        - command: "collaboration.list_agents"
+          status: pass
+        - command: "node /Users/steven/Workspace/40_Code/infrastructure/goalbuddy/goalbuddy/scripts/check-goal-state.mjs docs/goals/orcastrata-dynamic-routing-v2/state.yaml"
+          status: pass
+      summary: >-
+        Fresh inventory found the Parent, one interrupted child record, and two
+        completed child records. No active child, addressable desktop child
+        task, or persistent child session remained. Parent accepted the exact
+        installed 1.1.1 host journey and closed the goal.

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "artifact_type": "OrcastrataGithubUmbrellaPlanningManifest",
+  "plan_id": "orcastrata-aol-github-umbrella-v1",
+  "created_at": "2026-09-01",
+  "architecture_boundary": "standalone_orcastrata_with_downstream_aol_handoff",
+  "execution_authority": "t030_t040_and_local_only_t050a_t050b_not_granted",
+  "active_task": "T050",
+  "source_candidate": {
+    "repository": "codexmax-orchestrator",
+    "branch": "codex/orcastrata-dynamic-routing-v2",
+    "head": "1ea368d38fdde239660f41a3aa146cb018d16d2d",
+    "package_name": "codexmax-orchestrator",
+    "package_version": "1.2.0",
+    "release_status": "local_uncommitted_candidate"
+  },
+  "artifacts": [
+    {
+      "path": "goal.md",
+      "sha256": "5a090cb086de08991bfcf291ae5972d076496b269e594fbb75a9c71423642952"
+    },
+    {
+      "path": "state.yaml",
+      "sha256": "3dac261a9b3c732dce4ffcb7acb3b22f0b41f529492f03bdab2cee23bb222018"
+    },
+    {
+      "path": "notes/orcastrata-github-umbrella-plan.md",
+      "sha256": "2cfb356a4f8f745decb428386c717b70b8089364e91915625ef8569cc463236d"
+    },
+    {
+      "path": "notes/aol-integration-handoff.md",
+      "sha256": "2b7fd8dd9a3e3634e83885e088b6267a646ee5f8e031e479a143a97796322d3a"
+    },
+    {
+      "path": "notes/adversarial-review-candidate.md",
+      "sha256": "8aff33cc376f564a91e39ff69e45f641ef7543d5dd98d6a7355f97ff7c98d82b"
+    },
+    {
+      "path": "notes/adversarial-review-receipt.md",
+      "sha256": "103c10ec607d71aa9f424d1e31cd913eab0b6934a15fdbb85defdce8b57241fe"
+    },
+    {
+      "path": "notes/t030-live-read-receipt.json",
+      "sha256": "a6e78c3acfbd4c3a6bb2c7db333b0f5e6a3c6ce44bbf42fccd900da82314e623"
+    },
+    {
+      "path": "notes/t040-projection-receipt.json",
+      "sha256": "8688f34466eace0277d7b593431b4130ef565d505939ca0943ecc4213b05d5f7"
+    },
+    {
+      "path": "notes/t050a-local-simulation-receipt.json",
+      "sha256": "0b5b4576c2777836da7abd97a966e044f2fe5bd56fab08e0aed383cced74d258"
+    },
+    {
+      "path": "notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/result.json",
+      "sha256": "4c8beb75d37266c58f9cd400f602a13602a2d15a6fd92a9e50937dd9e5a5857c"
+    },
+    {
+      "path": "notes/adversarial-r2/fanout/lane-01-a0b61af9fe73/dispatch-return-manifest.json",
+      "sha256": "c2d2432581fca4d8c080cd63d33667258afe56700b05f652aa9014ae98134bd1"
+    },
+    {
+      "path": "notes/adversarial-r2/fanout/lane-03-7181e131da13/result.json",
+      "sha256": "ed80093c396b6acaacf64e5220cfbe0ef8b33d476919f7694b303c9015925e51"
+    },
+    {
+      "path": "notes/adversarial-r2/fanout/lane-03-7181e131da13/dispatch-return-manifest.json",
+      "sha256": "dd88ac5f69dff62ceb046cb092aa9c90dfb9b02e75658db81ccaf0466da87c87"
+    }
+  ],
+  "provider_review": {
+    "frozen_input_sha256": "sha256:0e7050b615ab7e5a896aa9a94e2118a931647e62f7ed379f6a0ace809336da36",
+    "requested_lanes": 3,
+    "called_lanes": 2,
+    "completed_lanes": 2,
+    "rejected_before_call": 1,
+    "deepseek_v4_pro_status": "identity_unverifiable",
+    "fallback_used": false,
+    "retry_used": false,
+    "tokens": "unknown",
+    "post_review_product_split_reviewed_by_providers": false
+  },
+  "validation": {
+    "implementation_plan": "valid",
+    "goalbuddy": "valid",
+    "t030_source_candidate": "implemented_and_independently_reviewed",
+    "t030_live_read": "pass_github.com_Vel-Labs_orcastrata-max",
+    "t040_local_projection": "implemented_round_trip_tested_and_independently_reviewed",
+    "t050a_local_simulation": "implemented_fake_runner_tested_and_independently_reviewed",
+    "release_parity_files": 410,
+    "github_effects_performed": false,
+    "aol_files_changed": false
+  }
+}

@@ -369,6 +369,18 @@ ROUTE_DEFAULTS: dict[str, dict[str, Any]] = {
         capability_evidence="unknown",
         quota_observability="unsupported",
     ),
+    "worker_commandcode_model": _route(
+        route_kind="worker", candidate_label="Command Code exact model",
+        provider="Command Code", exact_model="unknown",
+        route_id="commandcode-subscription-exact-model", runtime="Command Code",
+        reasoning="provider_default", billing_basis="subscription",
+        identity_status="unverified", capability_status="unknown",
+        source_access="local_filesystem", input_delivery="paths_only",
+        commands_executable="unknown", local_file_access="read_only",
+        write_access="unverified", recommended_role="bounded_implementation",
+        consequence_floor="medium", independence_group="commandcode_gateway",
+        identity_evidence="unknown", capability_evidence="unknown",
+    ),
     "worker_commandcode_claude_sonnet_5": _route(
         route_kind="worker", candidate_label="Command Code Claude Sonnet 5",
         provider="Command Code", exact_model="claude-sonnet-5",
@@ -506,6 +518,7 @@ _ROUTE_COST_RANKS = {
     "worker_claude_code_sonnet_5": 1,
     "worker_deepseek_v4_pro": 1,
     "worker_deepseek_v4_flash": 0,
+    "worker_commandcode_model": 1,
     "worker_commandcode_claude_sonnet_5": 2,
     "worker_commandcode_minimax_m3": 2,
     "worker_commandcode_grok_4_5": 2,
@@ -773,7 +786,7 @@ TASK_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
     "semantic_worker_implementation": _profile(
         "worker_deepseek_v4_pro", "worker_luna_xhigh",
         "worker_minimax_m3_tool_loop", "worker_claude_code_sonnet_5",
-        "worker_grok_4_6", "worker_codex_spark",
+        "worker_commandcode_model", "worker_codex_spark",
         source_access="local_filesystem", commands=True, write=True,
         consequence_floor="medium", independence_required=False,
     ),
@@ -925,7 +938,7 @@ ROLE_PRIORITY_DEFAULTS: dict[str, dict[str, Any]] = {
     "worker": _role_priority(
         "semantic_worker_implementation", "worker_deepseek_v4_pro",
         "worker_luna_xhigh", "worker_minimax_m3_tool_loop",
-        "worker_claude_code_sonnet_5", "worker_grok_4_6", "worker_codex_spark",
+        "worker_claude_code_sonnet_5", "worker_commandcode_model", "worker_codex_spark",
     ),
     "tester": _role_priority(
         "semantic_independent_test", "worker_deepseek_v4_pro", "worker_luna_xhigh",
@@ -1602,13 +1615,22 @@ def _binding_profile(binding: dict[str, Any]) -> dict[str, Any]:
 def _build_authored_binding(
     *, adapter_type: str, route_name: str, credential_kind: str,
     opaque_id: str, enabled: bool, concurrency_cap: int | None,
-    token_cap: int, task_profile: dict[str, Any] | None = None,
+    token_cap: int, exact_model: str | None = None,
+    task_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     route = ROUTE_DEFAULTS.get(route_name)
     if route is None or route.get("route_kind") != "worker":
         raise UnsafeOverrideError("adapter binding route must be a package-owned Worker route")
     if not ADAPTER_REGISTRY.adapter_route_compatible(adapter_type, route_name):
         raise UnsafeOverrideError("adapter type and Worker route are not code-owned compatible")
+    route_model = route.get("exact_model")
+    if route_model == "unknown":
+        if exact_model in {None, "", "unknown", "unverified"}:
+            raise ValidationError("generic adapter route requires --exact-model")
+    elif exact_model is not None and exact_model != route_model:
+        raise UnsafeOverrideError(
+            "model override requires a package-owned generic transport route"
+        )
     profile = task_profile or TASK_PROFILE_DEFAULTS[ADAPTER_BINDING_PROFILE]
     try:
         binding_id = ADAPTER_REGISTRY.derive_binding_id(
@@ -1616,6 +1638,7 @@ def _build_authored_binding(
             route_name=route_name,
             credential_kind=credential_kind,
             opaque_id=opaque_id,
+            exact_model=exact_model,
         )
         binding = ADAPTER_REGISTRY.build_binding(
             binding_id=binding_id,
@@ -1628,6 +1651,7 @@ def _build_authored_binding(
             enabled=enabled,
             concurrency_cap=concurrency_cap,
             token_cap=token_cap,
+            exact_model=exact_model,
         )
         ADAPTER_REGISTRY.validate_registry(
             ADAPTER_REGISTRY.build_registry({binding_id: binding}),
@@ -1653,6 +1677,7 @@ def _mutate_binding_overlay(
             enabled=args.enabled,
             concurrency_cap=args.concurrency_cap,
             token_cap=args.token_cap,
+            exact_model=args.exact_model,
         )
         binding_id = candidate["binding_id"]
         existing = bindings.get(binding_id)
@@ -1670,6 +1695,13 @@ def _mutate_binding_overlay(
                     args.clear_concurrency_cap, args.token_cap is not None)):
             raise InvocationError("update requires a mutable field")
         credential = existing["credential_reference"]
+        existing_model = existing["route"]["exact_model"]
+        legacy_id = ADAPTER_REGISTRY.derive_binding_id(
+            adapter_type=existing["adapter_type"],
+            route_name=existing["route"]["route_name"],
+            credential_kind=credential["kind"],
+            opaque_id=credential["opaque_id"],
+        )
         candidate = _build_authored_binding(
             adapter_type=existing["adapter_type"],
             route_name=existing["route"]["route_name"],
@@ -1681,6 +1713,9 @@ def _mutate_binding_overlay(
                 existing["concurrency_cap"] if args.concurrency_cap is None else args.concurrency_cap
             ),
             token_cap=existing["token_cap"] if args.token_cap is None else args.token_cap,
+            # Preserve the legacy ID for bindings authored before model
+            # overrides existed. New candidates bind model identity in the ID.
+            exact_model=None if binding_id == legacy_id else existing_model,
             task_profile=_binding_profile(existing),
         )
         if candidate["binding_id"] != binding_id:
@@ -1824,7 +1859,7 @@ def author_adapter_binding(args: argparse.Namespace) -> dict[str, Any]:
     input_directory: int | None = None
     try:
         _ensure_output_absent(output, output_directory)
-        if args.binding_action == "add":
+        if args.binding_action == "add" and args.input is None:
             value, before, identity = _empty_binding_overlay(), None, None
         else:
             input_path = _binding_overlay_path(args.input)
@@ -2239,7 +2274,7 @@ def validate_adapter_registry_routes(
         for profile in route_registry["task_profiles"].values()
     }
     identity_fields = (
-        "provider", "exact_model", "route_id", "runtime", "reasoning",
+        "provider", "route_id", "runtime", "reasoning",
         "billing_basis", "independence_group",
     )
     for name, binding in registry["bindings"].items():
@@ -2255,6 +2290,22 @@ def validate_adapter_registry_routes(
                 raise UnsafeOverrideError(
                     f"adapter_registry.bindings.{name}.route.{field} must match route registry"
                 )
+        # The approved route supplies the transport and immutable runtime
+        # identity. Only a generic transport route can receive a new exact
+        # model. A model-specific route cannot be relabeled as another model.
+        if not isinstance(route_identity["exact_model"], str) or not route_identity["exact_model"]:
+            raise ValidationError(
+                f"adapter_registry.bindings.{name}.route.exact_model must be a non-empty exact model"
+            )
+        if route["exact_model"] == "unknown":
+            if route_identity["exact_model"] in {"unknown", "unverified"}:
+                raise ValidationError(
+                    f"adapter_registry.bindings.{name}.route.exact_model must resolve the generic route"
+                )
+        elif route_identity["exact_model"] != route["exact_model"]:
+            raise UnsafeOverrideError(
+                f"adapter_registry.bindings.{name}.route.exact_model cannot relabel a model-specific route"
+            )
         if binding["task_profile_sha256"] not in profile_digests:
             raise ValidationError(
                 f"adapter_registry.bindings.{name}.task_profile_sha256 is unknown"
@@ -3199,9 +3250,18 @@ def parser() -> argparse.ArgumentParser:
     onboard.add_argument("--write-new", action="store_true")
     onboard.add_argument("--json", action="store_true")
     add = binding_commands.add_parser("add")
+    add.add_argument(
+        "--input",
+        type=Path,
+        help="immutable prior adapter overlay to extend; the input is never modified",
+    )
     add.add_argument("--output", type=Path, required=True)
     add.add_argument("--adapter-type", choices=ADAPTER_REGISTRY.ADAPTER_TYPES, required=True)
     add.add_argument("--route", required=True)
+    add.add_argument(
+        "--exact-model",
+        help="exact model identifier for this approved transport (defaults to the route model)",
+    )
     add.add_argument("--credential-kind", choices=ADAPTER_REGISTRY.REFERENCE_KINDS, required=True)
     add.add_argument("--opaque-id", required=True)
     add_enabled = add.add_mutually_exclusive_group(required=True)

@@ -1,0 +1,25 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T060
+child_task_id: T060-W01-R01
+attempt_id: T060-W01-A02
+predecessor: T060-W01-A01
+objective: "Repair the independent auditor's three exact lifecycle-binding defects."
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+  - tests/test_github_pr_lifecycle.py
+required_repairs:
+  - Require every discovered or created PR head SHA to equal the committed or reconciled head SHA before binding or audit readiness.
+  - Preserve the known committed head SHA when PR creation becomes unknown.
+  - Bind persisted state to worktree, lease claim and fencing token, board SHA, expected base SHA, and exact allowed paths so altered scope cannot reuse one lifecycle ID.
+  - Require an existing pull request body to prove both the bound issue and a stable lifecycle marker; base and head names alone are insufficient.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_pr_lifecycle
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_pr_lifecycle tests.test_github_cli_read tests.test_github_issue_live tests.test_orcastrata_native_interface
+forbidden_actions:
+  - Any new writable file, network or live Git effect, merge, comment, credential access, provider, AOL, board mutation, or acceptance claim.
+stop_if:
+  - A repair requires changing an existing T030 through T050 contract or adding a fourth writable file.
+result_required:
+  - Candidate state, changed files, exact commands and status, and remaining proof boundary.

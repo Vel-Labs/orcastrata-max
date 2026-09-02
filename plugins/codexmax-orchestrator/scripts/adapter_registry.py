@@ -201,7 +201,8 @@ def adapter_route_compatible(adapter_type: str, route_name: str) -> bool:
 
 
 def derive_binding_id(
-    *, adapter_type: str, route_name: str, credential_kind: str, opaque_id: str
+    *, adapter_type: str, route_name: str, credential_kind: str, opaque_id: str,
+    exact_model: str | None = None,
 ) -> str:
     """Derive a stable identifier from the immutable binding selector."""
     if adapter_type not in APPROVED_ADAPTER_CARDS:
@@ -210,12 +211,16 @@ def derive_binding_id(
     if credential_kind not in REFERENCE_KINDS:
         raise AdapterRegistryError("credential_reference_kind_unknown", "$.credential_kind")
     _opaque_id(opaque_id, "$.opaque_id")
+    if exact_model is not None:
+        _safe_scalar(exact_model, "$.exact_model")
     selector = {
         "adapter_type": adapter_type,
         "route_name": route_name,
         "credential_kind": credential_kind,
         "opaque_id": opaque_id,
     }
+    if exact_model is not None:
+        selector["exact_model"] = exact_model
     suffix = canonical_digest(selector).removeprefix("sha256:")[:20]
     return f"binding_{adapter_type}_{suffix}"
 
@@ -288,13 +293,17 @@ def build_binding(
     route: Mapping[str, Any], task_profile: Mapping[str, Any],
     credential_kind: str = "none", opaque_id: str = "none",
     enabled: bool = False, concurrency_cap: int | None = None,
-    token_cap: int = 1,
+    token_cap: int = 1, exact_model: str | None = None,
 ) -> dict[str, Any]:
     if adapter_type not in APPROVED_ADAPTER_CARDS:
         raise AdapterRegistryError("adapter_type_unknown", "$.adapter_type")
     if not adapter_route_compatible(adapter_type, route_name):
         raise AdapterRegistryError("adapter_route_incompatible", "$.route.route_name")
     card = APPROVED_ADAPTER_CARDS[adapter_type]
+    route_identity = _route_identity(route_name, route)
+    if exact_model is not None:
+        _safe_scalar(exact_model, "$.exact_model")
+        route_identity["exact_model"] = exact_model
     credential_core = {"kind": credential_kind, "opaque_id": opaque_id}
     core = {
         "binding_id": binding_id,
@@ -302,7 +311,7 @@ def build_binding(
         "adapter_type": adapter_type,
         "adapter_id": card["adapter_id"],
         "adapter_sha256": card["adapter_sha256"],
-        "route": _route_identity(route_name, route),
+        "route": route_identity,
         "credential_reference": {
             **credential_core,
             "reference_sha256": canonical_digest(credential_core),
@@ -310,7 +319,7 @@ def build_binding(
         "concurrency_cap": concurrency_cap,
         "token_cap": token_cap,
         "task_profile_sha256": canonical_digest(task_profile),
-        "provider_input_sha256": canonical_digest(_route_identity(route_name, route)),
+        "provider_input_sha256": canonical_digest(route_identity),
         "adapter_registry_sha256": REGISTRY_SHA256,
     }
     binding_digest = canonical_digest(core)

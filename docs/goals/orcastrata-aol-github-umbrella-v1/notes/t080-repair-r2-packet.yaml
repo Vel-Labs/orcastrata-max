@@ -1,0 +1,29 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T080
+child_task_id: T080-W01-R02
+predecessor_attempt_id: T080-W01-R01
+objective: >-
+  Close the three residual independent-audit findings without changing the
+  accepted six-file design.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_guarded_merge.py
+  - tests/test_github_cli_read.py
+required_repairs:
+  - Validate classic branch-protection top-level and nested shapes and reject every unsupported requirement, including strict status checks.
+  - Run the existing GoalBuddy canonical invariant validator and supported schema check before reading dependency state. Use a canonical test board and reject an invalid board.
+  - If the final pre-effect PR read fails, keep reconciliation required. If it proves merged, record merged. If it proves closed unmerged, record reconciled unmerged.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/github_guarded_merge.py plugins/codexmax-orchestrator/scripts/github_cli_read.py plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md tests/test_github_guarded_merge.py tests/test_github_cli_read.py
+forbidden_actions:
+  - Any other file write, network or live effect, Git or board mutation, acceptance claim, credential access, arbitrary gh, provider, AOL, schedule, deployment, or release.
+stop_if:
+  - The same failure signature repeats without a changed repair hypothesis.
+  - Closing a finding requires a new dependency, generic runner, or weaker gate.

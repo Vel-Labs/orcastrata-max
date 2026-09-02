@@ -1,4 +1,6 @@
 adapter_registry:
+  # Adapter overlays may declare a new exact_model on an approved Worker route.
+  # The route name remains the package-owned transport anchor.
   adapters:
     claude_cli:
       adapter_id: "builtin.claude_cli.v1"

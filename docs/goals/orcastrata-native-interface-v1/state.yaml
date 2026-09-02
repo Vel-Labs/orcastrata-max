@@ -1,0 +1,212 @@
+version: 2
+
+goal:
+  title: "Orcastrata Native Interface V1"
+  slug: orcastrata-native-interface-v1
+  kind: implementation
+  tranche: "Add native commands and trusted lifecycle hooks without duplicating Orcastrata runtime behavior."
+  status: done
+  oracle:
+    signal: >-
+      A clean installed plugin exposes the documented /orcastrata-* commands
+      and injects bounded Parent/PM context on a fresh supported hook event.
+    cadence: "after implementation and final independent audit"
+    final_proof: >-
+      Focused tests, package validation, isolated clean installation, native
+      command discovery, fresh hook execution, and final Parent audit.
+  intake:
+    original_request: >-
+      Implement the Orcastrata project workflow, adversarially review the plan
+      with MiniMax, Grok, and DeepSeek Pro, and clean all commands and hooks so
+      commands use /orcastrata-(task).
+    interpreted_outcome: >-
+      Preserve the existing runtime and add one coherent native operator layer.
+    input_shape: ordinary_language
+    audience: "Orcastrata operators"
+    authority: approved
+    proof_type: behavioral
+    completion_proof: >-
+      An isolated installed instance lists the exact command set and returns
+      valid hook context without changing board state or invoking providers.
+    likely_misfire: "Build a new orchestrator instead of exposing the existing one."
+    blind_spots_considered:
+      - "Native command files versus prompt aliases"
+      - "Plugin hook activation versus source-only fixtures"
+      - "Compatibility for current skill names"
+      - "Context creep from always-on hook output"
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  pm_routes_safe_successors: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+active_task: null
+
+tasks:
+  - id: T010
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Freeze and validate the smallest implementation plan."
+    dependencies: []
+    expected_output:
+      - "Validated execution-authorized plan"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      summary: >-
+        Froze the native command and hook plan. The Codexmax plan validator and
+        official GoalBuddy checker both passed.
+
+  - id: T020
+    type: judge
+    assignee: Judge
+    status: done
+    objective: "Review the frozen plan through exact MiniMax, Grok, and DeepSeek Pro lanes."
+    dependencies:
+      - T010
+    expected_output:
+      - "Three exact-lane receipts or truthful rejections"
+    receipt:
+      result: done
+      decision: revise
+      full_outcome_complete: false
+      summary: >-
+        MiniMax-M3 completed with 672 input and 806 output tokens and returned
+        REVISE. Grok failed exact identity verification before a call. DeepSeek
+        Pro was called once and timed out at 300 seconds with unknown tokens.
+        The Parent accepted exact-token tests, a named hook program, and clearer
+        trust wording. It rejected the claim that concise hook policy creates a
+        second runtime.
+
+  - id: T030
+    type: worker
+    assignee: Worker
+    status: done
+    objective: "Implement the accepted native commands and plugin hooks."
+    dependencies:
+      - T020
+    allowed_files:
+      - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - plugins/codexmax-orchestrator/CHANGELOG.md
+      - plugins/codexmax-orchestrator/commands/
+      - plugins/codexmax-orchestrator/commands/orcastrata-assignment.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-audit.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-closeout.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-config.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-discover.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-loop.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-orchestrate.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-plan.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-route.toml
+      - plugins/codexmax-orchestrator/commands/orcastrata-supervise.toml
+      - plugins/codexmax-orchestrator/hooks/
+      - plugins/codexmax-orchestrator/hooks/hooks.json
+      - plugins/codexmax-orchestrator/hooks/orcastrata_context.py
+      - plugins/codexmax-orchestrator/assets/contracts/codex-loop-hooks.md
+      - plugins/codexmax-orchestrator/README.md
+      - plugins/codexmax-orchestrator/GETTING_STARTED.md
+      - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+      - tests/
+      - tests/test_orcastrata_native_interface.py
+    expected_output:
+      - "Native command aliases and bounded lifecycle hook"
+    verify:
+      - "python3 -B -m unittest tests.test_orcastrata_native_interface -q"
+    stop_if:
+      - "A command duplicates workflow policy or a hook requires repository reads, provider calls, or board writes."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - plugins/codexmax-orchestrator/CHANGELOG.md
+        - plugins/codexmax-orchestrator/GETTING_STARTED.md
+        - plugins/codexmax-orchestrator/README.md
+        - plugins/codexmax-orchestrator/assets/contracts/codex-loop-hooks.md
+        - plugins/codexmax-orchestrator/commands/orcastrata-audit.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-assignment.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-closeout.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-config.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-discover.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-loop.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-orchestrate.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-plan.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-route.toml
+        - plugins/codexmax-orchestrator/commands/orcastrata-supervise.toml
+        - plugins/codexmax-orchestrator/hooks/hooks.json
+        - plugins/codexmax-orchestrator/hooks/orcastrata_context.py
+        - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+        - tests/test_orcastrata_native_interface.py
+      commands:
+        - command: "python3 -B -m unittest tests.test_orcastrata_native_interface -q"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root <absolute plugin root>"
+          status: pass
+      summary: >-
+        Added ten thin native commands, one bounded two-event context hook,
+        compatibility documentation, focused tests, and the 1.2.0 package identity.
+
+  - id: T040
+    type: judge
+    assignee: Judge
+    status: done
+    objective: "Run focused, package, isolated-install, and fresh-session acceptance."
+    dependencies:
+      - T030
+    expected_output:
+      - "Independent ACCEPT or REVISE verdict"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: false
+      summary: >-
+        ACCEPT. Version 1.2.0 installed through the real plugin manager in an
+        isolated task-owned Codex home. Installed cache parity matched 404
+        files, all ten commands were present, and the installed SubagentStart
+        hook returned bounded context. Automatic Desktop firing remains a
+        separate hash-trust operational check and is not claimed here.
+
+  - id: T999
+    type: pm
+    assignee: PM
+    status: done
+    objective: "Integrate the final audit, clean child lifecycle state, and close the board."
+    dependencies:
+      - T040
+    expected_output:
+      - "Terminal lifecycle receipt and accepted final state"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      outcome_integrated: true
+      task_transition_complete: true
+      terminal_lifecycle_allowed: true
+      board_mutation_allowed: false
+      summary: >-
+        Parent inventory found no active child and no board-created addressable
+        child task. Two pre-goal Ponytail research agents were already complete.
+        The accepted 1.2.0 candidate, external review truth, validation, install
+        proof, and remaining trust-gated Desktop canary are integrated.

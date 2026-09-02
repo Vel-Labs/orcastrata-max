@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "artifact_type": "OrcastrataGithubReadAcceptanceReceipt",
+  "task_id": "T030",
+  "observed_at": "2026-09-01T23:57:16Z",
+  "candidate": {
+    "adapter_sha256": "25a24886c5ab984758c85bc0895ef38a10c791898b33e46fcff64a3f44353c50",
+    "release_manifest_sha256": "e0a9a4db692c00af497d3382214b70bcec427a42ea36303333888f34d3d32f7a"
+  },
+  "request": {
+    "operation": "probeCapability",
+    "host": "github.com",
+    "repository": "Vel-Labs/orcastrata-max",
+    "authority_source": "operator_confirmed_target"
+  },
+  "result": {
+    "status": "ok",
+    "command_count": 2,
+    "authenticated": true,
+    "available": true,
+    "default_branch": "main",
+    "name_with_owner": "Vel-Labs/orcastrata-max",
+    "viewer_permission": "ADMIN",
+    "operations": [
+      "listIssues",
+      "listPullRequestChecks",
+      "probeCapability",
+      "readIssue",
+      "readPullRequest",
+      "readPullRequestDiffSummary",
+      "readRepository"
+    ]
+  },
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_mutated": false,
+    "local_state_mutated": false
+  },
+  "validation": {
+    "focused_and_consumer_tests": 11,
+    "focused_and_consumer_tests_status": "pass",
+    "release_parity_files": 406,
+    "release_parity_status": "pass",
+    "official_goalbuddy_status": "pass",
+    "implementation_plan_status": "valid",
+    "independent_audit": "no_blocking_implementation_finding"
+  },
+  "decision": "t030_candidate_complete_pending_successor_admission"
+}

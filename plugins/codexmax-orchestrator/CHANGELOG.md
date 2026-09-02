@@ -1,5 +1,53 @@
 # Changelog
 
+## 1.2.0 - 2026-09-01
+
+- Add native `/orcastrata-*` commands as thin aliases over the existing public
+  skills. Keep all `codexmax-*` skill IDs for compatibility.
+- Add trusted `SessionStart` and `SubagentStart` hooks that inject bounded
+  Parent and worker context without repository reads, state mutation, provider
+  calls, or scheduling.
+
+## 1.1.1 - 2026-08-28
+
+- Parse the formatted Command Code 1.38.1 model catalog as model rows instead
+  of treating section headings and footer text as candidate model IDs.
+- Add the current formatted catalog as a regression fixture. Live automatic
+  routing now discovers all 62 catalog models and completes through a
+  task-local DeepSeek Flash route without fallback.
+
+## 1.1.0 - 2026-08-28
+
+- Make normal external delegation model-free for the user. The Parent selects a
+  semantic role. Orcastrata prefers enabled bindings, then discovers exact
+  Command Code models and creates task-local bindings without persistence.
+- Let an exact Command Code model use the generic package-owned transport when
+  no saved binding exists. Preserve a real operator-created disabled binding
+  as a denial.
+- Consolidate exact, automatic, and adversarial execution on one task service.
+  Preserve one-attempt truth and compact fan-out receipts.
+- Add general isolated implementation. A provider returns a unified diff with
+  read-only authority. Orcastrata validates and applies it to an exact
+  existing-file allowlist, runs bounded Parent validation, and retains rollback
+  evidence.
+- Prove staged-package exact and automatic journeys with real subprocesses.
+  Prove live automatic DeepSeek Flash, exact MiniMax M3, three-lane partial
+  fan-out, isolated patch application, validation, and rollback.
+
+## 1.0.4 - 2026-08-28
+
+- Add declarative exact models over approved, package-owned transports. A new
+  model on a compatible transport no longer needs a source-code route.
+- Add installed task-scoped read execution and automatic compatible-route
+  selection with exact identity and no silent fallback.
+- Add explicit multi-model adversarial fan-out with one frozen input, isolated
+  lane evidence, and truthful partial-failure receipts.
+- Add one isolated development controlled-write lane. It uses a catch-all
+  Command Code guard, exact resulting bytes, one target, one attempt, a change
+  receipt, and a digest-bound rollback.
+- Add bounded provider timeouts and preserve unknown token, quota, cost, and
+  network values when a provider does not report them.
+
 ## 1.0.3 - 2026-08-26
 
 - Clarify that native Codex support is an Orcastrata-governed Parent path, not
