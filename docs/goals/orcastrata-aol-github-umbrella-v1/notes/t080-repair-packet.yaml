@@ -1,0 +1,32 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T080
+child_task_id: T080-W01-R01
+predecessor_attempt_id: T080-W01-A01
+objective: >-
+  Repair the guarded-merge trust boundary after the independent REVISE verdict.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_guarded_merge.py
+  - tests/test_github_cli_read.py
+required_repairs:
+  - Preserve reconcile-required state until an unknown outcome is proved merged or unmerged.
+  - Load and hash constrained canonical dependency and independent-audit evidence.
+  - Read all applicable branch rules, reject unmodeled rules, and preserve required check app identity.
+  - Serialize effect attempts and prove one PUT under a competing attempt.
+  - Reject ambiguous equal-time reviews and unsupported last-push policy.
+  - Bind every observation to exact SHAs and re-read immediately before effect.
+  - Constrain request, state, and evidence paths to one execution directory.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/github_guarded_merge.py plugins/codexmax-orchestrator/scripts/github_cli_read.py plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md tests/test_github_guarded_merge.py tests/test_github_cli_read.py
+forbidden_actions:
+  - Any other file write, network or live effect, Git or board mutation, acceptance claim, credential access, arbitrary gh, provider, AOL, schedule, deployment, or release.
+stop_if:
+  - A finding cannot be closed inside the existing six-file scope without weakening another gate.
+  - A new dependency, generic command runner, or unbounded filesystem surface is required.

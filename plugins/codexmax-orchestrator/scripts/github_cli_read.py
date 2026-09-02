@@ -26,6 +26,7 @@ OPERATIONS = (
     "listPullRequestReviews",
     "probeCapability",
     "readIssue",
+    "readMergeRequirements",
     "readPullRequest",
     "readPullRequestDiffSummary",
     "readRepository",
@@ -35,6 +36,7 @@ ARGUMENT_FIELDS = {
     "readRepository": {"host", "repository"},
     "listIssues": {"host", "repository", "limit"},
     "readIssue": {"host", "repository", "number"},
+    "readMergeRequirements": {"host", "repository", "branch"},
     "readPullRequest": {"host", "repository", "number"},
     "listPullRequestChecks": {"host", "repository", "number"},
     "listPullRequestReviews": {"host", "repository", "number"},
@@ -46,6 +48,7 @@ HOST_RE = re.compile(
 )
 REPOSITORY_RE = re.compile(r"[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}\Z")
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
+BRANCH_RE = re.compile(r"(?!.*(?:\.\.|//|@\{|\\))[A-Za-z0-9][A-Za-z0-9._/-]{0,254}\Z")
 SECRET_RE = re.compile(
     r"(?i)(?:authorization\s*:|bearer\s+[A-Za-z0-9._~+/-]+=*|"
     r"github_pat_[A-Za-z0-9_]+|gh[opusr]_[A-Za-z0-9]+)"
@@ -63,6 +66,9 @@ REVIEW_SUMMARY_JQ = (
 )
 MARKER_RE = re.compile(
     r"<!-- (orcastrata:(?:umbrella|issue):v1:[0-9a-f]{20}) -->"
+)
+LIFECYCLE_MARKER_RE = re.compile(
+    r"<!-- (orcastrata:lifecycle:[A-Za-z0-9][A-Za-z0-9._-]{0,199}:issue:[1-9][0-9]*) -->"
 )
 TOKEN_OVERRIDES = {
     "GH_TOKEN",
@@ -159,6 +165,11 @@ def _request(value: Any) -> tuple[str, dict[str, Any], str, str, str, str]:
         _positive_integer(arguments["number"], "$.arguments.number", 2_147_483_647)
     if "limit" in arguments:
         _positive_integer(arguments["limit"], "$.arguments.limit", MAX_ITEMS)
+    if "branch" in arguments and (
+        not isinstance(arguments["branch"], str)
+        or BRANCH_RE.fullmatch(arguments["branch"]) is None
+    ):
+        raise GithubReadError("branch_invalid", "$.arguments.branch")
     return operation, arguments, host, repository, owner, name
 
 
@@ -336,6 +347,10 @@ def _integer(value: Any) -> int:
     return value
 
 
+def _optional_integer(value: Any) -> int | None:
+    return None if value is None else _integer(value)
+
+
 def _mapping(value: Any) -> Mapping[str, Any]:
     if not isinstance(value, Mapping):
         raise GithubReadError("gh_response_invalid")
@@ -390,6 +405,12 @@ def _pull_request(value: Any) -> dict[str, Any]:
     item = _mapping(value)
     head = _mapping(item.get("head"))
     base = _mapping(item.get("base"))
+    body = item.get("body") or ""
+    if not isinstance(body, str):
+        raise GithubReadError("gh_response_invalid")
+    markers = LIFECYCLE_MARKER_RE.findall(body)
+    if "<!-- orcastrata:lifecycle:" in LIFECYCLE_MARKER_RE.sub("", body) or len(markers) != len(set(markers)):
+        raise GithubReadError("github_lifecycle_marker_invalid")
     return {
         "base_ref_name": _text(base.get("ref"), maximum=255),
         "base_ref_oid": _text(base.get("sha"), maximum=64),
@@ -398,10 +419,21 @@ def _pull_request(value: Any) -> dict[str, Any]:
         "head_ref_oid": _text(head.get("sha"), maximum=64),
         "mergeable": item.get("mergeable") if type(item.get("mergeable")) is bool else None,
         "mergeable_state": _optional_text(item.get("mergeable_state"), maximum=64),
+        "merge_commit_sha": _optional_text(item.get("merge_commit_sha"), maximum=64),
+        "merged": item.get("merged") is True,
+        "orcastrata_lifecycle_markers": markers,
         "number": _integer(item.get("number")),
         "state": _text(item.get("state"), maximum=32),
         "title": _text(item.get("title"), maximum=1024),
         "updated_at": _text(item.get("updated_at"), maximum=64),
+    }
+
+
+def _pull_binding(value: Any) -> dict[str, str]:
+    item = _mapping(value)
+    return {
+        "base_sha": _text(_mapping(item.get("base")).get("sha"), maximum=64),
+        "head_sha": _text(_mapping(item.get("head")).get("sha"), maximum=64),
     }
 
 
@@ -485,6 +517,81 @@ def _operate(
         if isinstance(raw, Mapping) and "pull_request" in raw:
             raise GithubReadError("github_item_is_pull_request")
         return _issue(raw), 1
+    if operation == "readMergeRequirements":
+        branch = _mapping(_json_output(_invoke(_api(
+            executable, host, f"{repository_endpoint}/branches/{arguments['branch']}"
+        ), runner, environment)))
+        protected = branch.get("protected")
+        if type(protected) is not bool or _text(branch.get("name"), maximum=255) != arguments["branch"]:
+            raise GithubReadError("gh_response_invalid")
+        if protected:
+            raise GithubReadError("github_branch_rule_unsupported")
+        rules = _json_output(_invoke(_api(
+            executable, host, f"{repository_endpoint}/rules/branches/{arguments['branch']}"
+        ), runner, environment))
+        if not isinstance(rules, list):
+            raise GithubReadError("gh_response_invalid")
+        required_checks: set[tuple[str, int | None]] = set()
+        approvals = 0
+        dismiss_stale = False
+        code_owner = False
+        last_push = False
+        conversations_required = False
+        for raw_rule in rules:
+            rule = _mapping(raw_rule)
+            rule_type = _text(rule.get("type"), maximum=64)
+            parameters = rule.get("parameters")
+            if rule_type not in {"pull_request", "required_status_checks"} or not isinstance(parameters, Mapping):
+                raise GithubReadError("github_branch_rule_unsupported")
+            if rule_type == "required_status_checks":
+                if set(parameters) - {"required_status_checks", "strict_required_status_checks_policy"}:
+                    raise GithubReadError("github_branch_rule_unsupported")
+                strict = parameters.get("strict_required_status_checks_policy", False)
+                if type(strict) is not bool or strict:
+                    raise GithubReadError("github_branch_rule_unsupported")
+                rows = parameters.get("required_status_checks")
+                if not isinstance(rows, list):
+                    raise GithubReadError("gh_response_invalid")
+                for raw_check in rows:
+                    check = _mapping(raw_check)
+                    required_checks.add((
+                        _text(check.get("context"), maximum=255),
+                        _optional_integer(check.get("integration_id")),
+                    ))
+            else:
+                allowed_pull_parameters = {
+                    "allowed_merge_methods", "dismiss_stale_reviews_on_push",
+                    "require_code_owner_review", "require_last_push_approval",
+                    "required_approving_review_count", "required_review_thread_resolution",
+                }
+                if set(parameters) - allowed_pull_parameters or parameters.get("allowed_merge_methods"):
+                    raise GithubReadError("github_branch_rule_unsupported")
+                for field in (
+                    "dismiss_stale_reviews_on_push", "require_code_owner_review",
+                    "require_last_push_approval", "required_review_thread_resolution",
+                ):
+                    if field in parameters and type(parameters[field]) is not bool:
+                        raise GithubReadError("gh_response_invalid")
+                count = parameters.get("required_approving_review_count", 0)
+                if type(count) is not int or not 0 <= count <= 100:
+                    raise GithubReadError("gh_response_invalid")
+                approvals = max(approvals, count)
+                dismiss_stale = dismiss_stale or parameters.get("dismiss_stale_reviews_on_push") is True
+                code_owner = code_owner or parameters.get("require_code_owner_review") is True
+                last_push = last_push or parameters.get("require_last_push_approval") is True
+                conversations_required = conversations_required or parameters.get("required_review_thread_resolution") is True
+        return {
+            "protected": bool(rules),
+            "required_approvals": approvals,
+            "required_checks": [
+                {"app_id": app_id, "context": context}
+                for context, app_id in sorted(required_checks, key=lambda row: (row[0], -1 if row[1] is None else row[1]))
+            ],
+            "dismiss_stale_reviews": dismiss_stale,
+            "require_code_owner_review": code_owner,
+            "require_last_push_approval": last_push,
+            "require_conversation_resolution": conversations_required,
+        }, 2
     if operation == "readPullRequest":
         raw = _json_output(_invoke(_api(
             executable, host, f"{repository_endpoint}/pulls/{arguments['number']}"
@@ -506,6 +613,7 @@ def _operate(
             raise GithubReadError("gh_response_invalid")
         items = [{
             "app": _optional_text(_mapping(item).get("app", {}).get("name") if isinstance(_mapping(item).get("app"), Mapping) else None, maximum=100),
+            "app_id": _optional_integer(_mapping(item).get("app", {}).get("id") if isinstance(_mapping(item).get("app"), Mapping) else None),
             "conclusion": _optional_text(_mapping(item).get("conclusion"), maximum=64),
             "name": _text(_mapping(item).get("name"), maximum=255),
             "status": _text(_mapping(item).get("status"), maximum=64),
@@ -514,23 +622,31 @@ def _operate(
         if type(total) is not int or total < len(items):
             raise GithubReadError("gh_response_invalid")
         return {
+            **_pull_binding(pull),
             "items": items,
             "limit": MAX_ITEMS,
             "possibly_more": total > len(items),
         }, 2
     if operation == "listPullRequestReviews":
+        pull = _mapping(_json_output(_invoke(_api(
+            executable, host, f"{repository_endpoint}/pulls/{arguments['number']}"
+        ), runner, environment)))
         raw = _json_lines(_invoke(_review_summary_argv(
             executable, host,
             f"{repository_endpoint}/pulls/{arguments['number']}/reviews",
         ), runner, environment))
         items = [_review(value) for value in raw]
         return {
+            **_pull_binding(pull),
             "items": items[:MAX_ITEMS],
             "limit": MAX_ITEMS,
             "possibly_more": len(items) > MAX_ITEMS,
             "total_count": len(items),
-        }, 1
+        }, 2
     if operation == "readPullRequestDiffSummary":
+        pull = _mapping(_json_output(_invoke(_api(
+            executable, host, f"{repository_endpoint}/pulls/{arguments['number']}"
+        ), runner, environment)))
         raw = _json_lines(_invoke(_diff_summary_argv(
             executable, host, f"{repository_endpoint}/pulls/{arguments['number']}/files",
         ), runner, environment))
@@ -556,12 +672,13 @@ def _operate(
             sorted(filenames), ensure_ascii=False, separators=(",", ":")
         ).encode("utf-8")).hexdigest()
         return {
+            **_pull_binding(pull),
             "filenames_sha256": filenames_sha256,
             "items": items,
             "limit": MAX_ITEMS,
             "possibly_more": len(filenames) > MAX_ITEMS,
             "total_count": len(filenames),
-        }, 1
+        }, 2
     raise GithubReadError("operation_unsupported")
 
 

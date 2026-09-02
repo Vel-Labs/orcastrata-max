@@ -394,6 +394,10 @@ tasks:
       - tests/test_github_guarded_merge.py
       - tests/test_github_cli_read.py
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-worker-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-audit-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-repair-r2-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-repair-r3-redesign-packet.yaml
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-runtime-projection.pre-spawn.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-runtime-projection.final.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-audit-runtime-projection.pre-spawn.json

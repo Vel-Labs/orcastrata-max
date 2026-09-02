@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`scripts/github_cli_read.py` exposes eight read-only GitHub operations through
+`scripts/github_cli_read.py` exposes nine read-only GitHub operations through
 the installed local `gh` CLI. It is a standalone Orcastrata surface. It has no
 AOL dependency.
 
@@ -22,6 +22,7 @@ Operations are closed:
 - `readRepository`: `host`, `repository`;
 - `listIssues`: `host`, `repository`, `limit` from 1 through 100;
 - `readIssue`: `host`, `repository`, positive `number`;
+- `readMergeRequirements`: `host`, `repository`, validated `branch`;
 - `readPullRequest`: `host`, `repository`, positive `number`;
 - `listPullRequestChecks`: `host`, `repository`, positive `number`;
 - `listPullRequestReviews`: `host`, `repository`, positive `number`;
@@ -54,6 +55,20 @@ state, commit SHA, reviewer login, and submitted time. They never return review
 bodies. Issue reads return only valid Orcastrata umbrella and issue marker
 identities, never the issue body. Malformed or duplicate marker identities fail
 closed.
+
+Pull-request reads return valid lifecycle marker identities and merge state,
+but never the pull-request body. Merge-requirement reads inspect the exact
+branch and GitHub's applicable branch-rules endpoint. Every unmodeled rule fails
+closed. V1 does not model classic branch protection. If the exact branch
+reports active classic protection, the operation returns
+`github_branch_rule_unsupported` without reading the classic protection
+endpoint. For applicable branch rules, the projection preserves required check
+context and app ID, approval count, stale-review handling, code-owner review,
+last-push approval, and conversation-resolution requirements.
+
+Check, review, and diff receipts include the base and head SHA observed for the
+same operation. Check rows include the GitHub App ID. These bindings let an
+effect consumer reject a head or base change between observations.
 
 Pull-request diff reads also use complete CLI pagination. They retain at most
 100 metadata rows and report `total_count` plus `filenames_sha256`. The digest

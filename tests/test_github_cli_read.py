@@ -86,10 +86,13 @@ class GithubCliReadTests(unittest.TestCase):
         }
         pull = {
             "base": {"ref": "main", "sha": "a" * 40},
+            "body": "<!-- orcastrata:lifecycle:T060:issue:7 -->",
             "draft": False,
             "head": {"ref": "feature", "sha": "b" * 40},
             "mergeable": True,
             "mergeable_state": "clean",
+            "merge_commit_sha": None,
+            "merged": False,
             "number": 9,
             "state": "open",
             "title": "Feature",
@@ -100,10 +103,11 @@ class GithubCliReadTests(unittest.TestCase):
             ("readRepository", {}, [result(repository)], 1),
             ("listIssues", {"limit": 10}, [result([issue, {**issue, "number": 8, "pull_request": {}}])], 1),
             ("readIssue", {"number": 7}, [result(issue)], 1),
+            ("readMergeRequirements", {"branch": "main"}, [result({"name": "main", "protected": False}), result([])], 2),
             ("readPullRequest", {"number": 9}, [result(pull)], 1),
-            ("listPullRequestChecks", {"number": 9}, [result(pull), result({"total_count": 1, "check_runs": [{"app": {"name": "CI"}, "conclusion": "success", "name": "test", "status": "completed"}]})], 2),
-            ("listPullRequestReviews", {"number": 9}, [result(json_lines([{"commit_id": "b" * 40, "reviewer": "reviewer", "state": "APPROVED", "submitted_at": "2026-09-01T01:00:00Z"}]))], 1),
-            ("readPullRequestDiffSummary", {"number": 9}, [result(json_lines([{"additions": 2, "changes": 3, "deletions": 1, "filename": "src/app.py", "status": "modified"}]))], 1),
+            ("listPullRequestChecks", {"number": 9}, [result(pull), result({"total_count": 1, "check_runs": [{"app": {"id": 7, "name": "CI"}, "conclusion": "success", "name": "test", "status": "completed"}]})], 2),
+            ("listPullRequestReviews", {"number": 9}, [result(pull), result(json_lines([{"commit_id": "b" * 40, "reviewer": "reviewer", "state": "APPROVED", "submitted_at": "2026-09-01T01:00:00Z"}]))], 2),
+            ("readPullRequestDiffSummary", {"number": 9}, [result(pull), result(json_lines([{"additions": 2, "changes": 3, "deletions": 1, "filename": "src/app.py", "status": "modified"}]))], 2),
         ]
         for operation, arguments, responses, count in cases:
             with self.subTest(operation=operation):
@@ -115,8 +119,10 @@ class GithubCliReadTests(unittest.TestCase):
                 self.assertNotIn("stdout", receipt)
                 self.assertNotIn("stderr", receipt)
                 self.assert_read_only(runner.calls)
-                if operation in {"listIssues", "listPullRequestChecks"}:
+                if operation == "listIssues":
                     self.assertEqual(set(receipt["data"]), {"items", "limit", "possibly_more"})
+                if operation == "listPullRequestChecks":
+                    self.assertEqual(set(receipt["data"]), {"base_sha", "head_sha", "items", "limit", "possibly_more"})
                 if operation == "listPullRequestReviews":
                     self.assertEqual(receipt["data"]["items"][0], {
                         "commit_sha": "b" * 40,
@@ -128,6 +134,9 @@ class GithubCliReadTests(unittest.TestCase):
                     self.assertEqual(receipt["data"]["orcastrata_markers"], [
                         "orcastrata:issue:v1:" + "c" * 20
                     ])
+                if operation == "readMergeRequirements":
+                    self.assertFalse(receipt["data"]["protected"])
+                    self.assertEqual(receipt["data"]["required_checks"], [])
         self.assertEqual(cases[0][2][0]["stdout"], b"auth detail")
 
     def test_exact_target_argv_and_environment_are_bound(self):
@@ -168,7 +177,8 @@ class GithubCliReadTests(unittest.TestCase):
             "filename": f"src/{index}.py", "status": "modified",
         } for index in range(101)]
         rows[0]["filename"] = 'src/quoted"\\name.py'
-        runner = QueueRunner(result(json_lines(rows)))
+        binding = {"base": {"sha": "a" * 40}, "head": {"sha": "b" * 40}}
+        runner = QueueRunner(result(binding), result(json_lines(rows)))
         receipt = self.execute(request("readPullRequestDiffSummary", number=12), runner)
         self.assertEqual(receipt["status"], "ok")
         self.assertEqual(len(receipt["data"]["items"]), 100)
@@ -180,7 +190,7 @@ class GithubCliReadTests(unittest.TestCase):
         ).encode()).hexdigest()
         self.assertEqual(receipt["data"]["filenames_sha256"], expected_digest)
         self.assertEqual(receipt["data"]["items"][0]["filename"], 'src/quoted"\\name.py')
-        self.assertEqual(runner.calls[0][0], [
+        self.assertEqual(runner.calls[1][0], [
             "/trusted/gh", "api", "--hostname", "github.com", "--method", "GET",
             "--paginate", "--jq",
             ".[] | {filename, status, additions, deletions, changes}",
@@ -188,15 +198,49 @@ class GithubCliReadTests(unittest.TestCase):
         ])
         self.assert_read_only(runner.calls)
 
-        malformed = QueueRunner(result(
+        malformed = QueueRunner(result(binding), result(
             b'{"filename":"a","filename":"b","status":"modified","additions":1,"deletions":0,"changes":1}\n'
         ))
         receipt = self.execute(request("readPullRequestDiffSummary", number=12), malformed)
         self.assertEqual(receipt["error"]["code"], "gh_response_invalid")
 
-        duplicate = QueueRunner(result(json_lines([rows[1], rows[1]])))
+        duplicate = QueueRunner(result(binding), result(json_lines([rows[1], rows[1]])))
         receipt = self.execute(request("readPullRequestDiffSummary", number=12), duplicate)
         self.assertEqual(receipt["error"]["code"], "github_diff_filename_duplicate")
+
+    def test_classic_protected_branch_is_unsupported_without_protection_read(self):
+        runner = QueueRunner(result({"name": "main", "protected": True}))
+        receipt = self.execute(request("readMergeRequirements", branch="main"), runner)
+        self.assertEqual(receipt["error"]["code"], "github_branch_rule_unsupported")
+        self.assertEqual(len(runner.calls), 1)
+        self.assertEqual(
+            runner.calls[0][0][-1],
+            "repos/Vel-Labs/orcastrata-max/branches/main",
+        )
+        self.assert_read_only(runner.calls)
+
+    def test_applicable_branch_rules_preserve_app_identity_and_reject_unknown_rules(self):
+        runner = QueueRunner(
+            result({"name": "main", "protected": False}),
+            result([{
+                "type": "required_status_checks",
+                "parameters": {
+                    "strict_required_status_checks_policy": False,
+                    "required_status_checks": [{"context": "test", "integration_id": 7}],
+                },
+            }]),
+        )
+        receipt = self.execute(request("readMergeRequirements", branch="main"), runner)
+        self.assertEqual(receipt["status"], "ok")
+        self.assertEqual(receipt["data"]["required_checks"], [{"app_id": 7, "context": "test"}])
+        self.assert_read_only(runner.calls)
+
+        unsupported = QueueRunner(
+            result({"name": "main", "protected": False}),
+            result([{"type": "required_deployments", "parameters": {}}]),
+        )
+        receipt = self.execute(request("readMergeRequirements", branch="main"), unsupported)
+        self.assertEqual(receipt["error"]["code"], "github_branch_rule_unsupported")
 
     def test_issue_markers_and_review_projection_fail_closed(self):
         issue = {
@@ -213,7 +257,8 @@ class GithubCliReadTests(unittest.TestCase):
         self.assertEqual(receipt["error"]["code"], "github_marker_invalid")
         self.assertNotIn("private body", json.dumps(receipt))
 
-        review_with_body = QueueRunner(result(json_lines([{
+        binding = {"base": {"sha": "a" * 40}, "head": {"sha": "b" * 40}}
+        review_with_body = QueueRunner(result(binding), result(json_lines([{
             "body": "must not pass", "commit_id": "b" * 40, "reviewer": "octo",
             "state": "APPROVED", "submitted_at": "2026-09-01T01:00:00Z",
         }])))
@@ -221,13 +266,13 @@ class GithubCliReadTests(unittest.TestCase):
         self.assertEqual(receipt["error"]["code"], "gh_response_invalid")
         self.assertNotIn("must not pass", json.dumps(receipt))
 
-        runner = QueueRunner(result(json_lines([{
+        runner = QueueRunner(result(binding), result(json_lines([{
             "commit_id": "b" * 40, "reviewer": "octo", "state": "APPROVED",
             "submitted_at": "2026-09-01T01:00:00Z",
         }])))
         receipt = self.execute(request("listPullRequestReviews", number=9), runner)
         self.assertEqual(receipt["status"], "ok")
-        self.assertEqual(runner.calls[0][0], [
+        self.assertEqual(runner.calls[1][0], [
             "/trusted/gh", "api", "--hostname", "github.com", "--method", "GET",
             "--paginate", "--jq",
             ".[] | {state, commit_id, reviewer: .user.login, submitted_at}",
@@ -255,6 +300,7 @@ class GithubCliReadTests(unittest.TestCase):
             request("readRepository", host="user@github.com"),
             request("readIssue", number=True),
             request("listIssues", limit=101),
+            request("readMergeRequirements", branch="../main"),
         ]
         for payload in invalid:
             with self.subTest(payload=payload):

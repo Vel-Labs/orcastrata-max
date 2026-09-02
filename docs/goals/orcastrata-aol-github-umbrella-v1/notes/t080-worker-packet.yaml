@@ -1,0 +1,39 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T080
+child_task_id: T080-W01
+attempt_id: T080-W01-A01
+objective: >-
+  Implement the smallest closed guarded-merge seam and fake-gh proof. The
+  Parent retains all live GitHub effects and acceptance.
+lane_mode: write_worker
+runtime_surface: codex_collaboration
+read_first:
+  - plugins/codexmax-orchestrator/scripts/github_issue_effect.py
+  - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-full-receipt.json
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_guarded_merge.py
+  - tests/test_github_cli_read.py
+acceptance:
+  - Reuse current closed request, identity, runner, environment, receipt, and reconciliation patterns.
+  - Permit only one exact pull-request merge operation for github.com/Vel-Labs/orcastrata-max after exact username, ADMIN or WRITE, base SHA, head SHA, board marker, dependency, complete scope digest, conflict, required-check, required-review-policy, current review, and independent-audit bindings pass.
+  - Expose only fixed GET observations and one fixed merge endpoint. Reject caller argv, executable, environment, credentials, merge method selection, auto-merge, force, branch deletion, comments, and repository-setting mutation.
+  - Persist prepare state before the effect. An unknown effect cannot be retried until exact pull-request reconciliation proves merged or unmerged. Multiple or ambiguous identities fail closed.
+  - Fake-gh tests cover stale SHA, scope mismatch, conflict, failing or pending required checks, unmet required review policy, non-board PR, identity or permission mismatch, unknown outcome, reconciliation, replay, and one accepted merge.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/github_guarded_merge.py plugins/codexmax-orchestrator/scripts/github_cli_read.py plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md tests/test_github_guarded_merge.py tests/test_github_cli_read.py
+forbidden_actions:
+  - Any live GitHub or network effect, Git mutation, commit, push, board update, receipt acceptance, credential access, arbitrary gh command, auto-merge, force push, history rewrite, schedule, deployment, release, provider, AOL, or another repository.
+stop_if:
+  - Safe required-review policy cannot be represented by a closed read and deterministic gate.
+  - A generic command runner, new dependency, repository-setting mutation, or file outside write_scope is required.
+  - Current shared changes appear outside the assigned files or another writer overlaps this scope.
