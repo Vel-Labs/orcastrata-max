@@ -168,7 +168,11 @@ Resource classes are `native_visible_thread`, `collaboration_agent`,
   visible disposable tasks, and removable worktrees compile only to supported
   exact Parent actions. Unsupported active cleanup fails closed.
 - A terminal collaboration agent with no archive/remove capability becomes
-  `retained_terminal_host_record` and does not block completion.
+  `retained_terminal_host_record` and does not block completion. A terminal or
+  absent collaboration record with no archive/remove capability does not
+  require a visible-thread pair when the Parent-child plan does not list it as
+  a descendant. Active agents still require complete descendant coverage. Any
+  listed descendant still requires one exact visible-thread and agent pair.
 - Visible disposable tasks compile archive and/or unpin only when the inventory
   explicitly reports those capabilities.
 - Active persistent sessions compile `retain_persistent` only when a matching,

@@ -11,12 +11,13 @@ lane_mode: read_only
 runtime_surface: codex_collaboration
 candidate:
   repository: github.com/Vel-Labs/orcastrata-max
-  merged_main_sha: f77056010b8bf568918f1f8a737fb1c8af6fa886
-  source_commit_sha: b64c9464d02dfb9ff08b44eeec2dd015fecb268e
+  merge_base_sha: f77056010b8bf568918f1f8a737fb1c8af6fa886
+  merged_main_sha: 055ce821a344f025f6e24a1a749018352de410c3
+  source_commit_sha: b041c2cc4307d9926ccf9feaf01927b873f86715
   package_version: 1.2.0
   file_count: 417
-  tree_sha256: 6b202e89d0f2aedb82dc9011661489f8681ae242df52de2c114296bd3b639c1b
-  release_manifest_sha256: ac786a5f905444ae770f16906d130b6b872fa6824cdc2ba877f42d76792b7ecc
+  tree_sha256: bc88df1bde83b7037f9f56e386debedae4fc792d1d36885ecd5a3fb18edf1707
+  release_manifest_sha256: 8a26e2c1f2dcb89fd49d988d15d82f6a82b5a981d667e005518ca8e20b82520f
 read_first:
   - docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md
   - docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml
@@ -30,8 +31,8 @@ read_first:
 validation_evidence:
   - command: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests
     result: pass
-    tests: 118
-    runtime_seconds: 3.335
+    tests: 121
+    runtime_seconds: 3.400
   - command: verify_release_parity.py verify against source, immutable stage, and installed cache
     result: pass
     file_count: 417
@@ -55,7 +56,7 @@ repair_evidence:
   focused_tests: 5
   regression_result: pass
 measurement:
-  full_suite_runtime_seconds: 3.335
+  full_suite_runtime_seconds: 3.400
   input_tokens: unknown
   cached_input_tokens: unknown
   output_tokens: unknown
@@ -63,6 +64,40 @@ measurement:
   cost: unknown
   reason: The local validators and plugin lifecycle do not expose model usage counters and no provider-backed task was run.
   ponytail_benchmark_boundary: Published medians are not a per-repository measurement.
+repair_pull_request_gate:
+  repository: github.com/Vel-Labs/orcastrata-max
+  pull_request: 13
+  lifecycle_marker: orcastrata:lifecycle:T090-CACHE-PARITY:issue:10
+  base_sha: f77056010b8bf568918f1f8a737fb1c8af6fa886
+  head_sha: b041c2cc4307d9926ccf9feaf01927b873f86715
+  state: open
+  draft: false
+  mergeable: true
+  mergeable_state: clean
+  branch_protected: false
+  required_checks: []
+  observed_checks: []
+  required_approvals: 0
+  observed_reviews:
+    - reviewer: chatgpt-codex-connector[bot]
+      state: COMMENTED
+      commit_sha: 646195ee7a5efad44ed285c8eec5a0398449e672
+  total_changed_paths: 20
+  filenames_sha256: sha256:84e7d6a3846de71363eb8992fc6e91c65ae0a583b8b965634b9b2a7d01363c87
+  remote_local_scope_match: true
+  requested_verdict: >-
+    Decide whether these exact fresh facts and the repaired candidate satisfy
+    the independent pre-effect gate for one board-owned merge. Do not perform a
+    GitHub read or mutation. The Parent must reread every gate before the effect.
+post_merge_evidence:
+  effect_time_board_sha256: sha256:ba1b0cecd1482f8b9f8dff41feeebfb400555bf0b68eaf0d41d07b4623039d78
+  merge_commit_sha: 055ce821a344f025f6e24a1a749018352de410c3
+  origin_main_sha: 055ce821a344f025f6e24a1a749018352de410c3
+  merged_pull_request_state: closed
+  merged_pull_request_observed: true
+  linked_issue_10_state: open
+  tested_head_tree_equals_merged_main_tree: true
+  full_suite_proof: reused_checksum_bound
 questions:
   - Does merged main contain the exact accepted package candidate?
   - Do full-suite, immutable-stage, installed-cache, command inventory, and hook evidence support standalone local acceptance?

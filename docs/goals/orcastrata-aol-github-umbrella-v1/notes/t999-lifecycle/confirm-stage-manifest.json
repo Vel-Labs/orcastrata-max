@@ -1,0 +1,12 @@
+{
+  "artifact_type": "TerminalLifecycleConfirmStageManifest",
+  "official_checker_receipt_sha256": "sha256:4fc47f2895439a35b752f97c7dbb324c5bb5fb999c3b85dcc8eb3879044aa9ae",
+  "post_transition_board_projection_sha256": "sha256:1d6650d1a07e129410a0ea95bf5ad1ff93d8f6ef6ab244b628b651d329ad6fc7",
+  "post_transition_board_source_sha256": "sha256:00ef09b1359aa18ed690d3d36e3e8ac000188127a95000e9d23e73eae52154ce",
+  "pre_transition_board_source_sha256": "sha256:1129bc6a5faac1f6cfe563aa469bcc0af5bf359d3f03797c8f7e353dfc168793",
+  "ready_receipt_sha256": "sha256:f63ecd17212b796a6cecf71c9cc8e7dc38e1f0bbebef9848ecfb6d3551066274",
+  "ready_stage_manifest_sha256": "sha256:3db95aa2520bcec6262c739b166ab5a4b4cede28967cf09e72286061a814ee5f",
+  "schema_version": 1,
+  "stop_checker_receipt_sha256": "sha256:1e2949ccc00a7d3f882cd55b6c3b2aae06a2924cd006c02dfe6bae7d68075001",
+  "trust_anchors_sha256": "sha256:c4ca221a17df7d355ac8d226f7ee4bda5d9567344fad60a0611977497d5c9c28"
+}

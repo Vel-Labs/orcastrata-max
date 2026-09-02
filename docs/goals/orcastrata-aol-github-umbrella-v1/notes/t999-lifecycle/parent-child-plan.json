@@ -1,0 +1,16 @@
+{
+  "actions": [],
+  "artifact_type": "ParentChildCloseoutPlan",
+  "board_mutation_allowed": false,
+  "descendants": [],
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "parent": {
+    "agent_path": "/root",
+    "host_id": "local",
+    "thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41"
+  },
+  "plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+  "retained_persistent_children": [],
+  "schema_version": 1,
+  "terminal_task_id": "T999"
+}

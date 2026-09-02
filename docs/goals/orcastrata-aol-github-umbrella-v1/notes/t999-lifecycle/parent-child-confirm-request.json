@@ -1,0 +1,121 @@
+{
+  "action_results": [],
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "history_pages": [
+    {
+      "child_events": [],
+      "has_more": false,
+      "next_cursor": null,
+      "request_cursor": null
+    }
+  ],
+  "live_agents": [
+    {
+      "agent_path": "/root",
+      "status": "running"
+    },
+    {
+      "agent_path": "/root/ponytail_architecture",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/ponytail_traction",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_cache_parity_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_generic_merge_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_standalone_audit",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_compiler",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_mapper",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_agent_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_repair_audit",
+      "status": "completed"
+    }
+  ],
+  "operation": "confirm",
+  "parent": {
+    "agent_path": "/root",
+    "host_id": "local",
+    "thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41"
+  },
+  "persistence_authorities": [],
+  "plan": {
+    "actions": [],
+    "artifact_type": "ParentChildCloseoutPlan",
+    "board_mutation_allowed": false,
+    "descendants": [],
+    "goal_id": "orcastrata-aol-github-umbrella-v1",
+    "parent": {
+      "agent_path": "/root",
+      "host_id": "local",
+      "thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41"
+    },
+    "plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+    "retained_persistent_children": [],
+    "schema_version": 1,
+    "terminal_task_id": "T999"
+  },
+  "post_live_agents": [
+    {
+      "agent_path": "/root",
+      "status": "running"
+    },
+    {
+      "agent_path": "/root/ponytail_architecture",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/ponytail_traction",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_cache_parity_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_generic_merge_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_standalone_audit",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_compiler",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_mapper",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_agent_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_repair_audit",
+      "status": "completed"
+    }
+  ],
+  "schema_version": 1,
+  "terminal_task_id": "T999"
+}

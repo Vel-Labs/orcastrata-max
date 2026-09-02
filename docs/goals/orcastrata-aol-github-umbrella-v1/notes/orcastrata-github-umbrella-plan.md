@@ -56,13 +56,7 @@ sequence. The separate AOL handoff is not an implementation task on this board.
 ## Current Task
 
 <!-- codexmax-current-task:start -->
-T090 is active. T080 passed local, package, independent-audit, fresh live-gate,
-single-effect, and reconciliation checks. PR #12 merged at `f77056010b8b` and
-linked issue #7 closed. T090 now tests the merged standalone package without
-AOL, publication, deployment, schedules, or external providers.
-Credentials, other repositories, AOL source, external providers,
-schedules, deployments, release publication, auto-merge, force push, history
-rewriting, and repository settings remain forbidden.
+No active task. GoalBuddy has no active-task pointer.
 <!-- codexmax-current-task:end -->
 
 ## Phase-To-Milestone Hierarchy
@@ -72,7 +66,7 @@ rewriting, and repository settings remain forbidden.
 - Child milestones: T010 plan; T020 admission; T030 reads; T040 umbrella state;
   T050 issues; T060 workers and PRs; T070 audit-full; T080 guarded merge; T090
   dogfood acceptance; T999 closeout.
-- Active milestone: T090.
+- Active milestone: none. GoalBuddy is terminal.
 - Split triggers: credentials, a second transport, schedules, default merge,
   AOL implementation, or any cross-repository write.
 - Dependencies: T010 -> T020 -> T030 -> T040 -> T050 -> T060 and T070 -> T080 -> T090 -> T999.
@@ -92,8 +86,8 @@ rewriting, and repository settings remain forbidden.
 | T060 | Bounded workers and PR lifecycle | done | T050 | T080 | parallel_disjoint_write | One worker per owned branch and path set | PR lifecycle receipts | `t060-pr-lifecycle-receipt.json` |
 | T070 | Scoped audit and audit-full | done | T050 | T080 | independent_gate | Independent auditor | Read-only typed verdicts | `t070-audit-full-receipt.json` |
 | T080 | Explicit guarded merge | done | T060, T070 | T090 | serial | Orcastrata effect executor | Standing operator grant plus fresh per-PR gates | `t080-guarded-merge-receipt.json` |
-| T090 | Standalone dogfood acceptance | active | T080 | T999 | independent_gate | Independent auditor | Package, security, and end-to-end proof | — |
-| T999 | Parent lifecycle closeout | queued | T090 | — | serial | Parent/PM | Terminal lifecycle and final checks | — |
+| T090 | Standalone dogfood acceptance | done | T080 | T999 | independent_gate | Independent auditor | Package, security, and end-to-end proof | `t090-standalone-dogfood-receipt.json` |
+| T999 | Parent lifecycle closeout | done | T090 | — | serial | Parent/PM | Terminal lifecycle and final checks | `t999-lifecycle/terminal-confirmation.json` |
 <!-- codexmax-task-ledger:end -->
 
 ## Objective and Acceptance Oracle

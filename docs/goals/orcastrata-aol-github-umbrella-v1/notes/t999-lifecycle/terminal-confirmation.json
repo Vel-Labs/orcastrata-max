@@ -1,0 +1,19 @@
+{
+  "acceptance_claimed": false,
+  "artifact_type": "TerminalLifecycleConfirmation",
+  "confirm_stage_manifest_sha256": "sha256:a52a1f298b0cf8936c1671d41ecb70ee04c16fd4db2e186b4be43d3eb5555370",
+  "confirmation_sha256": "sha256:dee0623ea30fab72ddcdf9dd6a741dbfe3e6a136f5b70e481ab827effb33bb88",
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "official_checker_receipt_sha256": "sha256:4fc47f2895439a35b752f97c7dbb324c5bb5fb999c3b85dcc8eb3879044aa9ae",
+  "parent_child_closeout_plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+  "parent_child_closeout_receipt_sha256": "sha256:f4ac5190239796d8e67dee1efe080a44a623744b787a2dd6f762f95e1a815a2d",
+  "plan_sha256": "sha256:cc104dcc634c1bd10c132e7e44fe208b9b4712e74de8975940782c670bc6c435",
+  "post_inventory_sha256": "sha256:0c06ae8452e8d3ae93a72dfe16c1050db5f4ac70b987d63d16fdeee6aa225750",
+  "post_transition_board_sha256": "sha256:1d6650d1a07e129410a0ea95bf5ad1ff93d8f6ef6ab244b628b651d329ad6fc7",
+  "pre_inventory_sha256": "sha256:5b725abe75743446714c00c3063ceda3aa6b53bacd9678df458969a6aad74079",
+  "ready_sha256": "sha256:f63ecd17212b796a6cecf71c9cc8e7dc38e1f0bbebef9848ecfb6d3551066274",
+  "schema_version": 1,
+  "stop_checker_receipt_sha256": "sha256:1e2949ccc00a7d3f882cd55b6c3b2aae06a2924cd006c02dfe6bae7d68075001",
+  "terminal_confirmed": true,
+  "trust_anchors_sha256": "sha256:c4ca221a17df7d355ac8d226f7ee4bda5d9567344fad60a0611977497d5c9c28"
+}

@@ -1,0 +1,35 @@
+{
+  "artifact_type": "GoalBuddyOfficialCheckerEvidence",
+  "checker_id": "goalbuddy_official_checker",
+  "command": "node /Users/steven/Workspace/40_Code/infrastructure/goalbuddy/goalbuddy/scripts/check-goal-state.mjs docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+  "executed_at": "2026-09-02T08:13:03Z",
+  "exit_code": 0,
+  "output": {
+    "active_task": null,
+    "agent_statuses": {
+      "judge": "installed",
+      "scout": "installed",
+      "worker": "installed"
+    },
+    "errors": [],
+    "goal_status": "done",
+    "ok": true,
+    "pm_status": {
+      "candidate": null,
+      "current_gate": null,
+      "exact_blocker": null,
+      "human_action": null,
+      "next_automatic_action": null,
+      "outcome_state": null,
+      "pm_decision": null
+    },
+    "state_path": "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+    "task_count": 10,
+    "terminal_stop": {
+      "allowed": false,
+      "reason": "goal_not_blocked"
+    },
+    "version": 2,
+    "warnings": []
+  }
+}

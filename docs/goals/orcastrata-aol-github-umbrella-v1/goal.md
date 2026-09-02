@@ -21,17 +21,24 @@ confirmed guarded merge. T010 proves only that the corrected plan is ready.
 
 ## Authority
 
-The user authorized planning and adversarial review. Implementation, GitHub
-mutation, installation, merge, push, publication, automation, and scheduled PR
-babysitting are not authorized.
+The user authorized T050B through T999 for `Vel-Labs/orcastrata-max`. This grant
+includes exact-repository GitHub issue and pull-request writes, local branches,
+commits, non-force pushes, bounded native workers, independent audits, isolated
+installation, full validation, standalone dogfood, and one-at-a-time guarded
+merges after all required gates pass.
 
 ## Scope
 
-Write only planning and review evidence in this Orcastrata worktree. Treat AOL
-as a separate downstream consumer. Do not change AOL source.
+Write only board-owned Orcastrata source, tests, plans, and receipts in this
+worktree. Use only `Vel-Labs/orcastrata-max` for GitHub effects. Treat AOL as a
+separate downstream consumer. Do not change AOL source.
 
 ## Stop Rule
 
-Do not treat terminal authentication as action authority. Do not read or copy a
-GitHub token. Do not make GitHub the only canonical run truth. Do not implement
-or run GitHub mutations until the operator accepts an exact tranche.
+Do not read, expose, refresh, or replace credentials. Stop on identity mismatch,
+multiple marker matches, unexpected repository state, unresolved merge conflict,
+failing required gates, scope overlap, credential failure, or authority outside
+the grant. Do not use auto-merge, force push, history rewriting, arbitrary `gh`
+commands, external model providers, schedules, deployments, releases, repository
+settings, secrets, AOL source, another repository, or unrelated issues and pull
+requests.

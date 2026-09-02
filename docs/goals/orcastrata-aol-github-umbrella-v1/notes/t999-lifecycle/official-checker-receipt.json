@@ -1,0 +1,9 @@
+{
+  "checker_id": "goalbuddy_official_checker",
+  "evidence_sha256": "sha256:5fbb8a8378020dfd2b662ec7f866e5de69a654e34b8d6e127eb372f21822812b",
+  "executed": true,
+  "post_transition_board_sha256": "sha256:1d6650d1a07e129410a0ea95bf5ad1ff93d8f6ef6ab244b628b651d329ad6fc7",
+  "post_transition_board_source_sha256": "sha256:00ef09b1359aa18ed690d3d36e3e8ac000188127a95000e9d23e73eae52154ce",
+  "receipt_sha256": "sha256:4fc47f2895439a35b752f97c7dbb324c5bb5fb999c3b85dcc8eb3879044aa9ae",
+  "status": "pass"
+}

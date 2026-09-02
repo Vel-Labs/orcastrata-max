@@ -5,7 +5,7 @@ goal:
   slug: orcastrata-aol-github-umbrella-v1
   kind: implementation
   tranche: "Prepare the standalone open-source Orcastrata GitHub umbrella workflow."
-  status: active
+  status: done
   oracle:
     signal: >-
       An authorized test repository completes the standalone umbrella-to-merge
@@ -61,7 +61,7 @@ agents:
   worker: installed
   judge: installed
 
-active_task: T090
+active_task: null
 
 tasks:
   - id: T010
@@ -445,7 +445,7 @@ tasks:
   - id: T090
     type: judge
     assignee: Judge
-    status: active
+    status: done
     objective: "Run standalone consumer, security, package, and end-to-end dogfood acceptance."
     dependencies:
       - T080
@@ -464,6 +464,7 @@ tasks:
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-dogfood-receipt.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-repair-packet.yaml
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-merge-executor-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-effects/
     verify:
       - "python3 -m unittest discover -s tests"
       - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
@@ -473,13 +474,88 @@ tasks:
       - "The full suite, package stage, isolated install, standalone journey, security boundary, or independent audit fails."
       - "Validation would require publication, deployment, production effects, credentials, another repository, AOL, schedules, or external providers."
       - "Token, latency, or cost data is unavailable and would be inferred instead of recorded as unknown."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: true
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+        - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+        - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - tests/test_orcastrata_native_interface.py
+        - tests/test_github_guarded_merge.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-packet.yaml
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-dogfood-receipt.json
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-effects/
+      commands:
+        - command: "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests"
+          status: pass
+        - command: "verify_release_parity.py across source, immutable stage, installed cache, and post-runtime cache"
+          status: pass
+        - command: "isolated Codex marketplace install, plugin enablement, command inventory, and SessionStart/SubagentStart hook journey"
+          status: pass
+        - command: "github_guarded_merge.py --task-id T090 and exact PR/origin-main reconciliation"
+          status: pass
+        - command: "independent read-only T090 final audit"
+          status: pass
+      summary: >-
+        The 417-file Orcastrata Max 1.2.0 package passed source, immutable-stage,
+        installed-cache, command, and hook dogfood. The full 121-test result is
+        reused checksum-bound proof because tested head b041c2c and merged main
+        055ce82 have the same Git tree. The independent final audit accepted the
+        evidence. Token and cost counters remain unknown.
 
   - id: T999
     type: pm
     assignee: PM
-    status: queued
+    status: done
     objective: "Integrate final evidence, clean child lifecycle state, and close the board."
     dependencies:
       - T090
     expected_output:
       - "Terminal lifecycle receipt and accepted final state"
+    allowed_files:
+      - docs/goals/orcastrata-aol-github-umbrella-v1/
+      - plugins/codexmax-orchestrator/scripts/compile_terminal_lifecycle.py
+      - plugins/codexmax-orchestrator/assets/contracts/terminal-lifecycle.md
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_terminal_lifecycle.py
+    verify:
+      - "Terminal Lifecycle ready and confirm"
+      - "Official GoalBuddy checker and distinct terminal stop check"
+      - "Implementation plan validator and release parity"
+    receipt:
+      result: done
+      decision: complete
+      outcome_integrated: true
+      task_transition_complete: true
+      full_outcome_complete: true
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/compile_terminal_lifecycle.py
+        - plugins/codexmax-orchestrator/assets/contracts/terminal-lifecycle.md
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - tests/test_terminal_lifecycle.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t999-lifecycle/
+      commands:
+        - command: "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests"
+          status: pass
+        - command: "isolated package stage, install, installed compiler smoke, and cache parity"
+          status: pass
+        - command: "compile_parent_child_closeout.py plan and confirm"
+          status: pass
+        - command: "compile_terminal_lifecycle.py plan and ready"
+          status: pass
+        - command: "official GoalBuddy checker and distinct terminal stop check"
+          status: pass
+        - command: "compile_terminal_lifecycle.py confirm"
+          status: pass
+      summary: >-
+        Parent lifecycle inventory found no visible child Codex tasks and no
+        active child agent. Nine completed collaboration records are retained
+        as terminal host records. Two absent T080 records require no action.
+        The fresh 122-test suite, package parity, isolated install, independent
+        technical audit, and Terminal Lifecycle gates passed before the board
+        moved to done.

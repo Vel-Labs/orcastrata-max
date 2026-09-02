@@ -1,0 +1,55 @@
+{
+  "action_results": [],
+  "artifact_type": "ParentChildCloseoutReceipt",
+  "board_mutation_allowed": false,
+  "closeout_complete": true,
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "parent_thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41",
+  "plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+  "post_live_agents": [
+    {
+      "agent_path": "/root",
+      "status": "running"
+    },
+    {
+      "agent_path": "/root/ponytail_architecture",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/ponytail_traction",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_cache_parity_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_generic_merge_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t090_standalone_audit",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_compiler",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_lifecycle_mapper",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_agent_repair",
+      "status": "completed"
+    },
+    {
+      "agent_path": "/root/t999_terminal_repair_audit",
+      "status": "completed"
+    }
+  ],
+  "receipt_sha256": "sha256:f4ac5190239796d8e67dee1efe080a44a623744b787a2dd6f762f95e1a815a2d",
+  "schema_version": 1,
+  "terminal_lifecycle_allowed": true,
+  "terminal_task_id": "T999"
+}

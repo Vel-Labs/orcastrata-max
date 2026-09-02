@@ -607,6 +607,12 @@ def _child_resource_maps(
         if row["resource_class"] == "collaboration_agent"
         and row["ownership"] == "goal_owned" and row["target"]["host_id"] == parent_host
         and row["target"]["agent_id"].startswith(child_plan["parent"]["agent_path"].rstrip("/") + "/")
+        and not (
+            row["lifecycle"] in {"terminal", "absent"}
+            and not row["capabilities"]["archive"]
+            and not row["capabilities"]["remove"]
+            and row["target"]["agent_id"] not in descendant_paths
+        )
     ]
     authoritative_threads = {row["target"]["thread_id"] for row in visible_children}
     authoritative_paths = {row["target"]["agent_id"] for row in agent_children}
