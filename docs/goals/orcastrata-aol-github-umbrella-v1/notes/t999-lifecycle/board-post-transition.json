@@ -1,0 +1,58 @@
+{
+  "active_task": null,
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "source_sha256": "sha256:00ef09b1359aa18ed690d3d36e3e8ac000188127a95000e9d23e73eae52154ce",
+  "status": "done",
+  "tasks": [
+    {
+      "status": "done",
+      "task_id": "T010",
+      "type": "pm"
+    },
+    {
+      "status": "done",
+      "task_id": "T020",
+      "type": "pm"
+    },
+    {
+      "status": "done",
+      "task_id": "T030",
+      "type": "worker"
+    },
+    {
+      "status": "done",
+      "task_id": "T040",
+      "type": "worker"
+    },
+    {
+      "status": "done",
+      "task_id": "T050",
+      "type": "worker"
+    },
+    {
+      "status": "done",
+      "task_id": "T060",
+      "type": "worker"
+    },
+    {
+      "status": "done",
+      "task_id": "T070",
+      "type": "judge"
+    },
+    {
+      "status": "done",
+      "task_id": "T080",
+      "type": "worker"
+    },
+    {
+      "status": "done",
+      "task_id": "T090",
+      "type": "judge"
+    },
+    {
+      "status": "done",
+      "task_id": "T999",
+      "type": "pm"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "allowed_persistence_authority_sha256s": [],
+  "artifact_type": "TerminalLifecycleTrustAnchors",
+  "final_audit_sha256": "sha256:9cb1a788b5411cd22de7cef777e6b6ef9e2604a6caa0790e917a04f44964c762",
+  "goal_contract_sha256": "sha256:05ef8d38138d425cfa245659a65dad85f9d562657c4860b7aec52f7afa4c5bd2",
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "initial_inventory_sha256": "sha256:9d90692529070f00df2a3eba6c70df086ed2f4164dda054d5741c3e3da067f62",
+  "inventory_authority": {
+    "authority_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41:T999",
+    "authority_kind": "parent_inventory",
+    "authority_sha256": "sha256:493549da459a2b83e6fb41f5413447eb9fc4a1a085821cdf02d9592f73354e92"
+  },
+  "parent_authority": {
+    "authority_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41",
+    "authority_kind": "parent_codex",
+    "authority_sha256": "sha256:e8b4ffa31b04bfaa760a78ce8d6cf2c44410a05909df6581006352915a0288a6"
+  },
+  "parent_child_closeout_plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+  "persistence_authorities_sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "pre_transition_board_projection_sha256": "sha256:e048f1d9a23f75b39e53fdf626643a48547cfc633e6cd0682f06fc58ba44eed1",
+  "pre_transition_board_source_sha256": "sha256:1129bc6a5faac1f6cfe563aa469bcc0af5bf359d3f03797c8f7e353dfc168793",
+  "schema_version": 1
+}

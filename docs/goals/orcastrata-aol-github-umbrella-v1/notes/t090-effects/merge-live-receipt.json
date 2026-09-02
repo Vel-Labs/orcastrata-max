@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_github_guarded_merge_receipt_v1",
+  "status": "bound",
+  "outcome": "merged",
+  "pull_request": {
+    "number": 13,
+    "head_sha": "b041c2cc4307d9926ccf9feaf01927b873f86715",
+    "merge_commit_sha": "055ce821a344f025f6e24a1a749018352de410c3"
+  },
+  "command_count": 13,
+  "mutation_attempted": true,
+  "reconcile_required": false,
+  "effect_boundary": {
+    "acceptance_granted": false,
+    "authority_granted": false,
+    "credentials_read_by_orcastrata": false,
+    "github_called": true,
+    "github_mutated": true,
+    "live_execution_available": true,
+    "simulation_only": false
+  },
+  "reconciliation": {
+    "pull_request_state": "closed",
+    "pull_request_merged": true,
+    "remote_main_sha": "055ce821a344f025f6e24a1a749018352de410c3",
+    "linked_issue_10_state": "open"
+  }
+}

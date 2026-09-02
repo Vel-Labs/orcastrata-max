@@ -1,0 +1,10 @@
+{
+  "artifact_type": "TerminalLifecycleReadyStageManifest",
+  "parent_action_receipt_sha256": "sha256:a3890ebf2fe2bc7afe9edcad1b110fa21b696114fe7a48cc1ddb973905fe4f6d",
+  "plan_sha256": "sha256:cc104dcc634c1bd10c132e7e44fe208b9b4712e74de8975940782c670bc6c435",
+  "post_inventory_sha256": "sha256:0c06ae8452e8d3ae93a72dfe16c1050db5f4ac70b987d63d16fdeee6aa225750",
+  "pre_transition_board_source_sha256": "sha256:1129bc6a5faac1f6cfe563aa469bcc0af5bf359d3f03797c8f7e353dfc168793",
+  "ready_receipt_sha256": "sha256:f63ecd17212b796a6cecf71c9cc8e7dc38e1f0bbebef9848ecfb6d3551066274",
+  "schema_version": 1,
+  "trust_anchors_sha256": "sha256:c4ca221a17df7d355ac8d226f7ee4bda5d9567344fad60a0611977497d5c9c28"
+}

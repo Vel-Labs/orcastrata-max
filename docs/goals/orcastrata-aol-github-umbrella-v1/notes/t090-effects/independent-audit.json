@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_github_merge_independent_audit_v1",
+  "task_id": "T090",
+  "auditor": {
+    "read_only": true,
+    "runtime_child_id": "/root/t090_standalone_audit",
+    "runtime_surface": "codex_collaboration"
+  },
+  "verdict": "ACCEPT",
+  "board_sha256": "sha256:ba1b0cecd1482f8b9f8dff41feeebfb400555bf0b68eaf0d41d07b4623039d78",
+  "pull_request": {
+    "number": 13,
+    "base_sha": "f77056010b8bf568918f1f8a737fb1c8af6fa886",
+    "head_sha": "b041c2cc4307d9926ccf9feaf01927b873f86715",
+    "total_count": 20,
+    "filenames_sha256": "sha256:84e7d6a3846de71363eb8992fc6e91c65ae0a583b8b965634b9b2a7d01363c87"
+  }
+}

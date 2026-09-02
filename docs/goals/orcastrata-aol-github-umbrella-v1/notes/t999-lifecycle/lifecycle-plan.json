@@ -1,0 +1,521 @@
+{
+  "acceptance_claimed": false,
+  "accepted_final_audit_path": "docs/goals/orcastrata-aol-github-umbrella-v1/notes/t999-lifecycle/final-audit.json",
+  "actions": [
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-a0e87e70bc61b434219a8e4d0d4e92881314e0e5bf826911193cfe015ee6f680",
+      "exact_target_identity": {
+        "agent_id": "/root/ponytail_architecture",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-ponytail-architecture"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-01583c40fd649eb2d60308e62cf6b2e9cef1c3fabb21d92ca5eaf6c24d0f8cad",
+      "exact_target_identity": {
+        "agent_id": "/root/ponytail_traction",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-ponytail-traction"
+    },
+    {
+      "action": "none",
+      "action_id": "action-652e824de21359f213067435005ea0381d5d16c1d7d19c739d87e079b1e5a467",
+      "exact_target_identity": {
+        "agent_id": "/root/t080_guarded_merge_audit",
+        "host_id": "local"
+      },
+      "reason": "already_terminal_or_absent",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t080-guarded-merge-audit"
+    },
+    {
+      "action": "none",
+      "action_id": "action-4a27d17bb6afcb547cc26ca935731a4b625ea797cf3cff0be54e46d3933176a2",
+      "exact_target_identity": {
+        "agent_id": "/root/t080_guarded_merge_worker",
+        "host_id": "local"
+      },
+      "reason": "already_terminal_or_absent",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t080-guarded-merge-worker"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-1abf7d691b9eeb1d70a52bc1f7c61cc466069710310a3d408a8a48d91367ca9d",
+      "exact_target_identity": {
+        "agent_id": "/root/t090_cache_parity_repair",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-cache-parity-repair"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-808e85d686cf43437baca5dcab1993f3145e2aca098e6eeee121887f36b25d73",
+      "exact_target_identity": {
+        "agent_id": "/root/t090_generic_merge_repair",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-generic-merge-repair"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-51f8c1f25df135026bfeb0ecd90dfff3c8683d8c4f14bb4f6dea886116cca62c",
+      "exact_target_identity": {
+        "agent_id": "/root/t090_standalone_audit",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-standalone-audit"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-e04aa615536f6e1e871ca5f5b5c918be2e1d0bffe85c22a6f55d291c2b4038af",
+      "exact_target_identity": {
+        "agent_id": "/root/t999_lifecycle_compiler",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-lifecycle-compiler"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-a40b5c7fabbe8dbc31b1f5881f98f66d6c817180bd47e976904ee0d1288601ce",
+      "exact_target_identity": {
+        "agent_id": "/root/t999_lifecycle_mapper",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-lifecycle-mapper"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-f03f2e2d084bd87137aa9e32059ef00976147ed0d4ae48ccc37786164e5b2264",
+      "exact_target_identity": {
+        "agent_id": "/root/t999_terminal_agent_repair",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-terminal-agent-repair"
+    },
+    {
+      "action": "retain_terminal_host_record",
+      "action_id": "action-c6343a20bf18c72c60e2b79e4b60ad68b0e89b27781b7b5278ac89751e1b814b",
+      "exact_target_identity": {
+        "agent_id": "/root/t999_terminal_repair_audit",
+        "host_id": "local"
+      },
+      "reason": "terminal_agent_host_record_only",
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-terminal-repair-audit"
+    },
+    {
+      "action": "none",
+      "action_id": "action-538d205edc501406183fcdfa71b350cf44088576a2ae13e63965db8e53b2ce71",
+      "exact_target_identity": {
+        "host_id": "local",
+        "thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41"
+      },
+      "reason": "parent_thread_preserved",
+      "resource_class": "parent_thread",
+      "resource_id": "parent-codex-thread"
+    },
+    {
+      "action": "none",
+      "action_id": "action-da4eddfd3b03ad734258c9f9ed2afd1947fe2df6c25bc39c2442aed286abff94",
+      "exact_target_identity": {
+        "agent_id": "/root",
+        "host_id": "local"
+      },
+      "reason": "shared_resource_preserved",
+      "resource_class": "collaboration_agent",
+      "resource_id": "parent-collaboration-agent"
+    }
+  ],
+  "artifact_type": "TerminalLifecyclePlan",
+  "bindings": {
+    "final_audit_sha256": "sha256:9cb1a788b5411cd22de7cef777e6b6ef9e2604a6caa0790e917a04f44964c762",
+    "goal_contract_sha256": "sha256:05ef8d38138d425cfa245659a65dad85f9d562657c4860b7aec52f7afa4c5bd2",
+    "initial_inventory_sha256": "sha256:9d90692529070f00df2a3eba6c70df086ed2f4164dda054d5741c3e3da067f62",
+    "persistence_authorities_sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "pre_transition_board_projection_sha256": "sha256:e048f1d9a23f75b39e53fdf626643a48547cfc633e6cd0682f06fc58ba44eed1",
+    "pre_transition_board_source_sha256": "sha256:1129bc6a5faac1f6cfe563aa469bcc0af5bf359d3f03797c8f7e353dfc168793"
+  },
+  "board_mutated": false,
+  "board_path": "docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml",
+  "created_at": "2026-09-02T08:09:03Z",
+  "goal_id": "orcastrata-aol-github-umbrella-v1",
+  "host_actions_executed": false,
+  "inventory_sha256": "sha256:5b725abe75743446714c00c3063ceda3aa6b53bacd9678df458969a6aad74079",
+  "parent_child_closeout_plan_sha256": "sha256:74ecb2578e4b7131acab8eef17bd1c44e901c4475add7ea704ae059e88e1b261",
+  "plan_sha256": "sha256:cc104dcc634c1bd10c132e7e44fe208b9b4712e74de8975940782c670bc6c435",
+  "resources": [
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:a30af731c8bd73fd9221ec02d57f1d92ce1f57dcaf0edcb44a8db18ca6994ac5",
+        "source_id": "collaboration-agent:/root/ponytail_architecture",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-ponytail-architecture",
+      "target": {
+        "agent_id": "/root/ponytail_architecture",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:d58b301aa808fbb70e01eb41f6fd63fb767e30c31e69c5f7faee34a49aff328d",
+        "source_id": "collaboration-agent:/root/ponytail_traction",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-ponytail-traction",
+      "target": {
+        "agent_id": "/root/ponytail_traction",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "absent",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:cbbddb9500ee2e0d54e4722944a7008aa107791ad1a2bd35a214b89e3df5f66a",
+        "source_id": "collaboration-agent:/root/t080_guarded_merge_audit",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t080-guarded-merge-audit",
+      "target": {
+        "agent_id": "/root/t080_guarded_merge_audit",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "absent",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:690b29398b171af259a126ebc505776a015b429254a4d76272cc2d0d91832ac5",
+        "source_id": "collaboration-agent:/root/t080_guarded_merge_worker",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t080-guarded-merge-worker",
+      "target": {
+        "agent_id": "/root/t080_guarded_merge_worker",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:d0a1e4e0a019f9a988b597f9dfea506c033183436b8ab86351679de58758fab5",
+        "source_id": "collaboration-agent:/root/t090_cache_parity_repair",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-cache-parity-repair",
+      "target": {
+        "agent_id": "/root/t090_cache_parity_repair",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:cbd77cf099cc7368fe6bda5f2619698f85397dc29ad3b258ee6f7bce2fc0caed",
+        "source_id": "collaboration-agent:/root/t090_generic_merge_repair",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-generic-merge-repair",
+      "target": {
+        "agent_id": "/root/t090_generic_merge_repair",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:1ea72a347d0c200a694aacbf6b6fa14b928d7280c0908808733a4c3359c24e9b",
+        "source_id": "collaboration-agent:/root/t090_standalone_audit",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t090-standalone-audit",
+      "target": {
+        "agent_id": "/root/t090_standalone_audit",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:94015e43ffe8b475aa7a63c83b43aceda56d8a2f0a4631d2903d564b99542ea1",
+        "source_id": "collaboration-agent:/root/t999_lifecycle_compiler",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-lifecycle-compiler",
+      "target": {
+        "agent_id": "/root/t999_lifecycle_compiler",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:9dde9ef435d0d8e36eb92cf3c2a1856175796a1adff680d414a56eec87e3de1d",
+        "source_id": "collaboration-agent:/root/t999_lifecycle_mapper",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-lifecycle-mapper",
+      "target": {
+        "agent_id": "/root/t999_lifecycle_mapper",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:7a528dc1350003bb10802c4d8b07c95e316c4c15524946a0809c6c62a9da5cd1",
+        "source_id": "collaboration-agent:/root/t999_terminal_agent_repair",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-terminal-agent-repair",
+      "target": {
+        "agent_id": "/root/t999_terminal_agent_repair",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "terminal",
+      "ownership": "goal_owned",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:faac1947dde85efb7f76f5704307ecdaef49aac9cf8162e106de53276bf4011a",
+        "source_id": "collaboration-agent:/root/t999_terminal_repair_audit",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "agent-t999-terminal-repair-audit",
+      "target": {
+        "agent_id": "/root/t999_terminal_repair_audit",
+        "host_id": "local"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "active",
+      "ownership": "shared",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:b3d1cf46025a6be0e4782caa14f75885cda04ad02f2ba8221033431d8ea1a1b5",
+        "source_id": "codex-parent-thread:01a05d31-abe7-7640-9e78-1d51aae7fe41",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "parent_thread",
+      "resource_id": "parent-codex-thread",
+      "target": {
+        "host_id": "local",
+        "thread_id": "01a05d31-abe7-7640-9e78-1d51aae7fe41"
+      }
+    },
+    {
+      "capabilities": {
+        "archive": false,
+        "interrupt": false,
+        "remove": false,
+        "unpin": false
+      },
+      "lifecycle": "active",
+      "ownership": "shared",
+      "ownership_evidence": {
+        "goal_id": "orcastrata-aol-github-umbrella-v1",
+        "sha256": "sha256:fa14c6e73f4bd3fb471e0fb6cb714f403170db664e6c391564a29f4a2559d63d",
+        "source_id": "collaboration-agent:/root",
+        "source_kind": "parent_inventory"
+      },
+      "persistence_authority_sha256": null,
+      "persistence_retain_until": null,
+      "resource_class": "collaboration_agent",
+      "resource_id": "parent-collaboration-agent",
+      "target": {
+        "agent_id": "/root",
+        "host_id": "local"
+      }
+    }
+  ],
+  "retained_resources": [
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-ponytail-architecture"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-ponytail-traction"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t090-cache-parity-repair"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t090-generic-merge-repair"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t090-standalone-audit"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t999-lifecycle-compiler"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t999-lifecycle-mapper"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t999-terminal-agent-repair"
+    },
+    {
+      "reason": "terminal_agent_host_record_only",
+      "resource_id": "agent-t999-terminal-repair-audit"
+    }
+  ],
+  "schema_version": 1,
+  "terminal_task_id": "T999",
+  "trust_anchors_sha256": "sha256:c4ca221a17df7d355ac8d226f7ee4bda5d9567344fad60a0611977497d5c9c28"
+}

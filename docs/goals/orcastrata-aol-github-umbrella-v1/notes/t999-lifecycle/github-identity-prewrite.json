@@ -1,0 +1,12 @@
+{
+  "artifact_type": "OrcastrataGithubIdentityPrewriteReceipt",
+  "command_count": 2,
+  "credentials_inspected": false,
+  "observed_at": "2026-09-02T08:15:24Z",
+  "schema_version": 1,
+  "target": "github.com/Vel-Labs/orcastrata-max",
+  "verified_identity": {
+    "permission": "ADMIN",
+    "username": "velcrafting"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "artifact_type": "GoalBuddyStopCheckerEvidence",
+  "checker_id": "goalbuddy_stop_checker",
+  "command": "python3 stdlib parser predicate: goal done, active_task null, all tasks terminal",
+  "executed_at": "2026-09-02T08:13:03Z",
+  "exit_code": 0,
+  "output": {
+    "active_task": null,
+    "goal_status": "done",
+    "nonterminal_task_count": 0,
+    "ok": true,
+    "predicate": "goal_done_active_task_null_all_tasks_terminal",
+    "task_count": 10
+  }
+}
