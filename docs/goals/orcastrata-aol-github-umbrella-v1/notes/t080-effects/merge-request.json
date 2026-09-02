@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_github_guarded_merge_request_v1",
+  "target": {
+    "host": "github.com",
+    "repository": "Vel-Labs/orcastrata-max"
+  },
+  "expected_user": "velcrafting",
+  "pull_request": {
+    "number": 12,
+    "base": "main",
+    "expected_base_sha": "2bdd4c534a9c9ca046af1fd5645139182d3c7bc8",
+    "expected_head_sha": "b64c9464d02dfb9ff08b44eeec2dd015fecb268e",
+    "lifecycle_marker": "orcastrata:lifecycle:T060-BASE-PR:issue:7"
+  },
+  "scope": {
+    "total_count": 180,
+    "filenames_sha256": "sha256:5a55b40689583fae429c96e0c7a9e02169993863823ddaf6af53d343878c1c47"
+  },
+  "evidence": {
+    "goalbuddy_sha256": "sha256:13abd6a5070f9a2a2bacbb860de533df8a8fa1e02ebdc07ac241f92f885d0250",
+    "independent_audit_sha256": "sha256:8f2494bbeebc346cea8ae675ee4e5ddc91076613ab5750e74e56f98afcb61232",
+    "independent_auditor_id": "/root/t080_guarded_merge_audit",
+    "auditor_projection_sha256": "sha256:5ebb97676ddfc2a8fa7a7e8864a3ffa862980c813bf6508c8ea28bdfe040bb23"
+  }
+}

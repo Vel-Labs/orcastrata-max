@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_t080_guarded_merge_receipt_v1",
+  "task_id": "T080",
+  "status": "accepted",
+  "decision": "approved",
+  "implementation_worker": {
+    "child_task_id": "T080-W01",
+    "runtime_child_id": "/root/t080_guarded_merge_worker",
+    "repairs": ["T080-W01-R01", "T080-W01-R02", "T080-W01-R03"],
+    "runtime_surface": "codex_collaboration",
+    "provider_dispatch": false
+  },
+  "independent_audit": {
+    "child_task_id": "T080-A01",
+    "runtime_child_id": "/root/t080_guarded_merge_audit",
+    "implementation_verdict": "ACCEPT",
+    "live_pre_effect_verdict": "ACCEPT",
+    "live_effect_performed_by_auditor": false
+  },
+  "changed_files": [
+    "plugins/codexmax-orchestrator/scripts/github_guarded_merge.py",
+    "plugins/codexmax-orchestrator/scripts/github_cli_read.py",
+    "plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md",
+    "plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md",
+    "plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json",
+    "tests/test_github_guarded_merge.py",
+    "tests/test_github_cli_read.py"
+  ],
+  "validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface",
+      "status": "pass",
+      "tests": 40
+    },
+    {
+      "command": "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator",
+      "status": "pass",
+      "file_count": 417,
+      "tree_sha256": "0576ec91786f86cbcea2c23df662e9a8d06e73570ecb916a3c500a294873de08",
+      "release_manifest_sha256": "6760ef69bbd0a0127a4502707c89a1ed91cb0f7746373441936e53786dac9c60"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "live_gate": {
+    "repository": "github.com/Vel-Labs/orcastrata-max",
+    "verified_user": "velcrafting",
+    "viewer_permission": "ADMIN",
+    "pull_request": 12,
+    "base_sha": "2bdd4c534a9c9ca046af1fd5645139182d3c7bc8",
+    "head_sha": "b64c9464d02dfb9ff08b44eeec2dd015fecb268e",
+    "lifecycle_marker": "orcastrata:lifecycle:T060-BASE-PR:issue:7",
+    "total_changed_paths": 180,
+    "filenames_sha256": "sha256:5a55b40689583fae429c96e0c7a9e02169993863823ddaf6af53d343878c1c47",
+    "remote_local_scope_match": true,
+    "branch_protected": false,
+    "applicable_rules": [],
+    "required_checks": [],
+    "required_approvals": 0,
+    "mergeable_state": "clean"
+  },
+  "effect": {
+    "request_sha256": "sha256:cb612f6cd38434505831eb00d999723c0093ce1020dec17c39469e15b7894abe",
+    "status": "bound",
+    "outcome": "merged",
+    "mutation_attempted": true,
+    "reconcile_required": false,
+    "merge_commit_sha": "f77056010b8bf568918f1f8a737fb1c8af6fa886"
+  },
+  "reconciliation": {
+    "pull_request_state": "closed",
+    "pull_request_merged": true,
+    "remote_main_sha": "f77056010b8bf568918f1f8a737fb1c8af6fa886",
+    "linked_issue_7_state": "closed"
+  },
+  "proof_boundary": "One exact board-created PR was merged after fresh SHA, dependency, policy, CI, review, scope, identity, permission, and independent-audit gates. No auto-merge, force push, history rewrite, schedule, deployment, release publication, repository-setting mutation, external provider, AOL change, or other repository was used."
+}

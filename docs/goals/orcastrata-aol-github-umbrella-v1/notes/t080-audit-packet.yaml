@@ -26,3 +26,33 @@ forbidden_actions:
   - Any file write, network, GitHub or Git effect, board mutation, acceptance mutation, credential access, provider, AOL, schedule, deployment, release, or merge.
 result:
   - Return ACCEPT, REVISE, or BLOCKED with typed findings, exact file and line evidence, required repair, and proof boundary.
+live_merge_gate:
+  observed_repository: github.com/Vel-Labs/orcastrata-max
+  pull_request: 12
+  base_sha: 2bdd4c534a9c9ca046af1fd5645139182d3c7bc8
+  head_sha: b64c9464d02dfb9ff08b44eeec2dd015fecb268e
+  lifecycle_marker: orcastrata:lifecycle:T060-BASE-PR:issue:7
+  total_changed_paths: 180
+  filenames_sha256: sha256:5a55b40689583fae429c96e0c7a9e02169993863823ddaf6af53d343878c1c47
+  remote_local_scope_match: true
+  state: open
+  draft: false
+  mergeable: true
+  mergeable_state: clean
+  branch_protected: false
+  applicable_rules: []
+  required_checks: []
+  observed_checks: []
+  required_approvals: 0
+  observed_reviews:
+    - reviewer: chatgpt-codex-connector[bot]
+      state: COMMENTED
+      commit_sha: f453025e2b0f99e4de08e75e83898081b4b90d44
+  dependencies:
+    - T060
+    - T070
+  required_live_verdict: >-
+    Decide only whether these exact facts and the current canonical board and
+    source satisfy the pre-effect independent-audit gate. Do not perform a
+    GitHub read or mutation. A later guarded-merge execution must read all
+    gates again and stop on any drift.

@@ -61,7 +61,7 @@ agents:
   worker: installed
   judge: installed
 
-active_task: T080
+active_task: T090
 
 tasks:
   - id: T010
@@ -378,7 +378,7 @@ tasks:
   - id: T080
     type: worker
     assignee: Worker
-    status: active
+    status: done
     objective: "Implement optional explicit guarded merge and unknown-outcome recovery."
     dependencies:
       - T060
@@ -413,16 +413,62 @@ tasks:
       - "The effect would merge an unrelated or non-board-created pull request."
       - "A merge outcome is unknown and cannot be reconciled before retry."
       - "The pull request has an unresolved merge conflict, scope overlap, or required gate failure."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+        - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+        - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+        - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - tests/test_github_guarded_merge.py
+        - tests/test_github_cli_read.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-guarded-merge-receipt.json
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-effects/
+      commands:
+        - command: "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/github_guarded_merge.py --execution-directory /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/docs/goals/orcastrata-aol-github-umbrella-v1"
+          status: pass
+        - command: "github_cli_read.py readPullRequest and readIssue plus git ls-remote main reconciliation"
+          status: pass
+      summary: >-
+        The guarded executor re-read every gate and merged only PR 12 at exact
+        head b64c946. Remote main and the known merge commit are f770560.
+        Linked issue 7 closed. Forty consumer tests, 417-file package parity,
+        and independent local and live-gate audits passed. No other effect ran.
 
   - id: T090
     type: judge
     assignee: Judge
-    status: queued
+    status: active
     objective: "Run standalone consumer, security, package, and end-to-end dogfood acceptance."
     dependencies:
       - T080
     expected_output:
       - "Independent ACCEPT, REVISE, or BLOCKED verdict"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_orcastrata_native_interface.py
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-dogfood-receipt.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-repair-packet.yaml
+    verify:
+      - "python3 -m unittest discover -s tests"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+      - "isolated package stage, install, and standalone command journey"
+    stop_if:
+      - "The merged main candidate does not match the accepted package manifest."
+      - "The full suite, package stage, isolated install, standalone journey, security boundary, or independent audit fails."
+      - "Validation would require publication, deployment, production effects, credentials, another repository, AOL, schedules, or external providers."
+      - "Token, latency, or cost data is unavailable and would be inferred instead of recorded as unknown."
 
   - id: T999
     type: pm

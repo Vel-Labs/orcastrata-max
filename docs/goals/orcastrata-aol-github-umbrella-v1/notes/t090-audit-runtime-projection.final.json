@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "ready",
+  "dispatch_performed": true,
+  "provider_dispatch": false,
+  "reason": "fixed_native_identity_matches_route",
+  "spawn_projection": {
+    "agent_type": "codex_auditor",
+    "fork_turns": "all"
+  },
+  "dispatch_receipt": {
+    "ledger_schema_version": 1,
+    "child_task_id": "T090-A01",
+    "semantic_role": "independent_auditor",
+    "requested_native_agent_type": "codex_auditor",
+    "native_agent_type": "codex_auditor",
+    "exact_model": "gpt-5.6-terra",
+    "reasoning_effort": "xhigh",
+    "runtime_surface": "codex_collaboration",
+    "provider_dispatch": false,
+    "selection_mode": "fixed_native",
+    "fallback": "forbidden",
+    "route_rotation_policy": "forbidden",
+    "route_id": "native-codex-auditor",
+    "route_authority": "operator-authorized independent read-only audit for T090",
+    "requested_fork_turns": "all",
+    "effective_fork_turns": "all",
+    "projection_status": "ready",
+    "dispatch_status": "spawned",
+    "runtime_child_id": "/root/t090_standalone_audit",
+    "runtime_child_id_status": "recorded",
+    "approval_reference": null,
+    "special_route_required": true
+  }
+}
