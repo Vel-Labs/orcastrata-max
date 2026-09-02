@@ -453,13 +453,17 @@ tasks:
       - "Independent ACCEPT, REVISE, or BLOCKED verdict"
     allowed_files:
       - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+      - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
       - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
       - tests/test_orcastrata_native_interface.py
+      - tests/test_github_guarded_merge.py
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-packet.yaml
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-runtime-projection.pre-spawn.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-audit-runtime-projection.final.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-standalone-dogfood-receipt.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t090-merge-executor-repair-packet.yaml
     verify:
       - "python3 -m unittest discover -s tests"
       - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"

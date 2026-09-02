@@ -69,7 +69,7 @@ def diff_row():
     return {"additions": 1, "changes": 1, "deletions": 0, "filename": FILENAME, "status": "modified"}
 
 
-def board(status="done", *, valid=True):
+def board(status="done", *, valid=True, task_id="T080"):
     active_fields = """    allowed_files:
       - src/app.py
     verify:
@@ -81,7 +81,7 @@ def board(status="done", *, valid=True):
 goal:
   slug: guarded-merge-test
   status: active
-active_task: T080
+active_task: {task_id}
 rules:
   pm_owns_state: true
 tasks:
@@ -108,7 +108,7 @@ tasks:
       commands:
         - command: audit
           status: pass
-  - id: T080
+  - id: {task_id}
     type: worker
     status: active
     dependencies:
@@ -118,11 +118,11 @@ tasks:
 """.encode()
 
 
-def audit(payload, board_sha):
+def audit(payload, board_sha, task_id="T080"):
     return {
         "schema_version": 1,
         "artifact_type": merge.AUDIT_TYPE,
-        "task_id": "T080",
+        "task_id": task_id,
         "auditor": {
             "read_only": True,
             "runtime_child_id": payload["evidence"]["independent_auditor_id"],
@@ -181,13 +181,17 @@ def ready_responses(*, pull_value=None, rule_rows=None, checks=None, reviews=Non
 
 
 class GithubGuardedMergeTests(unittest.TestCase):
-    def prepare(self, directory, payload=None, *, dependency_status="done", audit_verdict="ACCEPT", valid_board=True):
+    def prepare(
+        self, directory, payload=None, *, task_id="T080",
+        dependency_status="done", audit_verdict="ACCEPT", valid_board=True,
+    ):
         root = Path(directory).resolve()
-        (root / "notes/t080-effects").mkdir(parents=True)
+        _, request_name, _, audit_name, projection_name = merge._task_artifacts(task_id)
+        (root / f"notes/{task_id.lower()}-effects").mkdir(parents=True)
         payload = payload or request()
-        board_raw = board(dependency_status, valid=valid_board)
+        board_raw = board(dependency_status, valid=valid_board, task_id=task_id)
         board_sha = merge._bytes_digest(board_raw)
-        audit_value = audit(payload, board_sha)
+        audit_value = audit(payload, board_sha, task_id)
         audit_value["verdict"] = audit_verdict
         audit_raw = json.dumps(audit_value, sort_keys=True, separators=(",", ":")).encode()
         projection = {
@@ -196,7 +200,7 @@ class GithubGuardedMergeTests(unittest.TestCase):
             "dispatch_performed": True,
             "provider_dispatch": False,
             "dispatch_receipt": {
-                "child_task_id": "T080-A01",
+                "child_task_id": f"{task_id}-A01",
                 "runtime_child_id": payload["evidence"]["independent_auditor_id"],
                 "runtime_surface": "codex_collaboration",
                 "semantic_role": "independent_auditor",
@@ -211,9 +215,9 @@ class GithubGuardedMergeTests(unittest.TestCase):
             "auditor_projection_sha256": merge._bytes_digest(projection_raw),
         }
         (root / merge.BOARD_NAME).write_bytes(board_raw)
-        (root / merge.AUDIT_NAME).write_bytes(audit_raw)
-        (root / merge.AUDITOR_PROJECTION_NAME).write_bytes(projection_raw)
-        (root / merge.REQUEST_NAME).write_text(json.dumps(payload), encoding="utf-8")
+        (root / audit_name).write_bytes(audit_raw)
+        (root / projection_name).write_bytes(projection_raw)
+        (root / request_name).write_text(json.dumps(payload), encoding="utf-8")
         return root, payload
 
     def execute(self, root, runner):
@@ -245,6 +249,82 @@ class GithubGuardedMergeTests(unittest.TestCase):
             "repos/Vel-Labs/orcastrata-max/pulls/12/merge", "-f", f"sha={HEAD}",
         ])
         self.assertNotIn("GH_TOKEN", runner.calls[-1][1])
+
+    def test_selected_task_derives_paths_and_binds_board_and_auditor(self):
+        payload = request()
+        payload["evidence"]["independent_auditor_id"] = "/root/t090_guarded_merge_audit"
+        with tempfile.TemporaryDirectory() as directory:
+            root, _ = self.prepare(directory, payload, task_id="T090")
+            receipt = merge.execute(
+                root,
+                task_id="T090",
+                runner=QueueRunner(*ready_responses(
+                    merge_result=result({"merged": True, "sha": "e" * 40}),
+                )),
+                resolver=lambda: "/trusted/gh",
+                environment_source={"HOME": "/safe"},
+            )
+            saved = json.loads((root / "notes/t090-effects/merge-state.json").read_text())
+        self.assertEqual(receipt["outcome"], "merged")
+        self.assertEqual(saved["status"], "bound")
+
+    def test_selected_task_rejects_cross_task_evidence(self):
+        cases = (
+            ("board", "goalbuddy_task_binding_mismatch"),
+            ("audit", "independent_audit_binding_mismatch"),
+            ("projection", "auditor_projection_invalid"),
+        )
+        for evidence, code in cases:
+            with self.subTest(evidence=evidence), tempfile.TemporaryDirectory() as directory:
+                root, payload = self.prepare(directory, task_id="T090")
+                request_path = root / "notes/t090-effects/merge-request.json"
+                if evidence == "board":
+                    board_raw = board(task_id="T080")
+                    audit_path = root / "notes/t090-effects/independent-audit.json"
+                    audit_value = json.loads(audit_path.read_text())
+                    audit_value["board_sha256"] = merge._bytes_digest(board_raw)
+                    audit_raw = json.dumps(audit_value, sort_keys=True, separators=(",", ":")).encode()
+                    (root / merge.BOARD_NAME).write_bytes(board_raw)
+                    audit_path.write_bytes(audit_raw)
+                    payload["evidence"]["goalbuddy_sha256"] = merge._bytes_digest(board_raw)
+                    payload["evidence"]["independent_audit_sha256"] = merge._bytes_digest(audit_raw)
+                elif evidence == "audit":
+                    audit_path = root / "notes/t090-effects/independent-audit.json"
+                    audit_value = json.loads(audit_path.read_text())
+                    audit_value["task_id"] = "T080"
+                    audit_raw = json.dumps(audit_value, sort_keys=True, separators=(",", ":")).encode()
+                    audit_path.write_bytes(audit_raw)
+                    payload["evidence"]["independent_audit_sha256"] = merge._bytes_digest(audit_raw)
+                else:
+                    projection_path = root / "notes/t090-audit-runtime-projection.final.json"
+                    projection = json.loads(projection_path.read_text())
+                    projection["dispatch_receipt"]["child_task_id"] = "T080-A01"
+                    projection_raw = json.dumps(projection, sort_keys=True, separators=(",", ":")).encode()
+                    projection_path.write_bytes(projection_raw)
+                    payload["evidence"]["auditor_projection_sha256"] = merge._bytes_digest(projection_raw)
+                request_path.write_text(json.dumps(payload), encoding="utf-8")
+                runner = QueueRunner()
+                receipt = merge.execute(
+                    root,
+                    task_id="T090",
+                    runner=runner,
+                    resolver=lambda: "/trusted/gh",
+                )
+            self.assertEqual(receipt["error"]["code"], code)
+            self.assertEqual(runner.calls, [])
+
+    def test_task_identifier_is_closed(self):
+        for task_id in ("t090", "T90", "T090-A01", "T1000", "T090/../T080"):
+            with self.subTest(task_id=task_id), tempfile.TemporaryDirectory() as directory:
+                runner = QueueRunner()
+                receipt = merge.execute(
+                    Path(directory).resolve(),
+                    task_id=task_id,
+                    runner=runner,
+                    resolver=lambda: "/trusted/gh",
+                )
+            self.assertEqual(receipt["error"]["code"], "task_id_invalid")
+            self.assertEqual(runner.calls, [])
 
     def test_stale_scope_conflict_checks_review_marker_and_observation_drift_fail(self):
         cases = [

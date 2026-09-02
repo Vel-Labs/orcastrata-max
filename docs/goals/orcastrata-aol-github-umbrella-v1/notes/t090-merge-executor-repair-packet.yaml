@@ -1,0 +1,28 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T090
+child_task_id: T090-W02
+attempt_id: T090-W02-R01
+objective: >-
+  Generalize the existing guarded merge executor so one explicit canonical
+  board task can use its own fixed effect and auditor evidence paths. Preserve
+  T080 compatibility and bind T090 to T090-A01 without adding arbitrary paths.
+allowed_files:
+  - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+  - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+  - tests/test_github_guarded_merge.py
+forbidden_actions:
+  - Network, GitHub, Git commit or push, credential access, provider calls, installation, board mutation, AOL, schedules, deployment, publication, or edits outside the allowed files.
+acceptance:
+  - The CLI accepts one closed TNNN task identifier and derives only notes/<lower-task>-effects plus notes/<lower-task>-audit-runtime-projection.final.json.
+  - GoalBuddy active task, dependency receipts, audit task ID, and projection child ID bind the same task.
+  - Existing T080 request/state replay and default API behavior remain compatible.
+  - Arbitrary paths, task names, auditor identities, repositories, commands, and merge methods remain impossible.
+  - Existing fresh SHA, scope, rules, checks, reviews, identity, permission, lock, and unknown-outcome gates remain unchanged.
+validation:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_orcastrata_native_interface
+  - python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/github_guarded_merge.py plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json tests/test_github_guarded_merge.py
+stop_if:
+  - The change needs caller-selected filesystem paths, arbitrary gh, weaker evidence, a second merge implementation, or scope outside this packet.
