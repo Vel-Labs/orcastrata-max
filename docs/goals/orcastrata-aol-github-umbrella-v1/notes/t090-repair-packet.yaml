@@ -1,0 +1,26 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T090
+child_task_id: T090-W01
+attempt_id: T090-W01-R01
+objective: >-
+  Repair installed-cache parity so normal Python runtime bytecode under
+  __pycache__ does not invalidate the installed package after execution, while
+  unexpected standalone bytecode remains a parity failure.
+allowed_files:
+  - plugins/codexmax-orchestrator/scripts/verify_release_parity.py
+  - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+  - tests/test_orcastrata_native_interface.py
+forbidden_actions:
+  - Network, GitHub, Git commit or push, credential access, provider calls, installation, board mutation, AOL, schedules, deployment, publication, or edits outside the allowed files.
+acceptance:
+  - A cache with only generated __pycache__ content passes exact manifest parity.
+  - An unexpected standalone .pyc remains cache_file_extra.
+  - Existing source, immutable stage, and same-version drift gates remain unchanged.
+validation:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_orcastrata_native_interface
+  - python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator
+  - git diff --check -- plugins/codexmax-orchestrator/scripts/verify_release_parity.py plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json tests/test_orcastrata_native_interface.py
+stop_if:
+  - The fix must ignore arbitrary extra executable files or weaken content, manifest, name, version, path, alias, or immutable-stage validation.
+  - The repair needs any file or effect outside this packet.

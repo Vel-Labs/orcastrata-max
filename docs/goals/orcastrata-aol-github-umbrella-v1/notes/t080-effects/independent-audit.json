@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "artifact_type": "orcastrata_github_merge_independent_audit_v1",
+  "task_id": "T080",
+  "auditor": {
+    "read_only": true,
+    "runtime_child_id": "/root/t080_guarded_merge_audit",
+    "runtime_surface": "codex_collaboration"
+  },
+  "verdict": "ACCEPT",
+  "board_sha256": "sha256:13abd6a5070f9a2a2bacbb860de533df8a8fa1e02ebdc07ac241f92f885d0250",
+  "pull_request": {
+    "number": 12,
+    "base_sha": "2bdd4c534a9c9ca046af1fd5645139182d3c7bc8",
+    "head_sha": "b64c9464d02dfb9ff08b44eeec2dd015fecb268e",
+    "total_count": 180,
+    "filenames_sha256": "sha256:5a55b40689583fae429c96e0c7a9e02169993863823ddaf6af53d343878c1c47"
+  }
+}

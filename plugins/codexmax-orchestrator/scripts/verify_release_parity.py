@@ -167,19 +167,21 @@ def _identity(path: Path, root: Path, *, kind: str, value: os.stat_result) -> di
 
 
 def _inventory(
-    root: Path, *, exclude_source_generated: bool = False
+    root: Path, *, exclude_source_generated: bool = False,
+    exclude_cache_bytecode: bool = False,
 ) -> tuple[list[dict[str, Any]], list[Path]]:
     identities: list[dict[str, Any]] = []
     files: list[Path] = []
 
-    def visit(directory: Path) -> None:
+    def visit(directory: Path, *, record: bool = True, in_python_cache: bool = False) -> None:
         try:
             directory_stat = directory.lstat()
         except OSError as error:
             raise ParityError("tree_unavailable") from error
         if not stat.S_ISDIR(directory_stat.st_mode) or stat.S_ISLNK(directory_stat.st_mode):
             raise ParityError("tree_alias_forbidden")
-        identities.append(_identity(directory, root, kind="directory", value=directory_stat))
+        if record:
+            identities.append(_identity(directory, root, kind="directory", value=directory_stat))
         try:
             entries = sorted(os.scandir(directory), key=lambda item: item.name)
         except OSError as error:
@@ -205,12 +207,17 @@ def _inventory(
                     raise ParityError("tree_unavailable") from error
                 if not _same_canonical_path(lexical, resolved):
                     raise ParityError("tree_alias_forbidden")
-                visit(path)
+                if exclude_cache_bytecode and entry.name == "__pycache__":
+                    visit(path, record=False, in_python_cache=True)
+                else:
+                    visit(path)
                 continue
             if not stat.S_ISREG(named.st_mode):
                 raise ParityError("tree_nonregular_forbidden")
             if named.st_nlink != 1:
                 raise ParityError("tree_hardlink_forbidden")
+            if exclude_cache_bytecode and in_python_cache and entry.name.endswith((".pyc", ".pyo")):
+                continue
             identities.append(_identity(path, root, kind="file", value=named))
             files.append(path)
 
@@ -221,9 +228,13 @@ def _inventory(
 
 
 def _snapshot(
-    root: Path, *, source_projection: bool = False
+    root: Path, *, source_projection: bool = False, cache_projection: bool = False
 ) -> tuple[list[dict[str, Any]], dict[str, bytes]]:
-    before, files = _inventory(root, exclude_source_generated=source_projection)
+    before, files = _inventory(
+        root,
+        exclude_source_generated=source_projection,
+        exclude_cache_bytecode=cache_projection,
+    )
     payloads: dict[str, bytes] = {}
     rows: list[dict[str, Any]] = []
     for path in files:
@@ -236,7 +247,11 @@ def _snapshot(
                 "sha256": hashlib.sha256(raw).hexdigest(),
                 "size": len(raw),
             })
-    after, final_files = _inventory(root, exclude_source_generated=source_projection)
+    after, final_files = _inventory(
+        root,
+        exclude_source_generated=source_projection,
+        exclude_cache_bytecode=cache_projection,
+    )
     if before != after or files != final_files:
         raise ParityError("tree_changed_during_snapshot")
     rows.sort(key=lambda row: row["path"])
@@ -458,7 +473,7 @@ def verify(
         cache_path = _root(cache_root, missing_code="cache_missing")
         if cache_path.name != CANDIDATE_VERSION or cache_path.parent.name != PACKAGE_NAME:
             raise ParityError("cache_name_or_version_mismatch")
-        cache_rows, cache_payloads = _snapshot(cache_path)
+        cache_rows, cache_payloads = _snapshot(cache_path, cache_projection=True)
         try:
             cache_manifest = cache_payloads[MANIFEST_RELATIVE.as_posix()]
             cache_plugin_raw = cache_payloads[PLUGIN_RELATIVE.as_posix()]

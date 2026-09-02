@@ -1,0 +1,75 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T090
+child_task_id: T090-A01
+attempt_id: T090-A01-A01
+objective: >-
+  Independently audit the merged Orcastrata Max 1.2.0 candidate, its full-suite
+  result, immutable package stage, isolated installation, installed command and
+  hook journey, and security boundary.
+lane_mode: read_only
+runtime_surface: codex_collaboration
+candidate:
+  repository: github.com/Vel-Labs/orcastrata-max
+  merged_main_sha: f77056010b8bf568918f1f8a737fb1c8af6fa886
+  source_commit_sha: b64c9464d02dfb9ff08b44eeec2dd015fecb268e
+  package_version: 1.2.0
+  file_count: 417
+  tree_sha256: 6b202e89d0f2aedb82dc9011661489f8681ae242df52de2c114296bd3b639c1b
+  release_manifest_sha256: ac786a5f905444ae770f16906d130b6b872fa6824cdc2ba877f42d76792b7ecc
+read_first:
+  - docs/goals/orcastrata-aol-github-umbrella-v1/notes/orcastrata-github-umbrella-plan.md
+  - docs/goals/orcastrata-aol-github-umbrella-v1/state.yaml
+  - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-guarded-merge-receipt.json
+  - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+  - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+  - plugins/codexmax-orchestrator/GETTING_STARTED.md
+  - plugins/codexmax-orchestrator/hooks/hooks.json
+  - plugins/codexmax-orchestrator/hooks/orcastrata_context.py
+  - tests/test_orcastrata_native_interface.py
+validation_evidence:
+  - command: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests
+    result: pass
+    tests: 118
+    runtime_seconds: 3.335
+  - command: verify_release_parity.py verify against source, immutable stage, and installed cache
+    result: pass
+    file_count: 417
+  - command: isolated codex plugin marketplace add, plugin add, and plugin list
+    result: pass
+    installed: true
+    enabled: true
+    installed_version: 1.2.0
+  - command: installed command inventory and installed SessionStart and SubagentStart hook calls
+    result: pass
+    installed_command_count: 11
+    malformed_hook_result: '{}'
+  - command: post-journey source, immutable-stage, and installed-cache parity with ten generated __pycache__ bytecode files present
+    result: pass
+    file_count: 417
+repair_evidence:
+  attempt_id: T090-W01-R01
+  initial_audit_verdict: REVISE
+  initial_finding: Installed runtime smoke generated ten __pycache__ bytecode files and invalidated cache parity.
+  repair: Ignore only generated .pyc and .pyo files inside __pycache__; preserve visibility of other files and reject standalone bytecode.
+  focused_tests: 5
+  regression_result: pass
+measurement:
+  full_suite_runtime_seconds: 3.335
+  input_tokens: unknown
+  cached_input_tokens: unknown
+  output_tokens: unknown
+  reasoning_tokens: unknown
+  cost: unknown
+  reason: The local validators and plugin lifecycle do not expose model usage counters and no provider-backed task was run.
+  ponytail_benchmark_boundary: Published medians are not a per-repository measurement.
+questions:
+  - Does merged main contain the exact accepted package candidate?
+  - Do full-suite, immutable-stage, installed-cache, command inventory, and hook evidence support standalone local acceptance?
+  - Did the journey avoid credentials, providers, GitHub writes, schedules, AOL, publication, deployment, repository settings, and unrelated repositories?
+  - Are token and cost unknowns reported honestly rather than inferred?
+  - Is any material package, security, consumer, or end-to-end gap still present within the stated provider-free proof boundary?
+forbidden_actions:
+  - Any file write, network, GitHub or Git effect, acceptance mutation, credential access, provider, AOL, schedule, deployment, release, or installation.
+result:
+  - Return ACCEPT, REVISE, or BLOCKED with typed findings, exact evidence, required action, and proof boundary.

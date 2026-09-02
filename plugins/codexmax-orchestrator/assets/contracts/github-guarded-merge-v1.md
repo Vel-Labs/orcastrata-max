@@ -3,18 +3,22 @@
 `github_guarded_merge.py` owns one exact pull-request merge seam for
 `github.com/Vel-Labs/orcastrata-max`.
 
-The CLI accepts one absolute, non-symlink execution directory. That directory
-contains fixed names for the request, state, GoalBuddy state, independent audit,
-and merge lock. The request binds the exact byte digests of the two evidence
-files. It cannot select an arbitrary filesystem path.
+The CLI accepts one absolute, non-symlink execution directory and one canonical
+`TNNN` task identifier. `T080` is the default for compatibility. The task
+identifier can contain only `T` and exactly three digits. The adapter derives
+`notes/<lower-task>-effects/` for the request, state, independent audit, and
+merge lock. It derives
+`notes/<lower-task>-audit-runtime-projection.final.json` for the auditor
+projection. The request binds the exact byte digests of the two evidence files.
+The caller cannot select an arbitrary filesystem path.
 
 The adapter uses the existing GoalBuddy parser and calls its canonical schema
-and invariant validator. It requires T080 to be active and every canonical
-dependency to be done with an approved, passing receipt.
-It hashes and validates a separate T080 audit artifact from the exact bounded
+and invariant validator. It requires the selected task to be active and every
+canonical dependency of that task to be done with an approved, passing receipt.
+It hashes and validates a separate task audit artifact from the exact bounded
 read-only auditor identity and Codex collaboration runtime. The request also
 binds the exact byte digest of the canonical auditor runtime projection. The
-projection must identify T080-A01, the same runtime child, the collaboration
+projection must identify `<task>-A01`, the same runtime child, the collaboration
 surface, the independent-auditor role, and no provider dispatch.
 The audit must bind the same board digest, pull-request number, base SHA, head
 SHA, complete filename digest, and file count. Request assertions alone cannot

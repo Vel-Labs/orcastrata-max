@@ -22,6 +22,7 @@ STATE_TYPE = "orcastrata_github_guarded_merge_state_v1"
 AUDIT_TYPE = "orcastrata_github_merge_independent_audit_v1"
 HOST = "github.com"
 REPOSITORY = "Vel-Labs/orcastrata-max"
+DEFAULT_TASK_ID = "T080"
 REQUEST_NAME = "notes/t080-effects/merge-request.json"
 STATE_NAME = "notes/t080-effects/merge-state.json"
 AUDIT_NAME = "notes/t080-effects/independent-audit.json"
@@ -32,12 +33,26 @@ SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
 DIGEST_RE = re.compile(r"sha256:[0-9a-f]{64}\Z")
 MARKER_RE = re.compile(r"orcastrata:lifecycle:[A-Za-z0-9][A-Za-z0-9._-]{0,199}:issue:[1-9][0-9]*\Z")
 AUDITOR_RE = re.compile(r"/[A-Za-z0-9][A-Za-z0-9._/-]{0,254}\Z")
+TASK_ID_RE = re.compile(r"T[0-9]{3}\Z")
 
 
 class MergeError(ValueError):
     def __init__(self, code: str) -> None:
         super().__init__(code)
         self.code = code
+
+
+def _task_artifacts(value: Any) -> tuple[str, str, str, str, str]:
+    if not isinstance(value, str) or TASK_ID_RE.fullmatch(value) is None:
+        raise MergeError("task_id_invalid")
+    effects = f"notes/{value.lower()}-effects"
+    return (
+        value,
+        f"{effects}/merge-request.json",
+        f"{effects}/merge-state.json",
+        f"{effects}/independent-audit.json",
+        f"notes/{value.lower()}-audit-runtime-projection.final.json",
+    )
 
 
 def _module(name: str, filename: str) -> Any:
@@ -135,10 +150,10 @@ def _read_regular(path: Path, label: str) -> bytes:
         raise MergeError(f"{label}_invalid") from exc
 
 
-def _load_request(root: Path) -> dict[str, Any]:
+def _load_request(root: Path, name: str = REQUEST_NAME) -> dict[str, Any]:
     try:
         return _request(json.loads(
-            _read_regular(root / REQUEST_NAME, "merge_request").decode("utf-8"),
+            _read_regular(root / name, "merge_request").decode("utf-8"),
             object_pairs_hook=github._pairs,
         ))
     except (UnicodeDecodeError, json.JSONDecodeError, github.GithubReadError) as exc:
@@ -155,8 +170,8 @@ def _state(request: Mapping[str, Any], status: str, merge_commit_sha: str | None
     }
 
 
-def _load_state(root: Path, request: Mapping[str, Any]) -> dict[str, Any] | None:
-    path = root / STATE_NAME
+def _load_state(root: Path, request: Mapping[str, Any], name: str = STATE_NAME) -> dict[str, Any] | None:
+    path = root / name
     if not path.exists():
         return None
     try:
@@ -176,8 +191,8 @@ def _load_state(root: Path, request: Mapping[str, Any]) -> dict[str, Any] | None
     return value
 
 
-def _state_requires_reconciliation_hint(root: Path) -> bool:
-    path = root / STATE_NAME
+def _state_requires_reconciliation_hint(root: Path, name: str = STATE_NAME) -> bool:
+    path = root / name
     if not path.exists():
         return False
     try:
@@ -193,10 +208,17 @@ def _state_requires_reconciliation_hint(root: Path) -> bool:
     return value["status"] in {"effect_started", "unknown"}
 
 
-def _load_evidence(root: Path, request: Mapping[str, Any]) -> None:
+def _load_evidence(
+    root: Path,
+    request: Mapping[str, Any],
+    *,
+    task_id: str = DEFAULT_TASK_ID,
+    audit_name: str = AUDIT_NAME,
+    projection_name: str = AUDITOR_PROJECTION_NAME,
+) -> None:
     board_raw = _read_regular(root / BOARD_NAME, "goalbuddy_state")
-    audit_raw = _read_regular(root / AUDIT_NAME, "independent_audit")
-    projection_raw = _read_regular(root / AUDITOR_PROJECTION_NAME, "auditor_projection")
+    audit_raw = _read_regular(root / audit_name, "independent_audit")
+    projection_raw = _read_regular(root / projection_name, "auditor_projection")
     if _bytes_digest(board_raw) != request["evidence"]["goalbuddy_sha256"]:
         raise MergeError("goalbuddy_digest_mismatch")
     if _bytes_digest(audit_raw) != request["evidence"]["independent_audit_sha256"]:
@@ -214,9 +236,14 @@ def _load_evidence(root: Path, request: Mapping[str, Any]) -> None:
         or snapshot.get("board_sha256") != request["evidence"]["goalbuddy_sha256"]
     ):
         raise MergeError("goalbuddy_state_invalid")
-    if board["active_task"] != "T080" or board["task_statuses"].get("T080") != "active":
+    task = board["tasks"].get(task_id)
+    if (
+        board["active_task"] != task_id
+        or board["task_statuses"].get(task_id) != "active"
+        or not isinstance(task, Mapping)
+    ):
         raise MergeError("goalbuddy_task_binding_mismatch")
-    dependencies = board["tasks"]["T080"]["dependencies"]
+    dependencies = task["dependencies"]
     if not dependencies:
         raise MergeError("dependencies_invalid")
     for dependency in dependencies:
@@ -251,7 +278,7 @@ def _load_evidence(root: Path, request: Mapping[str, Any]) -> None:
         or projection.get("dispatch_performed") is not True
         or projection.get("provider_dispatch") is not False
         or not isinstance(dispatch, Mapping)
-        or dispatch.get("child_task_id") != "T080-A01"
+        or dispatch.get("child_task_id") != f"{task_id}-A01"
         or dispatch.get("runtime_child_id") != request["evidence"]["independent_auditor_id"]
         or dispatch.get("runtime_surface") != "codex_collaboration"
         or dispatch.get("semantic_role") != "independent_auditor"
@@ -279,7 +306,7 @@ def _load_evidence(root: Path, request: Mapping[str, Any]) -> None:
             "runtime_surface": "codex_collaboration",
         }
         or audit["board_sha256"] != request["evidence"]["goalbuddy_sha256"]
-        or audit["task_id"] != "T080"
+        or audit["task_id"] != task_id
         or audit["verdict"] != "ACCEPT"
         or facts != {
             "number": pull["number"],
@@ -292,8 +319,8 @@ def _load_evidence(root: Path, request: Mapping[str, Any]) -> None:
         raise MergeError("independent_audit_binding_mismatch")
 
 
-def _lock(root: Path) -> int:
-    path = root / LOCK_NAME
+def _lock(root: Path, name: str = LOCK_NAME) -> int:
+    path = root / name
     flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(path, flags, 0o600)
@@ -450,7 +477,14 @@ def _failure(code: str, commands: int, *, unknown: bool, attempted: bool) -> dic
     }
 
 
-def execute(execution_directory: Path, *, runner=github._run_command, resolver=github._resolve_gh, environment_source=None) -> dict[str, Any]:
+def execute(
+    execution_directory: Path,
+    *,
+    task_id: str = DEFAULT_TASK_ID,
+    runner=github._run_command,
+    resolver=github._resolve_gh,
+    environment_source=None,
+) -> dict[str, Any]:
     command_count = 0
     effect_prepared = False
     put_started = False
@@ -458,15 +492,23 @@ def execute(execution_directory: Path, *, runner=github._run_command, resolver=g
     descriptor: int | None = None
     try:
         root = _execution_directory(execution_directory)
-        descriptor = _lock(root)
-        pending_reconciliation = _state_requires_reconciliation_hint(root)
-        request = _load_request(root)
-        prior = _load_state(root, request)
+        task_id, request_name, state_name, audit_name, projection_name = _task_artifacts(task_id)
+        lock_name = f"notes/{task_id.lower()}-effects/merge-effect.lock"
+        descriptor = _lock(root, lock_name)
+        pending_reconciliation = _state_requires_reconciliation_hint(root, state_name)
+        request = _load_request(root, request_name)
+        prior = _load_state(root, request, state_name)
         pending_reconciliation = pending_reconciliation or (
             prior is not None and prior["status"] in {"effect_started", "unknown"}
         )
         if not pending_reconciliation:
-            _load_evidence(root, request)
+            _load_evidence(
+                root,
+                request,
+                task_id=task_id,
+                audit_name=audit_name,
+                projection_name=projection_name,
+            )
         executable = resolver()
         environment = github._environment(os.environ if environment_source is None else environment_source)
 
@@ -486,9 +528,9 @@ def execute(execution_directory: Path, *, runner=github._run_command, resolver=g
             _exact_pull(request, pull)
             if pull["merged"]:
                 merge_sha = _sha(pull["merge_commit_sha"], "merged_pull_request_invalid")
-                live._write_state(root / STATE_NAME, _state(request, "bound", merge_sha), initial=False)
+                live._write_state(root / state_name, _state(request, "bound", merge_sha), initial=False)
                 return _receipt("bound", "reconciled_merged", command_count, False, pull)
-            live._write_state(root / STATE_NAME, _state(request, "reconciled_unmerged"), initial=False)
+            live._write_state(root / state_name, _state(request, "reconciled_unmerged"), initial=False)
             return _receipt("ready", "reconciled_unmerged", command_count, False, pull)
         if prior is not None and prior["status"] == "bound":
             pull = _read("readPullRequest", arguments, executable, counted, environment)
@@ -498,21 +540,21 @@ def execute(execution_directory: Path, *, runner=github._run_command, resolver=g
             _sha(pull["merge_commit_sha"], "merged_pull_request_invalid")
             return _receipt("bound", "reconciled_merged", command_count, False, pull)
         _fresh_gates(request, executable, counted, environment)
-        live._write_state(root / STATE_NAME, _state(request, "effect_started"), initial=prior is None)
+        live._write_state(root / state_name, _state(request, "effect_started"), initial=prior is None)
         effect_prepared = True
         final_pull = _read("readPullRequest", arguments, executable, counted, environment)
         _exact_pull(request, final_pull)
         if final_pull["merged"]:
             merge_sha = _sha(final_pull["merge_commit_sha"], "merged_pull_request_invalid")
-            live._write_state(root / STATE_NAME, _state(request, "bound", merge_sha), initial=False)
+            live._write_state(root / state_name, _state(request, "bound", merge_sha), initial=False)
             effect_prepared = False
             return _receipt("bound", "reconciled_merged", command_count, False, final_pull)
         if final_pull["state"].lower() != "open":
-            live._write_state(root / STATE_NAME, _state(request, "reconciled_unmerged"), initial=False)
+            live._write_state(root / state_name, _state(request, "reconciled_unmerged"), initial=False)
             effect_prepared = False
             return _receipt("ready", "reconciled_unmerged", command_count, False, final_pull)
         if final_pull["draft"] or final_pull["mergeable"] is not True or final_pull["mergeable_state"] != "clean":
-            live._write_state(root / STATE_NAME, _state(request, "reconciled_unmerged"), initial=False)
+            live._write_state(root / state_name, _state(request, "reconciled_unmerged"), initial=False)
             effect_prepared = False
             raise MergeError("pre_effect_pull_request_unready")
         endpoint = f"repos/Vel-Labs/orcastrata-max/pulls/{request['pull_request']['number']}/merge"
@@ -525,16 +567,16 @@ def execute(execution_directory: Path, *, runner=github._run_command, resolver=g
             merged = github._mapping(github._json_output(github._invoke(argv, counted, environment)))
         except Exception as exc:
             try:
-                live._write_state(root / STATE_NAME, _state(request, "unknown"), initial=False)
+                live._write_state(root / state_name, _state(request, "unknown"), initial=False)
             except Exception:
                 pass
             raise MergeError("merge_outcome_unknown") from exc
         if merged.get("merged") is not True:
-            live._write_state(root / STATE_NAME, _state(request, "reconciled_unmerged"), initial=False)
+            live._write_state(root / state_name, _state(request, "reconciled_unmerged"), initial=False)
             effect_prepared = False
             raise MergeError("merge_rejected")
         merge_sha = _sha(merged.get("sha"), "merge_outcome_unknown")
-        live._write_state(root / STATE_NAME, _state(request, "bound", merge_sha), initial=False)
+        live._write_state(root / state_name, _state(request, "bound", merge_sha), initial=False)
         effect_prepared = False
         final_pull = dict(final_pull)
         final_pull["merge_commit_sha"] = merge_sha
@@ -555,8 +597,9 @@ def execute(execution_directory: Path, *, runner=github._run_command, resolver=g
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execution-directory", type=Path, required=True)
+    parser.add_argument("--task-id", default=DEFAULT_TASK_ID)
     args = parser.parse_args(argv)
-    receipt = execute(args.execution_directory)
+    receipt = execute(args.execution_directory, task_id=args.task_id)
     print(json.dumps(receipt, sort_keys=True, separators=(",", ":")))
     return 0 if receipt["status"] == "bound" else 2
 

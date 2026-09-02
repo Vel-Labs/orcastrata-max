@@ -56,9 +56,10 @@ sequence. The separate AOL handoff is not an implementation task on this board.
 ## Current Task
 
 <!-- codexmax-current-task:start -->
-T080 is active. T070 passed focused, package, live read, and independent-audit
-gates. PR #12 remains open and unmerged. T080 now adds the narrow guarded-merge
-effect and must re-read every merge gate at the current head before any effect.
+T090 is active. T080 passed local, package, independent-audit, fresh live-gate,
+single-effect, and reconciliation checks. PR #12 merged at `f77056010b8b` and
+linked issue #7 closed. T090 now tests the merged standalone package without
+AOL, publication, deployment, schedules, or external providers.
 Credentials, other repositories, AOL source, external providers,
 schedules, deployments, release publication, auto-merge, force push, history
 rewriting, and repository settings remain forbidden.
@@ -71,7 +72,7 @@ rewriting, and repository settings remain forbidden.
 - Child milestones: T010 plan; T020 admission; T030 reads; T040 umbrella state;
   T050 issues; T060 workers and PRs; T070 audit-full; T080 guarded merge; T090
   dogfood acceptance; T999 closeout.
-- Active milestone: T080.
+- Active milestone: T090.
 - Split triggers: credentials, a second transport, schedules, default merge,
   AOL implementation, or any cross-repository write.
 - Dependencies: T010 -> T020 -> T030 -> T040 -> T050 -> T060 and T070 -> T080 -> T090 -> T999.
@@ -90,8 +91,8 @@ rewriting, and repository settings remain forbidden.
 | T050 | Issue creation and reconciliation | done | T040 | T060, T070 | serial | Orcastrata implementer | T050A local fake-`gh`; exact-repository T050B canary and reconciliation | `t050a-local-simulation-receipt.json`; `t050b-execution-receipt.json` |
 | T060 | Bounded workers and PR lifecycle | done | T050 | T080 | parallel_disjoint_write | One worker per owned branch and path set | PR lifecycle receipts | `t060-pr-lifecycle-receipt.json` |
 | T070 | Scoped audit and audit-full | done | T050 | T080 | independent_gate | Independent auditor | Read-only typed verdicts | `t070-audit-full-receipt.json` |
-| T080 | Explicit guarded merge | active | T060, T070 | T090 | serial | Orcastrata effect executor | Standing operator grant plus fresh per-PR gates | — |
-| T090 | Standalone dogfood acceptance | queued | T080 | T999 | independent_gate | Independent auditor | Package, security, and end-to-end proof | — |
+| T080 | Explicit guarded merge | done | T060, T070 | T090 | serial | Orcastrata effect executor | Standing operator grant plus fresh per-PR gates | `t080-guarded-merge-receipt.json` |
+| T090 | Standalone dogfood acceptance | active | T080 | T999 | independent_gate | Independent auditor | Package, security, and end-to-end proof | — |
 | T999 | Parent lifecycle closeout | queued | T090 | — | serial | Parent/PM | Terminal lifecycle and final checks | — |
 <!-- codexmax-task-ledger:end -->
 
@@ -456,6 +457,12 @@ execution continues. Do not edit frozen provider artifacts.
   ACCEPT. T080 is newly unblocked and active. PR #12 remains unmerged. Its
   COMMENTED review is not approval evidence, so T080 must read repository
   review policy and all other merge gates fresh. T090 and T999 remain blocked.
+- T080 completed after a bounded worker, three changed-hypothesis repairs, a
+  fail-closed protected-branch redesign, 40 consumer tests, 417-file package
+  parity, and independent local and live-gate ACCEPT verdicts. The guarded
+  executor merged only PR #12 at head `b64c9464d02d`; remote `main` reconciled
+  to merge commit `f77056010b8b`, and linked issue #7 closed. T090 is newly
+  unblocked and active. T999 remains blocked.
 
 ## Roadmap-Return Contract
 
