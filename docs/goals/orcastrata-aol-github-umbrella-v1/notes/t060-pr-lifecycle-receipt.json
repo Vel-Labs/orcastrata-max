@@ -2,8 +2,8 @@
   "schema_version": 1,
   "artifact_type": "orcastrata_t060_pr_lifecycle_receipt_v1",
   "task_id": "T060",
-  "status": "candidate_complete",
-  "decision": "local_candidate_accepted_live_pr_pending",
+  "status": "accepted",
+  "decision": "approved",
   "worker": {
     "child_task_id": "T060-W01",
     "runtime_child_id": "/root/t060_pr_lifecycle_worker",
@@ -40,7 +40,24 @@
       "status": "pass"
     }
   ],
-  "live_pull_request": null,
+  "live_pull_request": {
+    "number": 12,
+    "url": "https://github.com/Vel-Labs/orcastrata-max/pull/12",
+    "base": "main",
+    "head": "codex/orcastrata-dynamic-routing-v2",
+    "observed_head_sha": "f453025e2b0f99e4de08e75e83898081b4b90d44",
+    "state": "open",
+    "draft": false,
+    "mergeable": true,
+    "mergeable_state": "clean",
+    "checks": [],
+    "diff_summary": {
+      "status": "ok_after_root_cause_repair",
+      "returned_items": 100,
+      "possibly_more": true,
+      "full_scope_basis": "The remote head SHA equals the exact locally staged commit. The full local diff was staged by explicit board-owned paths and passed git diff --cached --check."
+    }
+  },
   "merge_performed": false,
-  "proof_boundary": "Local fake-runner, consumer, package-parity, and independent-audit proof. The first live pull-request observation is still required before T060 acceptance."
+  "proof_boundary": "Local fake-runner, consumer, package-parity, independent-audit, exact non-force push, pull-request creation, reconciliation, and live read proof. This is T060 acceptance, not a merge gate. CI, reviews, and every T080 gate must be read fresh."
 }

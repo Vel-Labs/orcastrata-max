@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`scripts/github_cli_read.py` exposes seven read-only GitHub operations through
+`scripts/github_cli_read.py` exposes eight read-only GitHub operations through
 the installed local `gh` CLI. It is a standalone Orcastrata surface. It has no
 AOL dependency.
 
@@ -24,6 +24,7 @@ Operations are closed:
 - `readIssue`: `host`, `repository`, positive `number`;
 - `readPullRequest`: `host`, `repository`, positive `number`;
 - `listPullRequestChecks`: `host`, `repository`, positive `number`;
+- `listPullRequestReviews`: `host`, `repository`, positive `number`;
 - `readPullRequestDiffSummary`: `host`, `repository`, positive `number`.
 
 ## Execution Boundary
@@ -48,6 +49,17 @@ a stable error code and path. They do not contain raw command output.
 
 List receipts include their item limit and `possibly_more`. A bounded first
 page never claims complete repository coverage when another page can exist.
+Pull-request review reads use complete CLI pagination and project only the
+state, commit SHA, reviewer login, and submitted time. They never return review
+bodies. Issue reads return only valid Orcastrata umbrella and issue marker
+identities, never the issue body. Malformed or duplicate marker identities fail
+closed.
+
+Pull-request diff reads also use complete CLI pagination. They retain at most
+100 metadata rows and report `total_count` plus `filenames_sha256`. The digest
+is SHA-256 over canonical JSON for the complete sorted unique filename list.
+Duplicate filenames, incomplete CLI pagination, malformed projected rows, and
+output-limit failures fail closed.
 
 Capability and read receipts prove only point-in-time access. They do not grant
 GitHub write authority, GoalBuddy acceptance, merge authority, billing

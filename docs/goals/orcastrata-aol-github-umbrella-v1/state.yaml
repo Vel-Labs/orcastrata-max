@@ -61,7 +61,7 @@ agents:
   worker: installed
   judge: installed
 
-active_task: T060
+active_task: T080
 
 tasks:
   - id: T010
@@ -254,7 +254,7 @@ tasks:
   - id: T060
     type: worker
     assignee: Worker
-    status: active
+    status: done
     objective: "Implement bounded issue workers, branch guards, PR monitoring, and repair routing."
     dependencies:
       - T050
@@ -262,10 +262,14 @@ tasks:
       - "Issue-to-PR execution with bounded context and no merge authority"
     allowed_files:
       - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+      - plugins/codexmax-orchestrator/scripts/github_cli_read.py
       - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
       - tests/test_github_pr_lifecycle.py
+      - tests/test_github_cli_read.py
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-worker-packet.yaml
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-live-read-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-live-read-repair-r2-packet.yaml
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-runtime-projection.pre-spawn.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-runtime-projection.final.json
       - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-audit-runtime-projection.pre-spawn.json
@@ -281,27 +285,130 @@ tasks:
       - "A force push, merge, schedule, arbitrary gh command, credential access, external provider, AOL change, or unrelated GitHub object is required."
       - "A pull-request create outcome is unknown and cannot be reconciled before retry."
       - "CI or review findings require work outside the same lease, branch, and file scope."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/scripts/github_pr_lifecycle.py
+        - plugins/codexmax-orchestrator/assets/contracts/github-pr-lifecycle-v1.md
+        - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+        - tests/test_github_pr_lifecycle.py
+        - tests/test_github_cli_read.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t060-pr-lifecycle-receipt.json
+      commands:
+        - command: "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+        - command: "git push origin HEAD:refs/heads/codex/orcastrata-dynamic-routing-v2"
+          status: pass
+        - command: "gh pr create --repo Vel-Labs/orcastrata-max --base main --head codex/orcastrata-dynamic-routing-v2"
+          status: pass
+        - command: "github_cli_read.py readPullRequest, listPullRequestChecks, and repaired readPullRequestDiffSummary for PR 12"
+          status: pass
+      summary: >-
+        One bounded native worker produced the closed PR lifecycle. Independent
+        audit forced exact state, SHA, issue, and lifecycle binding repairs.
+        Twenty-eight focused and consumer tests passed. Package parity passed.
+        The exact branch was pushed without force and PR 12 was created and
+        reconciled. A live 117-file diff exposed and verified the bounded
+        metadata-read repair. No merge occurred.
 
   - id: T070
     type: judge
     assignee: Judge
-    status: queued
+    status: done
     objective: "Implement scoped audit and the distinct read-only /orcastrata-audit-full command."
     dependencies:
       - T050
     expected_output:
       - "Independent issue, PR, and umbrella verdict receipts"
+    allowed_files:
+      - plugins/codexmax-orchestrator/commands/orcastrata-audit-full.toml
+      - plugins/codexmax-orchestrator/skills/codexmax-audit-full/SKILL.md
+      - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+      - tests/test_github_cli_read.py
+      - tests/test_orcastrata_native_interface.py
+      - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-worker-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-read-repair-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-full-receipt.json
+    verify:
+      - "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_orcastrata_native_interface"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "The command would mutate GitHub, Git, GoalBuddy, WorkGraph, source, receipts, schedules, providers, AOL, or acceptance state."
+      - "The full audit would replace Parent acceptance instead of returning ACCEPT, REVISE, or BLOCKED advice."
+      - "The implementation duplicates existing focused verify logic instead of composing it."
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      changed_files:
+        - plugins/codexmax-orchestrator/commands/orcastrata-audit-full.toml
+        - plugins/codexmax-orchestrator/skills/codexmax-audit-full/SKILL.md
+        - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+        - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+        - plugins/codexmax-orchestrator/.codex-plugin/plugin.json
+        - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+        - tests/test_github_cli_read.py
+        - tests/test_orcastrata_native_interface.py
+        - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t070-audit-full-receipt.json
+      commands:
+        - command: "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface"
+          status: pass
+        - command: "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+          status: pass
+        - command: "git diff --check"
+          status: pass
+      summary: >-
+        The new audit-full command composes existing evidence without mutation.
+        Independent review forced complete PR-scope identity, normalized issue
+        markers, closed review reads, and a duplicate-marker regression check.
+        Thirty focused tests and 415-file package parity passed. The final
+        independent verdict was ACCEPT. Merge gates remain a T080 concern.
 
   - id: T080
     type: worker
     assignee: Worker
-    status: queued
+    status: active
     objective: "Implement optional explicit guarded merge and unknown-outcome recovery."
     dependencies:
       - T060
       - T070
     expected_output:
-      - "User-confirmed merge with current-state gates and no auto-merge"
+      - "Standing-authority merge with current-state gates, reconciliation, and no auto-merge"
+    allowed_files:
+      - plugins/codexmax-orchestrator/scripts/github_guarded_merge.py
+      - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+      - plugins/codexmax-orchestrator/assets/contracts/github-guarded-merge-v1.md
+      - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+      - plugins/codexmax-orchestrator/.codex-plugin/release-manifest.json
+      - tests/test_github_guarded_merge.py
+      - tests/test_github_cli_read.py
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-worker-packet.yaml
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-audit-runtime-projection.pre-spawn.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-audit-runtime-projection.final.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-guarded-merge-receipt.json
+      - docs/goals/orcastrata-aol-github-umbrella-v1/notes/t080-effects/
+    verify:
+      - "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_guarded_merge tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface"
+      - "python3 plugins/codexmax-orchestrator/scripts/verify_release_parity.py verify --source-root /Users/steven/Workspace/40_Code/_worktrees/orcastrata-dynamic-routing-v2/plugins/codexmax-orchestrator"
+    stop_if:
+      - "The exact repository, authenticated identity, permission, pull request, base SHA, head SHA, dependency, scope digest, conflict state, required checks, required review policy, or independent audit is missing, stale, failed, or ambiguous."
+      - "The implementation would use auto-merge, force push, history rewriting, schedules, arbitrary gh commands, repository settings, secrets, another repository, AOL, or external providers."
+      - "The effect would merge an unrelated or non-board-created pull request."
+      - "A merge outcome is unknown and cannot be reconciled before retry."
+      - "The pull request has an unresolved merge conflict, scope overlap, or required gate failure."
 
   - id: T090
     type: judge

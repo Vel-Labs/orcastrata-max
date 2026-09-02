@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -22,6 +23,7 @@ RECEIPT_TYPE = "orcastrata_github_read_receipt_v1"
 OPERATIONS = (
     "listIssues",
     "listPullRequestChecks",
+    "listPullRequestReviews",
     "probeCapability",
     "readIssue",
     "readPullRequest",
@@ -35,6 +37,7 @@ ARGUMENT_FIELDS = {
     "readIssue": {"host", "repository", "number"},
     "readPullRequest": {"host", "repository", "number"},
     "listPullRequestChecks": {"host", "repository", "number"},
+    "listPullRequestReviews": {"host", "repository", "number"},
     "readPullRequestDiffSummary": {"host", "repository", "number"},
 }
 HOST_RE = re.compile(
@@ -52,6 +55,15 @@ MAX_STDOUT_BYTES = 512 * 1024
 MAX_STDERR_BYTES = 64 * 1024
 TIMEOUT_SECONDS = 20.0
 MAX_ITEMS = 100
+DIFF_SUMMARY_JQ = (
+    ".[] | {filename, status, additions, deletions, changes}"
+)
+REVIEW_SUMMARY_JQ = (
+    ".[] | {state, commit_id, reviewer: .user.login, submitted_at}"
+)
+MARKER_RE = re.compile(
+    r"<!-- (orcastrata:(?:umbrella|issue):v1:[0-9a-f]{20}) -->"
+)
 TOKEN_OVERRIDES = {
     "GH_TOKEN",
     "GITHUB_TOKEN",
@@ -290,6 +302,20 @@ def _json_output(raw: bytes) -> Any:
         raise GithubReadError("gh_response_invalid") from exc
 
 
+def _json_lines(raw: bytes) -> list[Any]:
+    if len(raw) > MAX_STDOUT_BYTES:
+        raise GithubReadError("gh_output_limit_exceeded")
+    if not raw:
+        return []
+    lines = raw.splitlines()
+    if any(not line for line in lines):
+        raise GithubReadError("gh_response_invalid")
+    try:
+        return [_loads(line) for line in lines]
+    except GithubReadError as exc:
+        raise GithubReadError("gh_response_invalid") from exc
+
+
 def _text(value: Any, *, maximum: int = 512) -> str:
     if (
         not isinstance(value, str)
@@ -336,8 +362,14 @@ def _issue(value: Any) -> dict[str, Any]:
     item = _mapping(value)
     labels = item.get("labels", [])
     assignees = item.get("assignees", [])
-    if not isinstance(labels, list) or not isinstance(assignees, list):
+    body = item.get("body")
+    if body is None:
+        body = ""
+    if not isinstance(labels, list) or not isinstance(assignees, list) or not isinstance(body, str):
         raise GithubReadError("gh_response_invalid")
+    markers = MARKER_RE.findall(body)
+    if "<!-- orcastrata:" in MARKER_RE.sub("", body) or len(markers) != len(set(markers)):
+        raise GithubReadError("github_marker_invalid")
     return {
         "assignees": [
             _text(_mapping(entry).get("login"), maximum=100) for entry in assignees[:MAX_ITEMS]
@@ -346,6 +378,7 @@ def _issue(value: Any) -> dict[str, Any]:
         "labels": [
             _text(_mapping(entry).get("name"), maximum=100) for entry in labels[:MAX_ITEMS]
         ],
+        "orcastrata_markers": markers,
         "number": _integer(item.get("number")),
         "state": _text(item.get("state"), maximum=32),
         "title": _text(item.get("title"), maximum=1024),
@@ -377,6 +410,37 @@ def _api(executable: str, host: str, endpoint: str, *fields: tuple[str, Any]) ->
     for key, value in fields:
         argv.extend(("-f", f"{key}={value}"))
     return argv
+
+
+def _diff_summary_argv(executable: str, host: str, endpoint: str) -> list[str]:
+    return [
+        executable, "api", "--hostname", host, "--method", "GET",
+        "--paginate", "--jq", DIFF_SUMMARY_JQ, endpoint,
+        "-f", f"per_page={MAX_ITEMS}",
+    ]
+
+
+def _review_summary_argv(executable: str, host: str, endpoint: str) -> list[str]:
+    return [
+        executable, "api", "--hostname", host, "--method", "GET",
+        "--paginate", "--jq", REVIEW_SUMMARY_JQ, endpoint,
+        "-f", f"per_page={MAX_ITEMS}",
+    ]
+
+
+def _review(value: Any) -> dict[str, Any]:
+    item = _mapping(value)
+    if set(item) != {"commit_id", "reviewer", "state", "submitted_at"}:
+        raise GithubReadError("gh_response_invalid")
+    commit_sha = item["commit_id"]
+    if not isinstance(commit_sha, str) or not SHA_RE.fullmatch(commit_sha):
+        raise GithubReadError("gh_response_invalid")
+    return {
+        "commit_sha": commit_sha,
+        "reviewer": _text(item["reviewer"], maximum=100),
+        "state": _text(item["state"], maximum=64),
+        "submitted_at": _text(item["submitted_at"], maximum=64),
+    }
 
 
 def _operate(
@@ -454,24 +518,49 @@ def _operate(
             "limit": MAX_ITEMS,
             "possibly_more": total > len(items),
         }, 2
-    if operation == "readPullRequestDiffSummary":
-        raw = _json_output(_invoke(_api(
-            executable, host, f"{repository_endpoint}/pulls/{arguments['number']}/files",
-            ("per_page", MAX_ITEMS), ("page", 1),
+    if operation == "listPullRequestReviews":
+        raw = _json_lines(_invoke(_review_summary_argv(
+            executable, host,
+            f"{repository_endpoint}/pulls/{arguments['number']}/reviews",
         ), runner, environment))
-        if not isinstance(raw, list):
-            raise GithubReadError("gh_response_invalid")
-        items = [{
-            "additions": _integer(_mapping(item).get("additions")),
-            "changes": _integer(_mapping(item).get("changes")),
-            "deletions": _integer(_mapping(item).get("deletions")),
-            "filename": _text(_mapping(item).get("filename"), maximum=1024),
-            "status": _text(_mapping(item).get("status"), maximum=32),
-        } for item in raw[:MAX_ITEMS]]
+        items = [_review(value) for value in raw]
         return {
+            "items": items[:MAX_ITEMS],
+            "limit": MAX_ITEMS,
+            "possibly_more": len(items) > MAX_ITEMS,
+            "total_count": len(items),
+        }, 1
+    if operation == "readPullRequestDiffSummary":
+        raw = _json_lines(_invoke(_diff_summary_argv(
+            executable, host, f"{repository_endpoint}/pulls/{arguments['number']}/files",
+        ), runner, environment))
+        items = []
+        filenames = []
+        for value in raw:
+            item = _mapping(value)
+            if set(item) != {"additions", "changes", "deletions", "filename", "status"}:
+                raise GithubReadError("gh_response_invalid")
+            normalized = {
+                "additions": _integer(item["additions"]),
+                "changes": _integer(item["changes"]),
+                "deletions": _integer(item["deletions"]),
+                "filename": _text(item["filename"], maximum=1024),
+                "status": _text(item["status"], maximum=32),
+            }
+            filenames.append(normalized["filename"])
+            if len(items) < MAX_ITEMS:
+                items.append(normalized)
+        if len(filenames) != len(set(filenames)):
+            raise GithubReadError("github_diff_filename_duplicate")
+        filenames_sha256 = "sha256:" + hashlib.sha256(json.dumps(
+            sorted(filenames), ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")).hexdigest()
+        return {
+            "filenames_sha256": filenames_sha256,
             "items": items,
             "limit": MAX_ITEMS,
-            "possibly_more": len(raw) >= MAX_ITEMS,
+            "possibly_more": len(filenames) > MAX_ITEMS,
+            "total_count": len(filenames),
         }, 1
     raise GithubReadError("operation_unsupported")
 

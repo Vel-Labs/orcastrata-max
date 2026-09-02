@@ -17,6 +17,7 @@ COMMANDS = {
     "orcastrata-route": "codexmax-route",
     "orcastrata-supervise": "codexmax-supervise",
     "orcastrata-audit": "codexmax-verify",
+    "orcastrata-audit-full": "codexmax-audit-full",
     "orcastrata-closeout": "codexmax-closeout",
     "orcastrata-config": "codexmax-config",
     "orcastrata-loop": "codexmax-loop",
@@ -26,7 +27,7 @@ COMMANDS = {
 class OrcastrataNativeInterfaceTests(unittest.TestCase):
     def test_commands_are_thin_aliases_to_existing_skills(self):
         paths = sorted((PLUGIN / "commands").glob("*.toml"))
-        self.assertEqual([path.stem for path in paths], sorted(COMMANDS))
+        self.assertEqual(sorted(path.stem for path in paths), sorted(COMMANDS))
         for path in paths:
             command = tomllib.loads(path.read_text(encoding="utf-8"))
             prompt = command["prompt"]
@@ -34,6 +35,15 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
             self.assertEqual(tokens, [f"$codexmax-orchestrator:{COMMANDS[path.stem]}"])
             self.assertIn("{{args}}", prompt)
             self.assertTrue((PLUGIN / "skills" / COMMANDS[path.stem] / "SKILL.md").is_file())
+
+    def test_audit_full_is_advisory_and_read_only(self):
+        focused = (PLUGIN / "commands/orcastrata-audit.toml").read_text(encoding="utf-8")
+        full = (PLUGIN / "skills/codexmax-audit-full/SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("codexmax-verify", focused)
+        for verdict in ("`ACCEPT`", "`REVISE`", "`BLOCKED`"):
+            self.assertIn(verdict, full)
+        for boundary in ("read-only", "Only the Parent can accept", "Never repair"):
+            self.assertIn(boundary, full)
 
     def test_manifest_wires_the_native_hook(self):
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))

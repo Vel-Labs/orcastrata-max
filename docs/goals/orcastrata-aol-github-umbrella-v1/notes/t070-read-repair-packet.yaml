@@ -1,0 +1,21 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T070
+child_task_id: T070-W01-R01
+attempt_id: T070-W01-A02
+objective: "Close the three read-only evidence gaps found by the first audit-full dogfood."
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - plugins/codexmax-orchestrator/assets/contracts/github-cli-read-v1.md
+  - tests/test_github_cli_read.py
+required_repairs:
+  - Add one closed read-only pull-request review operation with bounded normalized state, commit SHA, reviewer login, and submitted time. Do not return review bodies.
+  - Extract only stable Orcastrata marker identities from issue bodies in existing issue reads. Do not return raw issue bodies.
+  - For the fully parsed paginated PR file metadata, return total_count and a deterministic SHA-256 digest over the complete sorted unique filename set while retaining at most 100 item rows.
+  - Fail closed on duplicate filenames, malformed markers, incomplete pagination, or output limits.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+forbidden_actions:
+  - GitHub mutation, raw issue/review bodies, arbitrary commands, credentials, output-limit increase, providers, AOL, merge, comments, schedules, board changes, or acceptance.
+stop_if:
+  - The evidence cannot remain inside the existing closed read adapter and three writable files.

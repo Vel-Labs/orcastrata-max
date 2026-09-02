@@ -1,0 +1,26 @@
+schema_version: 1
+goal_id: orcastrata-aol-github-umbrella-v1
+task_id: T060
+child_task_id: T060-W01-R02
+attempt_id: T060-W01-A03
+objective: >-
+  Repair the live PR diff-summary read so gh emits only bounded file metadata
+  before Orcastrata reads stdout.
+write_scope:
+  - plugins/codexmax-orchestrator/scripts/github_cli_read.py
+  - tests/test_github_cli_read.py
+observed_failure:
+  operation: readPullRequestDiffSummary
+  pull_request: 12
+  code: gh_output_limit_exceeded
+  cause: "The REST response included full patch bodies before local normalization."
+required_repair:
+  - Use one fixed read-only gh command that paginates and projects only filename, status, additions, deletions, and changes before output reaches Orcastrata.
+  - Preserve the closed operation, exact repository binding, cleaned environment, limits, and normalized receipt shape.
+  - Add one exact-argv regression check and retain existing failure tests.
+verify:
+  - PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_github_cli_read tests.test_github_pr_lifecycle tests.test_github_issue_live tests.test_orcastrata_native_interface
+forbidden_actions:
+  - Any other writable file, GitHub mutation, arbitrary command, credential access, provider, merge, comment, AOL, schedule, deployment, or acceptance claim.
+stop_if:
+  - The bounded projection cannot prove pagination completeness or requires weakening output limits.

@@ -21,7 +21,8 @@
     "defaultPrompt": [
       "Orchestrate — Use /orcastrata-orchestrate for native-first work and optional account setup.",
       "Discover — Use /orcastrata-discover for evidence-backed directions for this repository.",
-      "Audit — Use /orcastrata-audit to audit completed work against its evidence."
+      "Audit — Use /orcastrata-audit for focused verification.",
+      "Audit Full — Use /orcastrata-audit-full for the read-only umbrella gate."
     ]
   }
 }

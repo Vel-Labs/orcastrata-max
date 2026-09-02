@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -41,6 +42,10 @@ def result(value=b"{}", *, returncode=0, timed_out=False, exceeded=None, stderr=
     }
 
 
+def json_lines(values):
+    return b"".join(json.dumps(value, separators=(",", ":")).encode() + b"\n" for value in values)
+
+
 class QueueRunner:
     def __init__(self, *responses):
         self.responses = list(responses)
@@ -71,6 +76,7 @@ class GithubCliReadTests(unittest.TestCase):
         }
         issue = {
             "assignees": [{"login": "octo"}],
+            "body": "<!-- orcastrata:issue:v1:" + "c" * 20 + " -->\nDetails",
             "closed_at": None,
             "labels": [{"name": "bug"}],
             "number": 7,
@@ -96,7 +102,8 @@ class GithubCliReadTests(unittest.TestCase):
             ("readIssue", {"number": 7}, [result(issue)], 1),
             ("readPullRequest", {"number": 9}, [result(pull)], 1),
             ("listPullRequestChecks", {"number": 9}, [result(pull), result({"total_count": 1, "check_runs": [{"app": {"name": "CI"}, "conclusion": "success", "name": "test", "status": "completed"}]})], 2),
-            ("readPullRequestDiffSummary", {"number": 9}, [result([{"additions": 2, "changes": 3, "deletions": 1, "filename": "src/app.py", "status": "modified"}])], 1),
+            ("listPullRequestReviews", {"number": 9}, [result(json_lines([{"commit_id": "b" * 40, "reviewer": "reviewer", "state": "APPROVED", "submitted_at": "2026-09-01T01:00:00Z"}]))], 1),
+            ("readPullRequestDiffSummary", {"number": 9}, [result(json_lines([{"additions": 2, "changes": 3, "deletions": 1, "filename": "src/app.py", "status": "modified"}]))], 1),
         ]
         for operation, arguments, responses, count in cases:
             with self.subTest(operation=operation):
@@ -108,8 +115,19 @@ class GithubCliReadTests(unittest.TestCase):
                 self.assertNotIn("stdout", receipt)
                 self.assertNotIn("stderr", receipt)
                 self.assert_read_only(runner.calls)
-                if operation in {"listIssues", "listPullRequestChecks", "readPullRequestDiffSummary"}:
+                if operation in {"listIssues", "listPullRequestChecks"}:
                     self.assertEqual(set(receipt["data"]), {"items", "limit", "possibly_more"})
+                if operation == "listPullRequestReviews":
+                    self.assertEqual(receipt["data"]["items"][0], {
+                        "commit_sha": "b" * 40,
+                        "reviewer": "reviewer",
+                        "state": "APPROVED",
+                        "submitted_at": "2026-09-01T01:00:00Z",
+                    })
+                if operation == "readIssue":
+                    self.assertEqual(receipt["data"]["orcastrata_markers"], [
+                        "orcastrata:issue:v1:" + "c" * 20
+                    ])
         self.assertEqual(cases[0][2][0]["stdout"], b"auth detail")
 
     def test_exact_target_argv_and_environment_are_bound(self):
@@ -143,6 +161,79 @@ class GithubCliReadTests(unittest.TestCase):
         self.assertEqual(environment["GH_CONFIG_DIR"], "/safe/gh")
         self.assertEqual(environment["GH_PROMPT_DISABLED"], "1")
         self.assertFalse(set(environment) & {"GH_TOKEN", "GITHUB_TOKEN", "GH_HOST", "UNRELATED_SECRET"})
+
+    def test_diff_summary_paginates_and_projects_before_bounded_stdout(self):
+        rows = [{
+            "additions": index, "changes": index, "deletions": 0,
+            "filename": f"src/{index}.py", "status": "modified",
+        } for index in range(101)]
+        rows[0]["filename"] = 'src/quoted"\\name.py'
+        runner = QueueRunner(result(json_lines(rows)))
+        receipt = self.execute(request("readPullRequestDiffSummary", number=12), runner)
+        self.assertEqual(receipt["status"], "ok")
+        self.assertEqual(len(receipt["data"]["items"]), 100)
+        self.assertTrue(receipt["data"]["possibly_more"])
+        self.assertEqual(receipt["data"]["total_count"], 101)
+        expected_digest = "sha256:" + hashlib.sha256(json.dumps(
+            sorted(row["filename"] for row in rows),
+            ensure_ascii=False, separators=(",", ":"),
+        ).encode()).hexdigest()
+        self.assertEqual(receipt["data"]["filenames_sha256"], expected_digest)
+        self.assertEqual(receipt["data"]["items"][0]["filename"], 'src/quoted"\\name.py')
+        self.assertEqual(runner.calls[0][0], [
+            "/trusted/gh", "api", "--hostname", "github.com", "--method", "GET",
+            "--paginate", "--jq",
+            ".[] | {filename, status, additions, deletions, changes}",
+            "repos/Vel-Labs/orcastrata-max/pulls/12/files", "-f", "per_page=100",
+        ])
+        self.assert_read_only(runner.calls)
+
+        malformed = QueueRunner(result(
+            b'{"filename":"a","filename":"b","status":"modified","additions":1,"deletions":0,"changes":1}\n'
+        ))
+        receipt = self.execute(request("readPullRequestDiffSummary", number=12), malformed)
+        self.assertEqual(receipt["error"]["code"], "gh_response_invalid")
+
+        duplicate = QueueRunner(result(json_lines([rows[1], rows[1]])))
+        receipt = self.execute(request("readPullRequestDiffSummary", number=12), duplicate)
+        self.assertEqual(receipt["error"]["code"], "github_diff_filename_duplicate")
+
+    def test_issue_markers_and_review_projection_fail_closed(self):
+        issue = {
+            "assignees": [], "body": "<!-- orcastrata:issue:v1:not-a-digest -->",
+            "closed_at": None, "labels": [], "number": 7, "state": "open",
+            "title": "Malformed marker", "updated_at": "2026-09-01T00:00:00Z",
+        }
+        receipt = self.execute(request("readIssue", number=7), QueueRunner(result(issue)))
+        self.assertEqual(receipt["error"]["code"], "github_marker_invalid")
+
+        marker = "<!-- orcastrata:issue:v1:" + "c" * 20 + " -->"
+        issue["body"] = marker + "\nprivate body\n" + marker
+        receipt = self.execute(request("readIssue", number=7), QueueRunner(result(issue)))
+        self.assertEqual(receipt["error"]["code"], "github_marker_invalid")
+        self.assertNotIn("private body", json.dumps(receipt))
+
+        review_with_body = QueueRunner(result(json_lines([{
+            "body": "must not pass", "commit_id": "b" * 40, "reviewer": "octo",
+            "state": "APPROVED", "submitted_at": "2026-09-01T01:00:00Z",
+        }])))
+        receipt = self.execute(request("listPullRequestReviews", number=9), review_with_body)
+        self.assertEqual(receipt["error"]["code"], "gh_response_invalid")
+        self.assertNotIn("must not pass", json.dumps(receipt))
+
+        runner = QueueRunner(result(json_lines([{
+            "commit_id": "b" * 40, "reviewer": "octo", "state": "APPROVED",
+            "submitted_at": "2026-09-01T01:00:00Z",
+        }])))
+        receipt = self.execute(request("listPullRequestReviews", number=9), runner)
+        self.assertEqual(receipt["status"], "ok")
+        self.assertEqual(runner.calls[0][0], [
+            "/trusted/gh", "api", "--hostname", "github.com", "--method", "GET",
+            "--paginate", "--jq",
+            ".[] | {state, commit_id, reviewer: .user.login, submitted_at}",
+            "repos/Vel-Labs/orcastrata-max/pulls/9/reviews", "-f", "per_page=100",
+        ])
+        self.assert_read_only(runner.calls)
 
     def test_probe_uses_active_auth_without_exposing_auth_output(self):
         runner = QueueRunner(

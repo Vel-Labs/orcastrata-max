@@ -56,11 +56,10 @@ sequence. The separate AOL handoff is not an implementation task on this board.
 ## Current Task
 
 <!-- codexmax-current-task:start -->
-T060 is active. T050B verified `velcrafting` with `ADMIN` permission, passed an
-independent pre-write audit, created umbrella issue #1 and child issues #2-#11,
-and reconciled all eleven markers without mutation, duplicates, or unknown
-outcomes. T070 is dependency-ready but remains queued under the single-writer
-board rule. Credentials, other repositories, AOL source, external providers,
+T080 is active. T070 passed focused, package, live read, and independent-audit
+gates. PR #12 remains open and unmerged. T080 now adds the narrow guarded-merge
+effect and must re-read every merge gate at the current head before any effect.
+Credentials, other repositories, AOL source, external providers,
 schedules, deployments, release publication, auto-merge, force push, history
 rewriting, and repository settings remain forbidden.
 <!-- codexmax-current-task:end -->
@@ -72,7 +71,7 @@ rewriting, and repository settings remain forbidden.
 - Child milestones: T010 plan; T020 admission; T030 reads; T040 umbrella state;
   T050 issues; T060 workers and PRs; T070 audit-full; T080 guarded merge; T090
   dogfood acceptance; T999 closeout.
-- Active milestone: T060.
+- Active milestone: T080.
 - Split triggers: credentials, a second transport, schedules, default merge,
   AOL implementation, or any cross-repository write.
 - Dependencies: T010 -> T020 -> T030 -> T040 -> T050 -> T060 and T070 -> T080 -> T090 -> T999.
@@ -89,9 +88,9 @@ rewriting, and repository settings remain forbidden.
 | T030 | Local `gh` capability and reads | done | T020 | T040 | serial | Orcastrata implementer | Credential-blind fake and real read proof | `t030-live-read-receipt.json` |
 | T040 | Umbrella state and projection | done | T030 | T050 | serial | Orcastrata implementer | WorkGraph and GoalBuddy round-trip proof | `t040-projection-receipt.json` |
 | T050 | Issue creation and reconciliation | done | T040 | T060, T070 | serial | Orcastrata implementer | T050A local fake-`gh`; exact-repository T050B canary and reconciliation | `t050a-local-simulation-receipt.json`; `t050b-execution-receipt.json` |
-| T060 | Bounded workers and PR lifecycle | active | T050 | T080 | parallel_disjoint_write | One worker per owned branch and path set | PR lifecycle receipts | — |
-| T070 | Scoped audit and audit-full | queued | T050 | T080 | independent_gate | Independent auditor | Read-only typed verdicts | — |
-| T080 | Explicit guarded merge | queued | T060, T070 | T090 | serial | Orcastrata effect executor | Standing operator grant plus fresh per-PR gates | — |
+| T060 | Bounded workers and PR lifecycle | done | T050 | T080 | parallel_disjoint_write | One worker per owned branch and path set | PR lifecycle receipts | `t060-pr-lifecycle-receipt.json` |
+| T070 | Scoped audit and audit-full | done | T050 | T080 | independent_gate | Independent auditor | Read-only typed verdicts | `t070-audit-full-receipt.json` |
+| T080 | Explicit guarded merge | active | T060, T070 | T090 | serial | Orcastrata effect executor | Standing operator grant plus fresh per-PR gates | — |
 | T090 | Standalone dogfood acceptance | queued | T080 | T999 | independent_gate | Independent auditor | Package, security, and end-to-end proof | — |
 | T999 | Parent lifecycle closeout | queued | T090 | — | serial | Parent/PM | Terminal lifecycle and final checks | — |
 <!-- codexmax-task-ledger:end -->
@@ -448,6 +447,15 @@ execution continues. Do not edit frozen provider artifacts.
   T050B through T999 on `github.com/Vel-Labs/orcastrata-max` only. T050 remains
   active until fresh username and repository permission proof, the real board
   projection, live reconciliation, and the issue canary pass.
+- T050 completed after eleven exact issue effects reconciled without duplicate
+  or unknown outcomes. T060 completed after one bounded native worker, one
+  same-scope repair, 28 focused and consumer tests, 413-file package parity,
+  independent ACCEPT, an exact non-force push, and PR #12 creation and live
+  reconciliation. T070 completed after 30 focused tests, 415-file package
+  parity, complete issue-marker and PR-scope observations, and an independent
+  ACCEPT. T080 is newly unblocked and active. PR #12 remains unmerged. Its
+  COMMENTED review is not approval evidence, so T080 must read repository
+  review policy and all other merge gates fresh. T090 and T999 remain blocked.
 
 ## Roadmap-Return Contract
 
