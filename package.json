@@ -1,6 +1,6 @@
 {
   "name": "codexmax-orchestrator",
-  "version": "1.0.3",
+  "version": "1.4.0",
   "private": true,
   "description": "Orcastrata Max is the open agentic orchestration plugin for Codex.",
   "license": "Apache-2.0",

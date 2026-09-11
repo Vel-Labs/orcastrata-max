@@ -104,39 +104,30 @@ Apply route selection in this order:
 5. provider diversity for Tester and Auditor;
 6. latency.
 
-Default hypotheses:
+Route selection resolves from the current effective configuration and observed
+host capabilities. The invoking chat is always the Parent/PM for scope,
+integration, verification, and final acceptance. No fixed control-model
+assignments or automatic model-family exclusions apply.
 
-- Sol: Parent revision/final acceptance on the fixed control route; separate
-  non-control Sol-high Planner/Architect and Sol-medium Worker candidates;
-- Terra: fixed high-reasoning Supervisor control plus a distinct Terra-high
-  Worker candidate;
-- Luna or Spark: scouting, compression, test triage;
-- Claude Sonnet: difficult implementation and synthesis, quota-conscious;
-- Claude Opus: exceptional planning or review escalation;
-- DeepSeek through CommandCode: high-volume bounded implementation;
-- MiniMax Token Plan: PM, documentation, synthesis, inline review. New
-  standalone dispatches use exact model `MiniMax-M3`, route id
-  `standalone-minimax-m3`, and an explicit `--model MiniMax-M3`; never rely on
-  the current CLI default;
-- Qwopus/OpenCode: local functional testing and reproduction.
-
-The fixed Parent is exact `gpt-5.6-sol`. The visible goal-lifetime Supervisor is
-exact `gpt-5.6-terra` at `high`. Neither control route is a Worker fallback and
-changing the Supervisor model requires Parent approval. Worker profiles name
-one primary route and ordered secondaries. Unknown or unverified capability
-never satisfies a requirement, and profile order never overrides a hard gate.
-The shipped semantic defaults start Planner, Architect, and ordinary Auditor
-work with Luna. The effective config owns the complete route order. Terra is
-explicit-only and requires an exact operator selection or a closed escalation
-reason bound to the task grant. These are candidates, not usage quotas;
+Worker profiles name one primary route and ordered secondaries from the
+effective configuration. Unknown or unverified capability never satisfies a
+requirement, and profile order never overrides a hard gate. The effective
+config owns the complete route order. These are candidates, not usage quotas;
 fresh preflight may skip any incompatible route.
+
+For Claude, use only its observed native worker interface and supported model
+selections. Preserve exact preferences and fail closed when unavailable. See the [Claude sub-agent documentation](https://code.claude.com/docs/en/sub-agents)
+for the native Agent surface. Use its session-only `--agents` configuration and a
+full model ID or inherit only when the current Claude host preflight actually
+exposes and authorizes those values. Do not claim that this documentation proves
+local availability.
 
 Provider is not role identity. Record route, runtime, billing basis, quota state,
 and fallback. Never silently switch a subscription route to metered API billing.
 MiniMax M2.7 is a historical or parent-approved explicit fallback, not a default
 for new work. Preserve historical M2.7 receipts instead of relabeling them M3.
 
-For a native OpenAI route, route selection is not complete until the
+For native Codex collaboration, route selection is not complete until the
 [Codex Collaboration Runtime Projection](../../assets/contracts/codex-runtime-projection.md)
 binds it to the actual Codex `agent_type`, exact model, and reasoning effort.
 `default` otherwise inherits the Parent; fixed native roles select their own

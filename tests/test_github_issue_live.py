@@ -6,6 +6,7 @@ import unittest
 from unittest import mock
 
 from tests.test_github_issue_effect import issue, prepare, result
+from tests.test_github_umbrella_projection import projection, request as projection_request
 
 
 ROOT = Path(__file__).parents[1]
@@ -73,6 +74,33 @@ class GithubIssueLiveTests(unittest.TestCase):
         self.assertEqual([call[0][6] for call in runner.calls], ["user", "repos/Vel-Labs/orcastrata-max", "search/issues", "repos/Vel-Labs/orcastrata-max/issues"])
         self.assertEqual([call[0][5] for call in runner.calls], ["GET", "GET", "GET", "POST"])
         self.assertNotIn("GH_TOKEN", runner.calls[0][1])
+
+    def test_operator_bound_target_supports_another_repository(self):
+        projection_payload = projection_request()
+        projection_payload["target"] = {
+            "host": "github.com", "repository": "Acme/widgets",
+        }
+        projection_receipt = projection.execute(projection_payload)
+        stable_id = projection_receipt["preview"]["umbrella"]["stable_id"]
+        prepared = live.effect.execute({
+            "artifact_type": live.effect.REQUEST_TYPE,
+            "operation": "prepare",
+            "schema_version": 1,
+            "value": {"projection": projection_receipt, "stable_id": stable_id},
+        })
+        repository_value = repository()
+        repository_value["full_name"] = "Acme/widgets"
+        runner = QueueRunner(
+            result({"login": "velcrafting"}),
+            result(repository_value),
+            result({"items": [], "total_count": 0}),
+            result(issue(prepared)),
+        )
+        receipt = self.run_live(
+            runner, prepared, repository="Acme/widgets",
+        )
+        self.assertEqual(receipt["outcome"], "created")
+        self.assertEqual(runner.calls[-1][0][6], "repos/Acme/widgets/issues")
 
     def test_replay_binds_existing_without_post(self):
         prepared = prepare()

@@ -156,8 +156,8 @@ def initial_state(receipt: dict[str, Any], parent_id: str, supervisor_id: str) -
         "board_sha256": receipt["board_sha256"],
         "parent_id": _text(parent_id, "parent_id"),
         "supervisor_id": _text(supervisor_id, "supervisor_id"),
-        "parent_route_contract": "gpt-5.6-sol",
-        "supervisor_route_contract": "gpt-5.6-terra:high",
+        "parent_route_contract": "parent",
+        "supervisor_route_contract": "supervisor",
         "native_identity_verified": False,
         "state_epoch": 0,
         "status": "active",
@@ -191,7 +191,12 @@ def _validate_state(value: Any, receipt: dict[str, Any]) -> dict[str, Any]:
         raise SyncError("locked_plan_changed", receipt["goal_sha256"])
     if state.get("board_sha256") != receipt["board_sha256"]:
         raise SyncError("board_changed_requires_reconcile", receipt["board_sha256"])
-    if state.get("parent_route_contract") != "gpt-5.6-sol" or state.get("supervisor_route_contract") != "gpt-5.6-terra:high":
+    legacy_parent = "gpt-5.6-sol"
+    legacy_supervisor = "gpt-5.6-terra:high"
+    canonical_parent = "parent"
+    canonical_supervisor = "supervisor"
+    route_pair = (state.get("parent_route_contract"), state.get("supervisor_route_contract"))
+    if route_pair != (legacy_parent, legacy_supervisor) and route_pair != (canonical_parent, canonical_supervisor):
         raise SyncError("control_route_contract_changed")
     if state["parent_id"] == state["supervisor_id"]:
         raise SyncError("control_identity_collision")

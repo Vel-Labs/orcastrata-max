@@ -161,13 +161,13 @@ def rules(*, approvals=0, app_id=None, last_push=False):
     return rows
 
 
-def ready_responses(*, pull_value=None, rule_rows=None, checks=None, reviews=None, final_pull=None, check_pull=None, review_pull=None, diff_pull=None, merge_result=None):
+def ready_responses(*, pull_value=None, rule_rows=None, checks=None, reviews=None, final_pull=None, check_pull=None, review_pull=None, diff_pull=None, merge_result=None, repository_value=None):
     pull_value = pull_value or pull()
     final_pull = final_pull or pull_value
     checks = checks or []
     reviews = reviews or []
     responses = [
-        result({"login": "velcrafting"}), result(repository()),
+        result({"login": "velcrafting"}), result(repository_value or repository()),
         result(pull_value),
         result({"name": "main", "protected": False}), result(rule_rows or []),
         result(check_pull or pull_value), result({"total_count": len(checks), "check_runs": checks}),
@@ -223,6 +223,9 @@ class GithubGuardedMergeTests(unittest.TestCase):
     def execute(self, root, runner):
         return merge.execute(
             root,
+            expected_host="github.com",
+            expected_repository="Vel-Labs/orcastrata-max",
+            expected_user="velcrafting",
             runner=runner,
             resolver=lambda: "/trusted/gh",
             environment_source={"HOME": "/safe", "GH_TOKEN": "must-not-pass"},
@@ -250,6 +253,44 @@ class GithubGuardedMergeTests(unittest.TestCase):
         ])
         self.assertNotIn("GH_TOKEN", runner.calls[-1][1])
 
+    def test_operator_bound_target_supports_another_repository(self):
+        payload = request()
+        payload["target"] = {"host": "github.com", "repository": "Acme/widgets"}
+        repository_value = repository()
+        repository_value["full_name"] = "Acme/widgets"
+        runner = QueueRunner(*ready_responses(
+            repository_value=repository_value,
+            merge_result=result({"merged": True, "sha": "e" * 40}),
+        ))
+        with tempfile.TemporaryDirectory() as directory:
+            root, _ = self.prepare(directory, payload)
+            receipt = merge.execute(
+                root,
+                expected_host="github.com",
+                expected_repository="Acme/widgets",
+                expected_user="velcrafting",
+                runner=runner,
+                resolver=lambda: "/trusted/gh",
+                environment_source={"HOME": "/safe"},
+            )
+        self.assertEqual(receipt["outcome"], "merged")
+        self.assertEqual(runner.calls[-1][0][6], "repos/Acme/widgets/pulls/12/merge")
+
+    def test_operator_bound_target_mismatch_stops_before_github(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, _ = self.prepare(directory)
+            runner = QueueRunner()
+            receipt = merge.execute(
+                root,
+                expected_host="github.com",
+                expected_repository="Acme/widgets",
+                expected_user="velcrafting",
+                runner=runner,
+                resolver=lambda: "/trusted/gh",
+            )
+        self.assertEqual(receipt["error"]["code"], "authority_target_mismatch")
+        self.assertEqual(runner.calls, [])
+
     def test_selected_task_derives_paths_and_binds_board_and_auditor(self):
         payload = request()
         payload["evidence"]["independent_auditor_id"] = "/root/t090_guarded_merge_audit"
@@ -257,6 +298,9 @@ class GithubGuardedMergeTests(unittest.TestCase):
             root, _ = self.prepare(directory, payload, task_id="T090")
             receipt = merge.execute(
                 root,
+                expected_host="github.com",
+                expected_repository="Vel-Labs/orcastrata-max",
+                expected_user="velcrafting",
                 task_id="T090",
                 runner=QueueRunner(*ready_responses(
                     merge_result=result({"merged": True, "sha": "e" * 40}),
@@ -306,6 +350,9 @@ class GithubGuardedMergeTests(unittest.TestCase):
                 runner = QueueRunner()
                 receipt = merge.execute(
                     root,
+                    expected_host="github.com",
+                    expected_repository="Vel-Labs/orcastrata-max",
+                    expected_user="velcrafting",
                     task_id="T090",
                     runner=runner,
                     resolver=lambda: "/trusted/gh",
@@ -319,6 +366,9 @@ class GithubGuardedMergeTests(unittest.TestCase):
                 runner = QueueRunner()
                 receipt = merge.execute(
                     Path(directory).resolve(),
+                    expected_host="github.com",
+                    expected_repository="Vel-Labs/orcastrata-max",
+                    expected_user="velcrafting",
                     task_id=task_id,
                     runner=runner,
                     resolver=lambda: "/trusted/gh",
@@ -509,7 +559,14 @@ class GithubGuardedMergeTests(unittest.TestCase):
             self.assertTrue(receipt["reconcile_required"])
             self.assertEqual(runner.calls, [])
 
-        relative = merge.execute(Path("relative"), runner=QueueRunner(), resolver=lambda: "/trusted/gh")
+        relative = merge.execute(
+            Path("relative"),
+            expected_host="github.com",
+            expected_repository="Vel-Labs/orcastrata-max",
+            expected_user="velcrafting",
+            runner=QueueRunner(),
+            resolver=lambda: "/trusted/gh",
+        )
         self.assertEqual(relative["error"]["code"], "execution_directory_invalid")
 
 

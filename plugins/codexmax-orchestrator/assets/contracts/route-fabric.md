@@ -3,7 +3,7 @@
 `route_fabric.py` is a deterministic, local, advisory evidence layer. It does
 not replace the route registry, provider-input contract, preflight broker,
 scheduler, provider adapter, VisibleProviderReconciliation, dispatch ledger,
-GoalBuddy, or Sol Parent.
+GoalBuddy, or the invoking Parent.
 
 ## Exact identity
 

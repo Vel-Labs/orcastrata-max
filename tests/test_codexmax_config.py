@@ -15,6 +15,14 @@ _SPEC.loader.exec_module(config)
 
 
 class DeclarativeModelConfigTests(unittest.TestCase):
+    def test_automatic_worker_defaults_keep_commandcode_generic_explicit_only(self):
+        worker = config.ROLE_PRIORITY_DEFAULTS["worker"]
+        implementation = config.TASK_PROFILE_DEFAULTS["semantic_worker_implementation"]
+        selected = {worker[field] for field in config.ROLE_ROUTE_FIELDS}
+        candidates = {implementation[field] for field in config.PROFILE_ROUTE_FIELDS}
+        self.assertNotIn("worker_commandcode_model", selected | candidates)
+        self.assertIn("worker_grok_4_6", selected & candidates)
+
     def test_authored_binding_accepts_exact_model_without_route_row(self):
         binding = config._build_authored_binding(
             adapter_type="commandcode", route_name="worker_commandcode_model",

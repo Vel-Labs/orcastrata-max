@@ -693,6 +693,325 @@ def _append(path: Path, value: dict[str, Any], *, create: bool = False) -> None:
         os.fsync(stream.fileno())
 
 
+def _journal_path(state_path: Path) -> Path:
+    return state_path.with_name(state_path.name + ".journal.json")
+
+
+def _validate_journal_entry(entry: dict[str, Any]) -> None:
+    required = {
+        "schema_version",
+        "operation",
+        "state_path",
+        "before_state_sha256",
+        "before_state_projection_sha256",
+        "after_state_sha256",
+        "updated_state",
+        "event_record",
+        "predecessor_heads",
+        "cursor_path",
+        "runtime_identity",
+    }
+    if not isinstance(entry, dict):
+        raise RecoveryError("journal_entry_invalid", "type")
+    if set(entry) - (required | {"cursor_record"}):
+        raise RecoveryError("journal_entry_invalid", "extra_fields")
+    missing = required - set(entry)
+    if missing:
+        raise RecoveryError("journal_entry_invalid", f"missing:{','.join(sorted(missing))}")
+    if entry["schema_version"] != 1 or entry["operation"] != "event_state_transition":
+        raise RecoveryError("journal_entry_invalid", "schema_or_operation")
+    for field in ("state_path", "cursor_path"):
+        if not isinstance(entry[field], str):
+            raise RecoveryError("journal_entry_invalid", field)
+    for field in ("before_state_sha256", "before_state_projection_sha256", "after_state_sha256"):
+        if not isinstance(entry[field], str) or not re.fullmatch(r"[0-9a-f]{64}", entry[field]):
+            raise RecoveryError("journal_entry_invalid", field)
+    if not isinstance(entry["updated_state"], dict):
+        raise RecoveryError("journal_entry_invalid", "updated_state")
+    if not isinstance(entry["event_record"], dict):
+        raise RecoveryError("journal_entry_invalid", "event_record")
+    if not isinstance(entry["predecessor_heads"], dict):
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads")
+    if set(entry["predecessor_heads"]) != {"event", "cursor"}:
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.fields")
+    event_head = entry["predecessor_heads"]["event"]
+    if not isinstance(event_head, dict) or set(event_head) != {"event_count", "last_event_id", "last_event_hash"}:
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.event")
+    if type(event_head.get("event_count")) is not int or event_head["event_count"] < 1 or not isinstance(event_head.get("last_event_id"), str) or not isinstance(event_head.get("last_event_hash"), str) or not re.fullmatch(r"[0-9a-f]{64}", event_head["last_event_hash"]):
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.event")
+    cursor_head = entry["predecessor_heads"]["cursor"]
+    if not isinstance(cursor_head, dict) or set(cursor_head) != {"cursor_sequence", "cursor_hash", "last_event_sequence", "last_event_id", "last_event_hash"}:
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.cursor")
+    if any(not isinstance(cursor_head.get(field), str) or not re.fullmatch(r"[0-9a-f]{64}", cursor_head[field]) for field in ("cursor_hash", "last_event_hash")):
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.cursor")
+    if type(cursor_head.get("cursor_sequence")) is not int or cursor_head["cursor_sequence"] < 1 or type(cursor_head.get("last_event_sequence")) is not int or cursor_head["last_event_sequence"] < 0:
+        raise RecoveryError("journal_entry_invalid", "predecessor_heads.cursor")
+    if "cursor_record" in entry and not isinstance(entry["cursor_record"], dict):
+        raise RecoveryError("journal_entry_invalid", "cursor_record")
+    identity = entry["runtime_identity"]
+    if not isinstance(identity, dict):
+        raise RecoveryError("journal_entry_invalid", "runtime_identity")
+    required_identity = {"goal_slug", "checkpoint_id", "supervisor_id", "supervisor_epoch", "board_sha256"}
+    if set(identity) != required_identity:
+        raise RecoveryError("journal_entry_invalid", "runtime_identity.fields")
+    for field in ("goal_slug", "checkpoint_id", "supervisor_id"):
+        _text(identity.get(field), f"journal.runtime_identity.{field}")
+    if type(identity.get("supervisor_epoch")) is not int or identity["supervisor_epoch"] < 0:
+        raise RecoveryError("journal_entry_invalid", "runtime_identity.supervisor_epoch")
+    if not isinstance(identity.get("board_sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", identity["board_sha256"]):
+        raise RecoveryError("journal_entry_invalid", "runtime_identity.board_sha256")
+
+
+def _write_journal(state_path: Path, entry: dict[str, Any]) -> None:
+    _validate_journal_entry(entry)
+    path = _journal_path(state_path)
+    if path.exists():
+        raise RecoveryError("recovery_outcome_uncertain", "journal_already_present")
+    _atomic(path, entry)
+
+
+def _clear_journal(state_path: Path) -> None:
+    path = _journal_path(state_path)
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        return
+
+
+def _journal_for_transition(
+    state_path: Path,
+    before: dict[str, Any],
+    after: dict[str, Any],
+    record: dict[str, Any],
+    predecessor_heads: dict[str, Any],
+    cursor_path: Path,
+    runtime_identity: dict[str, Any],
+    cursor_record: dict[str, Any] | None = None,
+) -> None:
+    entry: dict[str, Any] = {
+        "schema_version": 1,
+        "operation": "event_state_transition",
+        "state_path": str(state_path),
+        "before_state_sha256": _hash(before),
+        "before_state_projection_sha256": _projection_hash(before),
+        "after_state_sha256": _hash(after),
+        "updated_state": copy.deepcopy(after),
+        "event_record": copy.deepcopy(record),
+        "predecessor_heads": copy.deepcopy(predecessor_heads),
+        "cursor_path": str(cursor_path),
+        "runtime_identity": copy.deepcopy(runtime_identity),
+    }
+    if cursor_record is not None:
+        entry["cursor_record"] = copy.deepcopy(cursor_record)
+    _write_journal(state_path, entry)
+
+
+def _read_cursor_records(path: Path, event_records: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        raise RecoveryError("recovery_outcome_uncertain", "cursor_unreadable") from exc
+    records: list[dict[str, Any]] = []
+    previous_hash = ZERO_HASH
+    previous_event_sequence = -1
+    for sequence, line in enumerate(lines, 1):
+        try:
+            raw = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise RecoveryError("recovery_outcome_uncertain", "cursor_invalid") from exc
+        record = copy.deepcopy(_mapping(raw, f"cursor[{sequence}]"))
+        recorded_hash = record.pop("cursor_hash", None)
+        if (
+            record.get("cursor_sequence") != sequence
+            or record.get("previous_cursor_hash") != previous_hash
+            or not isinstance(recorded_hash, str)
+            or recorded_hash != _hash(record)
+        ):
+            raise RecoveryError("recovery_outcome_uncertain", "cursor_chain_invalid")
+        target = record.get("last_event_sequence")
+        if type(target) is not int or target < previous_event_sequence or (event_records is not None and target > len(event_records)):
+            raise RecoveryError("recovery_outcome_uncertain", "cursor_sequence_invalid")
+        if event_records is not None:
+            expected = None if target == 0 else event_records[target - 1]
+            if record.get("last_event_id") != (None if expected is None else expected["event_id"]):
+                raise RecoveryError("recovery_outcome_uncertain", "cursor_event_id_invalid")
+            if record.get("last_event_hash") != (ZERO_HASH if expected is None else expected["event_hash"]):
+                raise RecoveryError("recovery_outcome_uncertain", "cursor_event_hash_invalid")
+        record["cursor_hash"] = recorded_hash
+        records.append(record)
+        previous_event_sequence = target
+        previous_hash = recorded_hash
+    if not records:
+        raise RecoveryError("recovery_outcome_uncertain", "cursor_empty")
+    return records
+
+
+def _validate_journal_event(entry: dict[str, Any], state: dict[str, Any]) -> None:
+    record = entry["event_record"]
+    required = {
+        "schema_version", "sequence", "event_id", "timestamp", "goal_slug", "checkpoint_id",
+        "source_role", "actor_id", "event_type", "payload", "previous_event_hash",
+        "state_before_hash", "state_after_hash", "proof_boundary", "board_mutated",
+        "transcript_used", "native_side_proof", "acceptance_claimed", "event_hash",
+    }
+    if set(record) != required or record.get("schema_version") != 1:
+        raise RecoveryError("recovery_journal_invalid", "event_fields")
+    if type(record.get("sequence")) is not int or record["sequence"] < 1:
+        raise RecoveryError("recovery_journal_invalid", "event_sequence")
+    for field in ("event_id", "goal_slug", "checkpoint_id", "source_role", "actor_id", "event_type"):
+        _text(record.get(field), f"journal.event.{field}")
+    _timestamp(record.get("timestamp"))
+    if not isinstance(record.get("payload"), dict):
+        raise RecoveryError("recovery_journal_invalid", "event_payload")
+    for field in ("previous_event_hash", "state_before_hash", "state_after_hash"):
+        if not isinstance(record.get(field), str) or not re.fullmatch(r"[0-9a-f]{64}", record[field]):
+            raise RecoveryError("recovery_journal_invalid", field)
+    if record.get("proof_boundary") != "local_not_native" or any(record.get(field) is not False for field in ("board_mutated", "transcript_used", "native_side_proof", "acceptance_claimed")):
+        raise RecoveryError("recovery_journal_invalid", "event_boundary")
+    candidate = copy.deepcopy(record)
+    recorded_hash = candidate.pop("event_hash", None)
+    if not isinstance(recorded_hash, str) or recorded_hash != _hash(candidate):
+        raise RecoveryError("recovery_journal_invalid", "event_hash")
+    predecessor = entry["predecessor_heads"].get("event")
+    if not isinstance(predecessor, dict) or record.get("sequence") != predecessor.get("event_count", -1) + 1:
+        raise RecoveryError("recovery_journal_invalid", "event_sequence")
+    if type(predecessor.get("event_count")) is not int or predecessor["event_count"] < 1:
+        raise RecoveryError("recovery_journal_invalid", "event_predecessor")
+    if record.get("previous_event_hash") != predecessor.get("last_event_hash"):
+        raise RecoveryError("recovery_journal_invalid", "event_previous_hash")
+    if entry["before_state_projection_sha256"] != record.get("state_before_hash"):
+        raise RecoveryError("recovery_journal_invalid", "event_state_before")
+    if record.get("state_after_hash") != _projection_hash(entry["updated_state"]):
+        raise RecoveryError("recovery_journal_invalid", "event_state_after")
+    if record.get("goal_slug") != state.get("goal_slug") or record.get("checkpoint_id") != state.get("checkpoint_id"):
+        raise RecoveryError("recovery_journal_invalid", "event_identity")
+
+
+def _head(record: dict[str, Any]) -> dict[str, Any]:
+    return {field: record[field] for field in ("cursor_sequence", "cursor_hash", "last_event_sequence", "last_event_id", "last_event_hash")}
+
+
+def _validate_journal_cursor(
+    entry: dict[str, Any], state: dict[str, Any], cursor_records: list[dict[str, Any]], event_record: dict[str, Any]
+) -> None:
+    predecessor = entry["predecessor_heads"].get("cursor")
+    if not isinstance(predecessor, dict):
+        raise RecoveryError("recovery_journal_invalid", "cursor_predecessor")
+    current = cursor_records[-1]
+    predecessor_tuple = _head(current)
+    expected = entry.get("cursor_record")
+    if expected is None:
+        if predecessor_tuple != predecessor:
+            raise RecoveryError("recovery_journal_invalid", "cursor_predecessor_mismatch")
+        return
+    required = {"schema_version", "cursor_sequence", "goal_slug", "checkpoint_id", "last_event_sequence", "last_event_id", "last_event_hash", "reason", "timestamp", "previous_cursor_hash", "cursor_hash"}
+    if set(expected) != required or expected.get("schema_version") != 1:
+        raise RecoveryError("recovery_journal_invalid", "cursor_fields")
+    if type(expected.get("cursor_sequence")) is not int or expected["cursor_sequence"] != predecessor["cursor_sequence"] + 1:
+        raise RecoveryError("recovery_journal_invalid", "cursor_sequence")
+    _timestamp(expected.get("timestamp"))
+    candidate = copy.deepcopy(expected)
+    recorded_hash = candidate.pop("cursor_hash", None)
+    if not isinstance(recorded_hash, str) or recorded_hash != _hash(candidate):
+        raise RecoveryError("recovery_journal_invalid", "cursor_hash")
+    if expected.get("previous_cursor_hash") != predecessor.get("cursor_hash"):
+        raise RecoveryError("recovery_journal_invalid", "cursor_previous_hash")
+    predecessor_event = entry["predecessor_heads"]["event"]
+    if expected.get("last_event_sequence") != predecessor_event.get("event_count"):
+        raise RecoveryError("recovery_journal_invalid", "cursor_event_sequence")
+    if expected.get("last_event_id") != predecessor_event.get("last_event_id") or expected.get("last_event_hash") != predecessor_event.get("last_event_hash"):
+        raise RecoveryError("recovery_journal_invalid", "cursor_event_head")
+    if expected.get("goal_slug") != state.get("goal_slug") or expected.get("checkpoint_id") != state.get("checkpoint_id"):
+        raise RecoveryError("recovery_journal_invalid", "cursor_identity")
+
+
+def _recover_pending_journal(state_path: Path, events_path: Path, cursor_path: Path) -> None:
+    journal_path = _journal_path(state_path)
+    if not journal_path.exists():
+        return
+    try:
+        entry = _load_json(journal_path, "recovery_journal_unreadable")
+        _validate_journal_entry(entry)
+    except RecoveryError:
+        raise
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RecoveryError("recovery_outcome_uncertain", "journal_unreadable") from exc
+    if entry["state_path"] != str(state_path) or entry.get("cursor_path") != str(cursor_path):
+        raise RecoveryError("recovery_outcome_uncertain", "journal_state_path")
+    if not state_path.exists():
+        raise RecoveryError("recovery_outcome_uncertain", "state_missing")
+    state = _load_json(state_path, "recovery_state_unreadable")
+    try:
+        _validate_state(state)
+        _validate_state(entry["updated_state"])
+    except RecoveryError as exc:
+        raise RecoveryError("recovery_outcome_uncertain", f"state_invalid:{exc.code}") from exc
+    before_hash = entry["before_state_sha256"]
+    after_hash = entry["after_state_sha256"]
+    current_hash = _hash(state)
+    if current_hash not in {before_hash, after_hash} or _hash(entry["updated_state"]) != after_hash:
+        raise RecoveryError("recovery_outcome_uncertain", "journal_state_binding")
+    identity = entry["runtime_identity"]
+    if any(state.get(field) != identity.get(field) for field in ("goal_slug", "checkpoint_id", "supervisor_id", "supervisor_epoch", "board_sha256")):
+        raise RecoveryError("recovery_outcome_uncertain", "journal_runtime_identity")
+    if any(entry["updated_state"].get(field) != identity.get(field) for field in ("goal_slug", "checkpoint_id", "supervisor_id", "supervisor_epoch", "board_sha256")):
+        raise RecoveryError("recovery_outcome_uncertain", "journal_updated_identity")
+    try:
+        log = verify_event_log(events_path)
+    except RecoveryError as exc:
+        raise RecoveryError("recovery_outcome_uncertain", f"event_log:{exc.code}") from exc
+    _validate_journal_event(entry, state)
+    if current_hash == after_hash and _projection_hash(state) != entry["event_record"]["state_after_hash"]:
+        raise RecoveryError("recovery_outcome_uncertain", "state_projection_binding")
+    if current_hash == before_hash and _projection_hash(state) != entry["before_state_projection_sha256"]:
+        raise RecoveryError("recovery_outcome_uncertain", "state_projection_binding")
+    expected_record = entry["event_record"]
+    predecessor_event = entry["predecessor_heads"]["event"]
+    if log["event_count"] < predecessor_event["event_count"]:
+        raise RecoveryError("recovery_outcome_uncertain", "event_predecessor_invalid")
+    actual_predecessor = log["records"][predecessor_event["event_count"] - 1] if predecessor_event["event_count"] else None
+    actual_predecessor_head = {
+        "event_count": 0,
+        "last_event_id": None,
+        "last_event_hash": ZERO_HASH,
+    } if actual_predecessor is None else {
+        "event_count": actual_predecessor["sequence"],
+        "last_event_id": actual_predecessor["event_id"],
+        "last_event_hash": actual_predecessor["event_hash"],
+    }
+    if actual_predecessor_head != predecessor_event:
+        raise RecoveryError("recovery_outcome_uncertain", "event_predecessor_invalid")
+    event_appended = log["event_count"] == expected_record["sequence"] and log["records"][-1] == expected_record
+    if log["event_count"] not in {expected_record["sequence"] - 1, expected_record["sequence"]}:
+        raise RecoveryError("recovery_outcome_uncertain", "event_conflicting_append")
+    cursor_records = _read_cursor_records(cursor_path, log["records"])
+    _validate_journal_cursor(entry, state, cursor_records, expected_record)
+    predecessor_cursor = entry["predecessor_heads"]["cursor"]
+    cursor_appended = entry.get("cursor_record") is None or cursor_records[-1] == entry["cursor_record"]
+    cursor_is_predecessor = _head(cursor_records[-1]) == predecessor_cursor
+    if entry.get("cursor_record") is not None and not (cursor_appended or cursor_is_predecessor):
+        raise RecoveryError("recovery_outcome_uncertain", "cursor_conflicting_append")
+    if entry.get("cursor_record") is not None and not event_appended and cursor_appended:
+        raise RecoveryError("recovery_outcome_uncertain", "cursor_without_event")
+    if current_hash == after_hash and event_appended and cursor_appended:
+        _clear_journal(state_path)
+        return
+    if current_hash == before_hash and event_appended and cursor_appended:
+        # The append completed before the state replace. Restore only the
+        # journal's hash-bound state; never replay the original operation.
+        _atomic(state_path, entry["updated_state"])
+        _clear_journal(state_path)
+        return
+    raise RecoveryError("recovery_outcome_uncertain", "journal_transaction_incomplete_or_conflicting")
+
+
+def _runtime_identity(state: dict[str, Any]) -> dict[str, Any]:
+    return {
+        field: copy.deepcopy(state[field])
+        for field in ("goal_slug", "checkpoint_id", "supervisor_id", "supervisor_epoch", "board_sha256")
+    }
+
+
 def _atomic(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False)
@@ -993,6 +1312,7 @@ def _verified_recovery_context(
     cursor_path: Path,
     repository_root: Path,
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
+    _recover_pending_journal(state_path, events_path, cursor_path)
     state = _load_json(state_path, "recovery_state_unreadable")
     recovery_log = verify_event_log(events_path)
     cursor = _bind_state(state, recovery_log, cursor_path)
@@ -1161,7 +1481,7 @@ def begin_loop_transition_files(
     supervisor_id = _text(supervisor_id, "supervisor_id")
     if type(supervisor_epoch) is not int or supervisor_epoch < 0:
         raise RecoveryError("invalid_input", "supervisor_epoch")
-    state, recovery_log, _, _, current_loop = _verified_recovery_context(
+    state, recovery_log, cursor, _, current_loop = _verified_recovery_context(
         goal_path, board_path, loop_state_path, loop_events_path,
         sync_state_path, sync_events_path, sync_cursor_path,
         state_path, events_path, cursor_path, repository_root,
@@ -1239,8 +1559,25 @@ def begin_loop_transition_files(
     record = _event_record(state, updated, event, pending)
     updated["event_sequence"] = record["sequence"]
     updated["last_event_hash"] = record["event_hash"]
+    _journal_for_transition(
+        state_path,
+        state,
+        updated,
+        record,
+        {
+            "event": {
+                "event_count": recovery_log["event_count"],
+                "last_event_id": recovery_log["last_event_id"],
+                "last_event_hash": recovery_log["last_event_hash"],
+            },
+            "cursor": _head(cursor),
+        },
+        cursor_path,
+        _runtime_identity(state),
+    )
     _append(events_path, record)
     _atomic(state_path, updated)
+    _clear_journal(state_path)
     return {"status": "prepared", "pending": copy.deepcopy(pending), "delta": record}
 
 
@@ -1259,7 +1596,7 @@ def complete_loop_transition_files(
     transition_id: str,
 ) -> dict[str, Any]:
     transition_id = _text(transition_id, "transition_id")
-    state, _, _, _, current_loop = _verified_recovery_context(
+    state, recovery_log, cursor, _, current_loop = _verified_recovery_context(
         goal_path, board_path, loop_state_path, loop_events_path,
         sync_state_path, sync_events_path, sync_cursor_path,
         state_path, events_path, cursor_path, repository_root,
@@ -1309,8 +1646,25 @@ def complete_loop_transition_files(
     record = _event_record(state, updated, event, payload)
     updated["event_sequence"] = record["sequence"]
     updated["last_event_hash"] = record["event_hash"]
+    _journal_for_transition(
+        state_path,
+        state,
+        updated,
+        record,
+        {
+            "event": {
+                "event_count": recovery_log["event_count"],
+                "last_event_id": recovery_log["last_event_id"],
+                "last_event_hash": recovery_log["last_event_hash"],
+            },
+            "cursor": _head(cursor),
+        },
+        cursor_path,
+        _runtime_identity(state),
+    )
     _append(events_path, record)
     _atomic(state_path, updated)
+    _clear_journal(state_path)
     return {"status": "committed", "loop_binding": copy.deepcopy(current_loop), "delta": record}
 
 
@@ -1369,7 +1723,7 @@ def initialize_files(
     repository_root: Path,
     timestamp: str,
 ) -> dict[str, Any]:
-    if state_path.exists() or events_path.exists() or cursor_path.exists():
+    if state_path.exists() or events_path.exists() or cursor_path.exists() or _journal_path(state_path).exists():
         raise RecoveryError("recovery_runtime_already_exists")
     receipt = _board_receipt(goal_path, board_path)
     loop_binding = _loop_binding(loop_state_path, loop_events_path, goal_path, board_path, receipt, repository_root)
@@ -1439,12 +1793,10 @@ def apply_event_files(
     event_path: Path,
     repository_root: Path,
 ) -> dict[str, Any]:
-    state = _load_json(state_path, "recovery_state_unreadable")
-    log = verify_event_log(events_path)
-    cursor = _bind_state(state, log, cursor_path)
-    board_receipt = _verify_substrates(
-        state, goal_path, board_path, loop_state_path, loop_events_path,
-        sync_state_path, sync_events_path, sync_cursor_path, repository_root,
+    state, log, cursor, board_receipt, _ = _verified_recovery_context(
+        goal_path, board_path, loop_state_path, loop_events_path,
+        sync_state_path, sync_events_path, sync_cursor_path,
+        state_path, events_path, cursor_path, repository_root,
     )
     event = _event(_load_json(event_path, "event_unreadable"), state)
     if event["event_id"] in log["event_ids"]:
@@ -1469,10 +1821,28 @@ def apply_event_files(
     record = _event_record(state, updated, event, payload)
     updated["event_sequence"] = record["sequence"]
     updated["last_event_hash"] = record["event_hash"]
+    _journal_for_transition(
+        state_path,
+        state,
+        updated,
+        record,
+        {
+            "event": {
+                "event_count": log["event_count"],
+                "last_event_id": log["last_event_id"],
+                "last_event_hash": log["last_event_hash"],
+            },
+            "cursor": _head(cursor),
+        },
+        cursor_path,
+        _runtime_identity(state),
+        next_cursor,
+    )
     _append(events_path, record)
     if next_cursor is not None:
         _append(cursor_path, next_cursor)
     _atomic(state_path, updated)
+    _clear_journal(state_path)
     return {"state": updated, "delta": record, "cursor": next_cursor or cursor}
 
 
@@ -1489,10 +1859,11 @@ def snapshot_files(
     cursor_path: Path,
     repository_root: Path,
 ) -> dict[str, Any]:
-    state = _load_json(state_path, "recovery_state_unreadable")
-    log = verify_event_log(events_path)
-    cursor = _bind_state(state, log, cursor_path)
-    _verify_substrates(state, goal_path, board_path, loop_state_path, loop_events_path, sync_state_path, sync_events_path, sync_cursor_path, repository_root)
+    state, log, cursor, _, _ = _verified_recovery_context(
+        goal_path, board_path, loop_state_path, loop_events_path,
+        sync_state_path, sync_events_path, sync_cursor_path,
+        state_path, events_path, cursor_path, repository_root,
+    )
     return {
         "schema_version": 1,
         "goal_slug": state["goal_slug"],

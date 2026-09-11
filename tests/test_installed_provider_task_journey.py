@@ -94,7 +94,7 @@ class InstalledProviderTaskJourneyTests(unittest.TestCase):
         self.assertTrue((self.repo / "reports/installed/result.json").is_file())
         self.assertTrue(str(script).startswith(str(self.staged)))
 
-    def test_staged_package_automatic_role_selects_without_model_input(self):
+    def test_staged_package_automatic_role_fails_closed_without_configured_route(self):
         script = self.staged / "scripts/run_automatic_provider_task.py"
         completed = subprocess.run(
             [
@@ -106,12 +106,12 @@ class InstalledProviderTaskJourneyTests(unittest.TestCase):
             ],
             cwd=self.root, env=self.env, capture_output=True, text=True, timeout=30,
         )
-        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(completed.returncode, 2, completed.stderr)
         result = json.loads(completed.stdout)
-        self.assertTrue(result["completed"])
-        self.assertEqual(result["selected_role"], "documenter")
-        self.assertEqual(result["selected_model"], "deepseek/deepseek-v4-flash")
-        self.assertTrue((self.repo / "reports/auto/result.json").is_file())
+        self.assertFalse(result["completed"])
+        self.assertFalse(result["selected"])
+        self.assertEqual(result["reason"], "no_eligible_configured_worker")
+        self.assertFalse((self.repo / "reports/auto/result.json").exists())
 
 
 if __name__ == "__main__":

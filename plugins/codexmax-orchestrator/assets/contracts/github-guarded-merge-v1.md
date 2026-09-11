@@ -1,10 +1,12 @@
 # GitHub Guarded Merge V1
 
-`github_guarded_merge.py` owns one exact pull-request merge seam for
-`github.com/Vel-Labs/orcastrata-max`.
+`github_guarded_merge.py` owns one exact pull-request merge seam for the host,
+repository, and local `gh` username named by the operator's task grant.
 
 The CLI accepts one absolute, non-symlink execution directory and one canonical
-`TNNN` task identifier. `T080` is the default for compatibility. The task
+`TNNN` task identifier. It also requires exact expected host, repository, and
+username arguments. Those arguments must match the persisted request before
+any GitHub call. `T080` is the default for compatibility. The task
 identifier can contain only `T` and exactly three digits. The adapter derives
 `notes/<lower-task>-effects/` for the request, state, independent audit, and
 merge lock. It derives

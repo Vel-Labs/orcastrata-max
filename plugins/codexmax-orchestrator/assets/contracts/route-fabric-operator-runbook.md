@@ -2,7 +2,7 @@
 
 This is a local, non-executing operating guide. Configuration inspection does
 not qualify a route, launch a provider, install software, change subscriptions,
-or transfer acceptance from Sol Parent.
+or transfer acceptance from the invoking Parent.
 
 ## Inspect and validate
 
@@ -140,7 +140,7 @@ authorized by this goal.
 Stop immediately on identity drift, stale or missing preflight, execution
 unknown, authority/credential/billing/retention uncertainty, schema or digest
 drift, raw-source leakage, silent or identity-changing provider fallback, or a request to mutate acceptance
-or GoalBuddy. Sol Parent reviews and accepts; configuration and Workers never
+or GoalBuddy. The invoking Parent reviews and accepts; configuration and Workers never
 self-accept.
 
 Any future Sage experiment needs a new GoalBuddy task and explicit operator

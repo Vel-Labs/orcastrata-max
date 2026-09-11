@@ -1089,6 +1089,7 @@ def _capture(
         process.stdout.close()
         process.stderr.close()
     return {
+        "process_started": True,
         "returncode": process.returncode,
         "stdout": bytes(buffers["stdout"]),
         "stderr": bytes(buffers["stderr"]),
@@ -1960,6 +1961,32 @@ def _attempt_outcome(
     result: dict[str, Any], normalized: str, accounting: dict[str, Any], detail: str,
 ) -> dict[str, Any]:
     return {"outcome": normalized, "detail": detail, **accounting}
+
+
+def _aggregate_attempt_measurement(attempts: list[dict[str, Any]], field: str) -> dict[str, Any]:
+    """Aggregate started-attempt usage without hiding an unknown attempt."""
+    if not attempts:
+        return _unknown("no_provider_attempt")
+    raw = [attempt.get(field) for attempt in attempts]
+    if any(
+        not isinstance(item, dict)
+        or item.get("value") == "unknown"
+        for item in raw
+    ):
+        return _unknown("attempt_exposure_unknown")
+    values = [item["value"] for item in raw]
+    if all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in values):
+        return {"value": sum(values), "reason": "attempts_aggregated"}
+    if all(isinstance(value, dict) for value in values):
+        keys = set().union(*(value.keys() for value in values))
+        aggregate: dict[str, Any] = {}
+        for key in keys:
+            numbers = [value.get(key) for value in values]
+            if not all(isinstance(number, (int, float)) and not isinstance(number, bool) for number in numbers):
+                return _unknown("attempt_exposure_unknown")
+            aggregate[key] = sum(numbers)
+        return {"value": aggregate, "reason": "attempts_aggregated"}
+    return _unknown("attempt_exposure_unknown")
 
 
 def _single_attempt_hard_stop(
@@ -2895,6 +2922,19 @@ def run_dispatch(
         structured_observation: dict[str, Any] | None = None
         completed_observation: dict[str, Any] | None = None
         minimax_final_pending: dict[str, Any] | None = None
+        attempt_number = len(attempts) + 1
+        attempt_dir = evidence / f"attempt-{attempt_number:03d}"
+        attempt_dir.mkdir(mode=0o700, exist_ok=False)
+        _atomic_write(
+            attempt_dir / "attempt-start.json",
+            (json.dumps({
+                "attempt_index": attempt_number,
+                "route_name": route_name,
+                "adapter": adapter_id,
+                "identity": copy.deepcopy(identity),
+                "process_started": False,
+            }, sort_keys=True) + "\n").encode("utf-8"),
+        )
         try:
             execution_cwd = scoped_context["workspace"] if scoped_context is not None else assignment["_working"]
             # Re-read the executor-owned clock after all preparation. Bind the
@@ -2952,6 +2992,7 @@ def run_dispatch(
         except (FileNotFoundError, PermissionError, OSError) as exc:
             spawn_failure = exc
             result = {
+                "process_started": False,
                 "returncode": None,
                 "stdout": b"",
                 "stderr": type(exc).__name__.encode("ascii"),
@@ -2964,6 +3005,17 @@ def run_dispatch(
                 _ensure_dual_unknown(backend_context, scheduler_lease_adapter, binding,
                                      execution_clock())
             raise
+        if result.get("process_started") is True:
+            _atomic_write(
+                attempt_dir / "attempt-start.json",
+                (json.dumps({
+                    "attempt_index": attempt_number,
+                    "route_name": route_name,
+                    "adapter": adapter_id,
+                    "identity": copy.deepcopy(identity),
+                    "process_started": True,
+                }, sort_keys=True) + "\n").encode("utf-8"),
+            )
         if structured_observation is not None:
             normalized_outcome, artifact_bytes = "execution_unknown", None
             accounting = {
@@ -2993,13 +3045,9 @@ def run_dispatch(
             outcome_detail = f"spawn_failure:{type(spawn_failure).__name__}"
         if assignment["proof_mode"] in {
             "live", "task_scoped_live", "isolated_development_live_write",
-        } and (
-            (normalized_outcome == "success" and artifact_bytes is not None)
-            or structured_observation is not None
-            or minimax_final_pending is not None
-        ):
-            # A process return is not sufficient. Exact normalized provider
-            # output or a validated MiniMax observation is external-call proof.
+        } and result.get("process_started") is True:
+            # A started provider process is billable exposure even when output
+            # validation later fails.
             external_call_performed = True
         if minimax_final_pending is not None:
             observation = copy.deepcopy(minimax_final_pending["observation"])
@@ -3082,15 +3130,13 @@ def run_dispatch(
                             execution_clock(),
                         )
                     raise
-        attempt_number = len(attempts) + 1
-        attempt_dir = evidence / f"attempt-{attempt_number:03d}"
-        attempt_dir.mkdir(mode=0o700, exist_ok=False)
         stdout_path = attempt_dir / "stdout.bin"
         stderr_path = attempt_dir / "stderr.bin"
         _atomic_write(stdout_path, result["stdout"])
         _atomic_write(stderr_path, result["stderr"])
         attempt = {
             "attempt_index": attempt_number,
+            "process_started": result.get("process_started") is True,
             "route_name": route_name,
             "identity": copy.deepcopy(identity),
             "adapter": adapter_id,
@@ -3178,9 +3224,9 @@ def run_dispatch(
         "attempts": attempts,
         "route_resolution": final_receipt,
         "usage": {
-            "tokens": attempts[-1]["tokens"] if attempts else _unknown("no_provider_attempt"),
-            "quota": attempts[-1]["quota"] if attempts else _unknown("no_provider_attempt"),
-            "cost": attempts[-1]["cost"] if attempts else _unknown("no_provider_attempt"),
+            "tokens": _aggregate_attempt_measurement(attempts, "tokens"),
+            "quota": _aggregate_attempt_measurement(attempts, "quota"),
+            "cost": _aggregate_attempt_measurement(attempts, "cost"),
         },
         "provider_change_receipt": provider_change_receipt_descriptor,
         "acceptance_authority": "Parent Codex",

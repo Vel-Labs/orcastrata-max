@@ -6,7 +6,7 @@ installation, billing, or Codex Desktop host actions.
 
 ## Before compilation
 
-1. Parent Sol derives the trusted authority record from the active goal's
+1. The invoking Parent derives the trusted authority record from the active goal's
    approved authority boundary. Do not accept an authority record or digest
    produced only by the assignment, worker, or provider.
 2. Parent records current live concurrency and confirms it is within the exact
@@ -29,7 +29,7 @@ installation, billing, or Codex Desktop host actions.
 - The raw artifact and the existing artifact validator's immutable byte-level
   evidence. Matching descriptors alone are not raw-byte validation.
 - The deterministic quality receipt and reconciliation packet. Both remain
-  `accepted: false` with `sol_decision: pending` until Parent Sol reviews them.
+  `accepted: false` with `sol_decision: pending` until the invoking Parent reviews them.
 
 ## No-call finalization
 
@@ -67,5 +67,5 @@ Local validation proves only deterministic compilation, reconciliation, and
 fail-closed invariants in the checked source tree. It does not prove Codex
 Desktop sidebar behavior, installation or installed-byte parity, a live
 provider call, provider authentication or quota, external native-model hosting,
-or Parent Sol acceptance. Those claims require separate fresh host and provider
+or invoking Parent acceptance. Those claims require separate fresh host and provider
 evidence and a Parent decision.

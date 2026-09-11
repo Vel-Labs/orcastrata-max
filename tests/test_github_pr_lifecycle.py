@@ -117,6 +117,25 @@ class GithubPrLifecycleTests(unittest.TestCase):
         self.assertFalse(any(item in {"--force", "--force-with-lease", "merge"} for command in commands for item in command))
         self.assertNotIn("GH_TOKEN", runner.calls[0][1])
 
+    def test_operator_bound_target_supports_another_repository(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request = self.request(directory, mode="observe")
+            request["target"] = {
+                "host": "github.com", "repository": "Acme/widgets",
+            }
+            repository_value = repository()
+            repository_value["full_name"] = "Acme/widgets"
+            runner = QueueRunner(
+                result({"login": "velcrafting"}), result(repository_value),
+                result([pull()]), result([{"filename": "src/a.py"}]),
+                result({"total_count": 0, "check_runs": []}), result([]),
+            )
+            receipt = self.execute(
+                request, (Path(directory) / "state.json").resolve(), runner,
+            )
+        self.assertEqual(receipt["status"], "ready_for_audit")
+        self.assertTrue(any("repos/Acme/widgets" in part for part in runner.calls[1][0]))
+
     def test_scope_and_lease_fail_closed_before_commands(self):
         with tempfile.TemporaryDirectory() as directory:
             request = self.request(directory)

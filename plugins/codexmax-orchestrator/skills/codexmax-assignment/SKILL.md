@@ -32,6 +32,17 @@ effort, history projection, and fallback. Do not use a native fixed role when
 its model or reasoning conflicts with the selected route. A missing or
 `approval_required` projection blocks the spawn.
 
+For a native Claude child, pass the same bounded assignment packet, role, scope,
+effective preferences, and capability receipt through the observed Claude
+host-native Agent surface only. The invoking chat is the Parent/PM. Use the
+documented Agent surface, session-only `--agents` configuration, and full model
+ID or `inherit` as described at
+https://code.claude.com/docs/en/sub-agents. These are usable only after current
+host preflight exposes and authorizes them. Do not invent a Claude tool name,
+worker API, model enum, runtime, or child-ID field. Missing or unsupported
+Claude capability returns `resolution_need` or an explicit unsupported result
+and does not substitute another route.
+
 When the GoalBuddy Supervisor execution loop dispatches the packet, wrap it in
 an `assignment_created` event defined by
 `../../assets/contracts/supervisor-execution-loop.md`. The assignment task ID
@@ -137,6 +148,14 @@ Every Worker packet requires the Worker to return:
   acceptance gaps;
 - handoff: produced, not produced, safe to use, must verify, next owner, and
   parent decision requested.
+
+## Material Repair Sequence
+
+For material repair, require the sequence: worker self-test → independent
+finding → changed repair → retest. A separate Tester and Auditor are not
+mandatory when one independent reviewer supplies the required proof. Record
+expected and actual lane, PM, review, and repair costs when known; preserve
+unknown honestly.
 
 Native collaboration results additionally retain the pre-spawn projection
 receipt and the canonical child ID returned by Codex. Record

@@ -16,14 +16,17 @@ Before reporting a routing defect, identify the runtime surface using
 [Runtime Support And Ownership](RUNTIME_SUPPORT.md). State whether the task was
 an Orcastrata-governed native Codex task, an unrelated Codex spawn, a configured
 OpenCode or Command Code route, or a standalone/provider-neutral contract test.
+For Claude session-only plugin path issues, state the authorized model, host
+version, and whether strict manifest validation passed. The session-only path
+requires observed host capability and does not prove installed support.
 Installing the plugin does not globally intercept every Codex `spawn_agent`
 call, and contract presence does not prove a live provider harness.
 
 If an exact OpenCode or Command Code request fails, configure that exact tool
-and try again, or ask Orcastrata Max to continue with native Codex. It does not
+and try again, or ask Orcastrata to continue with native Codex. It does not
 switch to another tool or model silently.
 
-Ask Orcastrata Max to draft the report before you share it:
+Ask Orcastrata to draft the report before you share it:
 
 ```text
 Prepare a sanitized support report for this problem. Include the package and

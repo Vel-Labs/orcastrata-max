@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4.0 - 2026-09-11
+
+- Keep the invoking chat as PM and resolve model preferences by task role.
+- Add opt-in Codex controller assignments with independent worker/reviewer
+  preferences, capability checks, and Parent-only final acceptance.
+- Add journal recovery and preserve unknown outcomes and per-attempt usage.
+- Add shared Orcastrata guidance and session-only Claude packaging.
+- Preserve compatibility IDs. Local models are optional. The new controller
+  package is verified on Codex; Claude parity, unattended operation, and cost
+  savings are not claimed.
+
+## 1.3.0 - 2026-09-02
+
+- Add the governed `/orcastrata-github` issue-to-merge workflow.
+- Require exact operator-bound GitHub host, repository, and username values
+  before a guarded merge can call GitHub.
+- Add native session guidance for explicitly GitHub-backed projects.
+
 ## 1.0.3 - 2026-08-26
 
 - Clarify that native Codex support is an Orcastrata-governed Parent path, not

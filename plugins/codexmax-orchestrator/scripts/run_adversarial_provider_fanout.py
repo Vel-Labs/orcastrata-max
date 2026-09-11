@@ -15,6 +15,7 @@ import hashlib
 import importlib.util
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -90,6 +91,96 @@ def _public_result(result: Mapping[str, Any]) -> dict[str, Any]:
     return public
 
 
+def _prepare_lane(
+    *, repo_root: Path, request: str, task_id: str, prompt: str,
+    read_scope: Sequence[str], evidence_directory: str, expected_artifact: str,
+    workspace_config: Path | None, allow_provider_call: bool,
+) -> dict[str, Any]:
+    """Resolve and probe one lane without starting provider execution."""
+    effective = TASK.SERVICE.ProviderTaskExecutionService(
+        session_module=TASK.SESSION,
+        dispatch_module=TASK.DISPATCH,
+        config_module=TASK.CONFIG,
+    ).resolve_config(repo_root, workspace_config)
+    effective, task_local_binding = TASK.SERVICE.task_local_exact_config(
+        effective=effective, request=request,
+        session_module=TASK.SESSION, config_module=TASK.CONFIG,
+    )
+    tool, model = TASK.SESSION.parse_request(request)
+    binding_id, binding, route = TASK.SESSION._configured_binding(effective, tool, model)
+    probe = None
+    if allow_provider_call:
+        provider_id, model_token = TASK.SESSION._probe_identity(tool, route, model)
+        probe = TASK.SESSION.probe_existing_session(
+            tool, provider_id, model_token, runner=subprocess.run,
+        )
+        assignment, _ = TASK.build_assignment(
+            request=request, task_id=task_id, prompt=prompt, repo_root=repo_root,
+            read_scope=read_scope, evidence_directory=evidence_directory,
+            expected_artifact=expected_artifact, probe_runner=subprocess.run,
+            effective=effective, allow_provider_call=True, session_probe=probe,
+        )
+        checked = TASK.DISPATCH._require_assignment(assignment, repo_root)
+        preview = TASK.DISPATCH._resolve_pre_dispatch(copy.deepcopy(checked["route_packet"]))
+        if preview.get("status") != "dispatch_required":
+            raise ValueError(preview.get("stop_reason", "pre_dispatch_rejected"))
+    credential = binding.get("credential_reference", {})
+    billing_path = {
+        "provider": route["provider"],
+        "billing_basis": route["billing_basis"],
+        "credential_kind": credential.get("kind"),
+        "credential_opaque_id": credential.get("opaque_id"),
+    }
+    return {
+        "binding_id": binding_id,
+        "adapter_type": binding["adapter_type"],
+        "provider": route["provider"],
+        "exact_model": route["exact_model"],
+        "route_name": binding["route"]["route_name"],
+        "billing_basis": route["billing_basis"],
+        "billing_path_sha256": _digest(billing_path),
+        "independence_group": route["independence_group"],
+        "explicit_tool": tool,
+        "effective_config": effective,
+        "session_probe": probe,
+        "task_local_binding": task_local_binding,
+    }
+
+
+def _validate_independence(prepared: Sequence[Mapping[str, Any]]) -> str:
+    """Apply provider_fanout's fail-closed lane-collision rule."""
+    mode = (
+        "model_diverse"
+        if prepared and all(row.get("explicit_tool") == "Command Code" for row in prepared)
+        else "provider_diverse"
+    )
+    if mode == "model_diverse":
+        return mode
+    for field in (
+        "adapter_type", "provider", "billing_path_sha256", "independence_group",
+    ):
+        values = [row.get(field) for row in prepared]
+        if any(not isinstance(value, str) or not value for value in values):
+            raise ValueError(f"lane_identity_invalid:{field}")
+        if len(values) != len(set(values)):
+            raise ValueError(f"lane_collision:{field}")
+    return mode
+
+
+def _run_prepared_lane(prepared: Mapping[str, Any], **kwargs: Any) -> dict[str, Any]:
+    return TASK.SERVICE.execute_task(
+        **kwargs,
+        session_module=TASK.SESSION,
+        dispatch_module=TASK.DISPATCH,
+        config_module=TASK.CONFIG,
+        assignment_builder=TASK.build_assignment,
+        effective_config=prepared["effective_config"],
+        session_probe=prepared["session_probe"],
+        allow_task_local_binding=False,
+        lifecycle_extra={"task_local_binding": prepared["task_local_binding"]},
+    )
+
+
 def run_fanout(
     *, repo_root: Path, task_id: str, requests: Sequence[str], prompt: str,
     candidate: str, rubric: str, read_scope: Sequence[str],
@@ -97,6 +188,7 @@ def run_fanout(
     allow_provider_call: bool,
     timeout_seconds: float = 60.0,
     task_runner: Callable[..., dict[str, Any]] | None = None,
+    lane_preparer: Callable[..., dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Execute each explicit request once and return a truthful aggregate."""
     task_id = _text(task_id, "task_id", 128)
@@ -126,12 +218,50 @@ def run_fanout(
     }
     frozen["rubric_sha256"] = _digest(rubric)
     frozen["input_sha256"] = _digest(frozen)
-    runner = task_runner or TASK.run_task
     lanes: list[dict[str, Any]] = []
     for index, request in enumerate(normalized, start=1):
         lane_id = _lane_id(index, request)
         lane_evidence = f"{evidence_directory}/fanout/{lane_id}"
         lane_artifact = f"{lane_evidence}/result.json"
+        lane = {
+            "lane_id": lane_id, "lane_index": index, "request": request,
+            "task_id": f"{task_id}-{lane_id}", "evidence_directory": lane_evidence,
+            "expected_artifact": lane_artifact, "exact_route": request,
+            "frozen_input_sha256": frozen["input_sha256"],
+        }
+        lanes.append(lane)
+
+    prepare = lane_preparer or _prepare_lane
+    prepared_lanes = [
+        prepare(
+            repo_root=repo_root, request=lane["request"], task_id=lane["task_id"],
+            prompt=(
+                f"Adversarial review candidate:\n{candidate}\n\n"
+                f"Rubric:\n{rubric}\n\n"
+                f"Review task:\n{prompt}\n\n"
+                "The candidate and rubric are frozen for every lane. Report findings "
+                "only; do not modify repository files."
+            ),
+            read_scope=read_scope, evidence_directory=lane["evidence_directory"],
+            expected_artifact=lane["expected_artifact"],
+            workspace_config=workspace_config,
+            allow_provider_call=allow_provider_call,
+        )
+        for lane in lanes
+    ]
+    diversity_mode = _validate_independence(prepared_lanes)
+    for lane, prepared in zip(lanes, prepared_lanes):
+        lane["route_identity"] = {
+            key: prepared[key]
+            for key in (
+                "binding_id", "adapter_type", "provider", "exact_model",
+                "route_name", "billing_basis", "billing_path_sha256",
+                "independence_group",
+            )
+        }
+
+    runner = task_runner
+    for lane, prepared in zip(lanes, prepared_lanes):
         lane_prompt = (
             f"Adversarial review candidate:\n{candidate}\n\n"
             f"Rubric:\n{rubric}\n\n"
@@ -139,21 +269,25 @@ def run_fanout(
             "The candidate and rubric are frozen for every lane. Report findings "
             "only; do not modify repository files."
         )
-        lane = {
-            "lane_id": lane_id, "lane_index": index, "request": request,
-            "task_id": f"{task_id}-{lane_id}", "evidence_directory": lane_evidence,
-            "expected_artifact": lane_artifact, "exact_route": request,
-            "frozen_input_sha256": frozen["input_sha256"],
-        }
         try:
-            result = runner(
-                repo_root=repo_root, request=request, task_id=lane["task_id"],
+            run_kwargs = dict(
+                repo_root=repo_root, request=lane["request"], task_id=lane["task_id"],
                 prompt=lane_prompt, read_scope=read_scope,
-                evidence_directory=lane_evidence, expected_artifact=lane_artifact,
+                evidence_directory=lane["evidence_directory"],
+                expected_artifact=lane["expected_artifact"],
                 workspace_config=workspace_config,
                 allow_provider_call=allow_provider_call,
-                probe_runner=__import__("subprocess").run,
+                probe_runner=subprocess.run,
                 timeout_seconds=timeout_seconds,
+            )
+            result = (
+                runner(**run_kwargs)
+                if runner is not None
+                else (
+                    _run_prepared_lane(prepared, **run_kwargs)
+                    if allow_provider_call
+                    else TASK.run_task(**run_kwargs)
+                )
             )
             if not isinstance(result, dict):
                 raise ValueError("lane_result_invalid")
@@ -176,7 +310,6 @@ def run_fanout(
                 "status": "rejected", "called": called, "completed": False,
                 "result": {"rejected": True, "reason": getattr(exc, "code", str(exc))},
             })
-        lanes.append(lane)
     completed = sum(lane["completed"] for lane in lanes)
     called = sum(lane["called"] for lane in lanes)
     return {
@@ -190,6 +323,7 @@ def run_fanout(
         "rejected_lane_count": len(lanes) - completed,
         "called": called > 0, "completed": completed == len(lanes),
         "rejected": completed != len(lanes), "lanes": lanes,
+        "diversity_mode": diversity_mode,
         "no_substitution": True, "no_retry_within_lane": True,
         "parent_synthesis_required": True,
         "accepted_by_parent": False, "fold_performed": False,

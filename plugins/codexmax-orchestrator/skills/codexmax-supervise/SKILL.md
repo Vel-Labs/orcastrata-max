@@ -33,6 +33,12 @@ scope checks establish disjoint eligibility. GoalBuddy remains board truth.
 9. Return `candidate_complete`, `needs_parent_repair`, or `waiting_external`
    with a full closeout packet. Never claim final acceptance.
 
+For material repair, require the sequence: worker self-test → independent
+finding → changed repair → retest. A separate Tester and Auditor are not
+mandatory when one independent reviewer supplies the required proof. Record
+expected and actual lane, PM, review, and repair costs when known; preserve
+unknown honestly.
+
 For scheduler-backed artifact lanes, verify the compiled envelope and exact
 binding digests, current fenced lease, ledger interval, legacy return manifest,
 and passing deterministic quality receipt before applying any bundled event.
@@ -155,8 +161,24 @@ Maintain a board or ledger with one row per lane:
 - disposition: usable, needs revision, needs reassignment, parent repair, or
   waiting external.
 
-The board is execution state, not acceptance. Parent Codex still decides final
+Qualify telemetry fields by host. Preserve measured values and use `unknown`
+for unavailable provider/model/runtime, token, quota, cost, wall-time, native
+session, and child identity fields. Do not transfer final acceptance to a
+Worker or Supervisor.
+
+The board is execution state, not acceptance. Parent/PM still decides final
 acceptance.
+
+When the Parent supplies `controller_execution`, keep its task scope, role
+model/effort references, repair authority, reviewer requirement, and reporting
+policy bound to the same projection receipt. The controller owns only internal
+readiness, proposal application, validation, and changed-hypothesis repair.
+Require independent review before candidate closeout. Do not mark internal
+readiness as a GoalBuddy checkpoint or final acceptance. Report routine
+progress through the run receipt and surface exceptions and the final candidate
+to Parent. Pass the emitted assignment text to the native host tool and record
+the returned child ID. Scope is an instruction; actual enforcement depends on independently configured
+host permissions; the projection grants no sandbox.
 
 ### Phase And Milestone Rollup
 

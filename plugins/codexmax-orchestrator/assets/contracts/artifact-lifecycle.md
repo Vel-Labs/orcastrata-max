@@ -40,7 +40,7 @@ manifest state is persisted. The gate also runs immediately before each
 post-result manifest write, so newly bound receipts are validated before their
 state transition is published.
 
-Parent Sol is the only acceptance authority. The compact handoff is the normal
+The invoking Parent is the only acceptance authority. The compact handoff is the normal
 Parent read surface and is capped at 16 KiB. It contains hashes and concise
 claims, never raw transcript content. Raw evidence is retrieved only for a
 named disputed claim.

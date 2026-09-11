@@ -1,0 +1,117 @@
+{
+  "effective_config": {
+    "role_preferences": {
+      "roles": {
+        "architect": {
+          "exact_model": "unknown",
+          "reasoning_effort": "unknown",
+          "selection_mode": "default"
+        },
+        "auditor": {
+          "exact_model": "unknown",
+          "reasoning_effort": "unknown",
+          "selection_mode": "default"
+        },
+        "documenter": {
+          "exact_model": "unknown",
+          "reasoning_effort": "unknown",
+          "selection_mode": "default"
+        },
+        "planner": {
+          "exact_model": "unknown",
+          "reasoning_effort": "unknown",
+          "selection_mode": "default"
+        },
+        "tester": {
+          "exact_model": "unknown",
+          "reasoning_effort": "unknown",
+          "selection_mode": "default"
+        },
+        "worker": {
+          "exact_model": "gpt-5.6-luna",
+          "reasoning_effort": "medium",
+          "selection_mode": "exact"
+        }
+      },
+      "schema_version": 1
+    }
+  },
+  "provenance": {
+    "role_preferences.roles.architect.exact_model": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.architect.reasoning_effort": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.architect.selection_mode": {
+      "value": "default",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.auditor.exact_model": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.auditor.reasoning_effort": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.auditor.selection_mode": {
+      "value": "default",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.documenter.exact_model": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.documenter.reasoning_effort": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.documenter.selection_mode": {
+      "value": "default",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.planner.exact_model": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.planner.reasoning_effort": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.planner.selection_mode": {
+      "value": "default",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.tester.exact_model": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.tester.reasoning_effort": {
+      "value": "unknown",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.tester.selection_mode": {
+      "value": "default",
+      "lifetime": "plugin"
+    },
+    "role_preferences.roles.worker.exact_model": {
+      "value": "gpt-5.6-luna",
+      "lifetime": "file"
+    },
+    "role_preferences.roles.worker.reasoning_effort": {
+      "value": "medium",
+      "lifetime": "file"
+    },
+    "role_preferences.roles.worker.selection_mode": {
+      "value": "exact",
+      "lifetime": "file"
+    },
+    "role_preferences.schema_version": {
+      "value": 1,
+      "lifetime": "file"
+    }
+  }
+}

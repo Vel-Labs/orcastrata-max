@@ -571,6 +571,15 @@ capability_preferences:
       route_06: "worker_codex_spark"
       user_concurrency_limit: 5
   schema_version: 1
+role_preferences:
+  schema_version: 1
+  roles:
+    planner: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
+    architect: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
+    worker: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
+    tester: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
+    documenter: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
+    auditor: {selection_mode: default, exact_model: unknown, reasoning_effort: unknown}
 execution:
   default_active_workers: 5
   max_attempts_per_checkpoint: 3
@@ -659,21 +668,21 @@ route_registry:
       consequence_floor: "highest"
       enabled: true
       escalation_policy: "ordinary"
-      exact_model: "gpt-5.6-sol"
+      exact_model: "unknown"
       health: "unknown"
       identity_evidence: "unknown"
       identity_status: "unverified"
-      independence_group: "openai_native"
+      independence_group: "unknown"
       input_delivery: "unknown"
       local_file_access: "unknown"
-      provider: "OpenAI"
+      provider: "unknown"
       quota_observability: "unknown"
       reasoning: "unknown"
       recommended_role: "parent_only"
       route_id: "native-codex-parent"
       route_kind: "control"
       route_schema_version: 1
-      runtime: "Codex Desktop"
+      runtime: "unknown"
       source_access: "unknown"
       token_limit: null
       web_search_access: "unknown"
@@ -692,21 +701,21 @@ route_registry:
       consequence_floor: "high"
       enabled: false
       escalation_policy: "explicit_only"
-      exact_model: "gpt-5.6-terra"
+      exact_model: "unknown"
       health: "unknown"
       identity_evidence: "unknown"
       identity_status: "unverified"
-      independence_group: "openai_native"
+      independence_group: "unknown"
       input_delivery: "paths_only"
       local_file_access: "read_write"
-      provider: "OpenAI"
+      provider: "unknown"
       quota_observability: "unknown"
-      reasoning: "high"
+      reasoning: "unknown"
       recommended_role: "supervisor_only"
       route_id: "native-codex-terra"
       route_kind: "control"
       route_schema_version: 1
-      runtime: "Codex Desktop"
+      runtime: "unknown"
       source_access: "local_filesystem"
       token_limit: null
       web_search_access: "unknown"

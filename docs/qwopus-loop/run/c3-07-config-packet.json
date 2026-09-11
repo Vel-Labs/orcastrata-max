@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "child_task_id": "C3-07-CONFIG-CHAIN",
+  "semantic_role": "worker",
+  "runtime_surface": "codex_collaboration",
+  "route_authority": "current-user-authorized-luna-review",
+  "selected_route": {
+    "route_id": "config-receipt-exact-luna",
+    "special_route_required": true,
+    "route_rotation_policy": "forbidden",
+    "fallback": "forbidden",
+    "exact_model": "gpt-5.6-luna",
+    "reasoning_effort": "medium"
+  },
+  "native_request": {
+    "agent_type": "default",
+    "fork_turns": "none",
+    "mapping_change_approved": false
+  },
+  "parent_runtime": {
+    "exact_model": "unknown",
+    "reasoning_effort": "unknown"
+  },
+  "host_snapshot": {
+    "supported_pairs": [
+      {
+        "exact_model": "gpt-5.6-luna",
+        "reasoning_effort": "low"
+      },
+      {
+        "exact_model": "gpt-5.6-luna",
+        "reasoning_effort": "medium"
+      },
+      {
+        "exact_model": "gpt-5.6-luna",
+        "reasoning_effort": "high"
+      },
+      {
+        "exact_model": "gpt-5.6-luna",
+        "reasoning_effort": "xhigh"
+      },
+      {
+        "exact_model": "gpt-5.6-luna",
+        "reasoning_effort": "max"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "low"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "medium"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "xhigh"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "exact_model": "gpt-6-astra",
+        "reasoning_effort": "ultra"
+      }
+    ],
+    "source": "current collaboration.spawn_agent tool metadata",
+    "observed_at": "2026-09-10T22:14:19.004273+00:00"
+  }
+}

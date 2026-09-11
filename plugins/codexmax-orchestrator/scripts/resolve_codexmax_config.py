@@ -32,6 +32,7 @@ HEADLESS_DISPATCH_SCHEMA_VERSION = 2
 SCHEDULER_SCHEMA_VERSION = 1
 CAPABILITY_PREFERENCE_SCHEMA_VERSION = 1
 CAPABILITY_MODEL_SCHEMA_VERSION = 2
+ROLE_PREFERENCE_SCHEMA_VERSION = 1
 REASONING_POLICY_SCHEMA_VERSION = 2
 ROLE_NAMES = ("planner", "architect", "worker", "tester", "documenter", "auditor")
 LANE_NAMES = (
@@ -232,24 +233,24 @@ def _route(
 
 ROUTE_DEFAULTS: dict[str, dict[str, Any]] = {
     "parent_sol": _route(
-        route_kind="control", candidate_label="Parent Codex", provider="OpenAI",
-        exact_model="gpt-5.6-sol", route_id="native-codex-parent",
-        runtime="Codex Desktop", reasoning="unknown", billing_basis="native_included",
+        route_kind="control", candidate_label="Parent Codex", provider="unknown",
+        exact_model="unknown", route_id="native-codex-parent",
+        runtime="unknown", reasoning="unknown", billing_basis="native_included",
         identity_status="unverified", capability_status="unknown",
         source_access="unknown", input_delivery="unknown", commands_executable="unknown",
         local_file_access="unknown", write_access="unknown", recommended_role="parent_only",
-        consequence_floor="highest", independence_group="openai_native",
+        consequence_floor="highest", independence_group="unknown",
         identity_evidence="unknown",
         capability_evidence="unknown",
     ),
     "supervisor_terra_high": _route(
-        route_kind="control", candidate_label="Goal-lifetime Supervisor", provider="OpenAI",
-        exact_model="gpt-5.6-terra", route_id="native-codex-terra",
-        runtime="Codex Desktop", reasoning="high", billing_basis="native_included",
+        route_kind="control", candidate_label="Goal-lifetime Supervisor", provider="unknown",
+        exact_model="unknown", route_id="native-codex-terra",
+        runtime="unknown", reasoning="unknown", billing_basis="native_included",
         identity_status="unverified", capability_status="unknown",
         source_access="local_filesystem", input_delivery="paths_only", commands_executable="yes",
         local_file_access="read_write", write_access="scoped", recommended_role="supervisor_only",
-        consequence_floor="high", independence_group="openai_native",
+        consequence_floor="high", independence_group="unknown",
         identity_evidence="unknown",
         capability_evidence="unknown",
         enabled=False,
@@ -786,7 +787,7 @@ TASK_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
     "semantic_worker_implementation": _profile(
         "worker_deepseek_v4_pro", "worker_luna_xhigh",
         "worker_minimax_m3_tool_loop", "worker_claude_code_sonnet_5",
-        "worker_commandcode_model", "worker_codex_spark",
+        "worker_grok_4_6", "worker_codex_spark",
         source_access="local_filesystem", commands=True, write=True,
         consequence_floor="medium", independence_required=False,
     ),
@@ -912,6 +913,15 @@ CAPABILITY_PREFERENCE_DEFAULTS = {
     lane_name: _capability_preference(lane_name) for lane_name in LANE_NAMES
 }
 
+ROLE_PREFERENCE_DEFAULTS: dict[str, dict[str, Any]] = {
+    role: {
+        "selection_mode": "default",
+        "exact_model": "unknown",
+        "reasoning_effort": "unknown",
+    }
+    for role in ROLE_NAMES
+}
+
 
 def _role_priority(task_profile: str, *routes: str) -> dict[str, Any]:
     if len(routes) > len(ROLE_ROUTE_FIELDS):
@@ -938,7 +948,7 @@ ROLE_PRIORITY_DEFAULTS: dict[str, dict[str, Any]] = {
     "worker": _role_priority(
         "semantic_worker_implementation", "worker_deepseek_v4_pro",
         "worker_luna_xhigh", "worker_minimax_m3_tool_loop",
-        "worker_claude_code_sonnet_5", "worker_commandcode_model", "worker_codex_spark",
+        "worker_claude_code_sonnet_5", "worker_grok_4_6", "worker_codex_spark",
     ),
     "tester": _role_priority(
         "semantic_independent_test", "worker_deepseek_v4_pro", "worker_luna_xhigh",
@@ -1061,6 +1071,17 @@ DEFAULTS: dict[str, Any] = {
         "schema_version": CAPABILITY_PREFERENCE_SCHEMA_VERSION,
         "lanes": CAPABILITY_PREFERENCE_DEFAULTS,
     },
+    "role_preferences": {
+        "schema_version": ROLE_PREFERENCE_SCHEMA_VERSION,
+        "roles": ROLE_PREFERENCE_DEFAULTS,
+        # Controller is an execution-package preference. It is deliberately
+        # outside the six semantic task-priority roles below.
+        "controller": {
+            "selection_mode": "default",
+            "exact_model": "unknown",
+            "reasoning_effort": "unknown",
+        },
+    },
     "headless_dispatch": {
         "schema_version": HEADLESS_DISPATCH_SCHEMA_VERSION,
         "role_priorities": ROLE_PRIORITY_DEFAULTS,
@@ -1123,7 +1144,7 @@ HARD_CONSTRAINTS = {
     "routing.silent_metered_fallback": False,
     "route_registry.fresh_preflight_required": True,
     "route_registry.model_identity_implies_tools": False,
-    "route_registry.control.parent_model": "gpt-5.6-sol",
+    "route_registry.control.parent_model": "unknown",
     "routing.terra_cost_guard": "deny_before_preflight",
     "execution.max_write_workers_ceiling": BOARD_MAX_WRITE_WORKERS,
     "acceptance_authority": "parent_codex_only",
@@ -2375,6 +2396,58 @@ def validate_capability_preferences(
             raise ValidationError(f"{prefix}.route_01 cannot be none")
 
 
+def validate_role_preferences(value: dict[str, Any], *, partial: bool) -> None:
+    prefs = value.get("role_preferences")
+    if prefs is None:
+        return
+    if not isinstance(prefs, dict):
+        raise ValidationError("role_preferences must be a mapping")
+    unknown_fields = sorted(set(prefs) - {"schema_version", "roles", "controller"})
+    if unknown_fields:
+        raise ValidationError(f"unknown field: role_preferences.{unknown_fields[0]}")
+    if prefs.get("schema_version", ROLE_PREFERENCE_SCHEMA_VERSION) != ROLE_PREFERENCE_SCHEMA_VERSION:
+        raise ValidationError(f"role_preferences.schema_version must equal {ROLE_PREFERENCE_SCHEMA_VERSION}")
+    roles = prefs.get("roles", {})
+    if not isinstance(roles, dict):
+        raise ValidationError("role_preferences.roles must be a mapping")
+    unknown_roles = sorted(set(roles) - set(ROLE_NAMES))
+    if unknown_roles:
+        raise ValidationError(f"unknown field: role_preferences.roles.{unknown_roles[0]}")
+    if not partial:
+        missing_roles = sorted(set(ROLE_NAMES) - set(roles))
+        if missing_roles:
+            raise ValidationError(f"missing field: role_preferences.roles.{missing_roles[0]}")
+    for role, entry in roles.items():
+        prefix = f"role_preferences.roles.{role}"
+        if not isinstance(entry, dict):
+            raise ValidationError(f"{prefix} must be a mapping")
+        allowed_fields = {"selection_mode", "exact_model", "reasoning_effort"}
+        unknown_entry = sorted(set(entry) - allowed_fields)
+        if unknown_entry:
+            raise ValidationError(f"unknown field: {prefix}.{unknown_entry[0]}")
+        mode = entry.get("selection_mode", "default")
+        _enum(mode, {"default", "prefer", "exact"}, f"{prefix}.selection_mode")
+        for field in ("exact_model", "reasoning_effort"):
+            if field in entry and (not isinstance(entry[field], str) or not entry[field].strip()):
+                raise ValidationError(f"{prefix}.{field} must be a non-empty string")
+        if mode == "exact" and not partial and entry.get("exact_model", "").strip() in {"", "unknown", "unset", "unverified"}:
+            raise ValidationError(f"{prefix}.exact_model required for exact selection_mode")
+    controller = prefs.get("controller")
+    if controller is not None:
+        if not isinstance(controller, dict):
+            raise ValidationError("role_preferences.controller must be a mapping")
+        allowed_fields = {"selection_mode", "exact_model", "reasoning_effort"}
+        unknown_controller = sorted(set(controller) - allowed_fields)
+        if unknown_controller:
+            raise ValidationError(f"unknown field: role_preferences.controller.{unknown_controller[0]}")
+        mode = controller.get("selection_mode", "default")
+        _enum(mode, {"default", "prefer", "exact"}, "role_preferences.controller.selection_mode")
+        for field in ("exact_model", "reasoning_effort"):
+            if field in controller and (not isinstance(controller[field], str) or not controller[field].strip()):
+                raise ValidationError(f"role_preferences.controller.{field} must be a non-empty string")
+        if mode == "exact" and not partial and controller.get("exact_model", "").strip() in {"", "unknown", "unset", "unverified"}:
+            raise ValidationError("role_preferences.controller.exact_model required for exact selection_mode")
+
 def _assert_capability_model_matches_package(
     candidate: dict[str, Any], *, partial: bool, path: str = "capability_model"
 ) -> None:
@@ -2762,6 +2835,8 @@ def validate_config(value: dict[str, Any], *, partial: bool) -> None:
             value["capability_preferences"], route_registry=registry, partial=partial
         )
 
+    validate_role_preferences(value, partial=partial)
+
     if "schema_version" in value and value["schema_version"] != CURRENT_SCHEMA_VERSION:
         raise ValidationError(f"schema_version must equal {CURRENT_SCHEMA_VERSION} after migration")
     journey = value.get("journey", {})
@@ -2870,10 +2945,7 @@ def validate_config(value: dict[str, Any], *, partial: bool) -> None:
     if not partial:
         controls = value["route_registry"]["routes"]
         fixed = {
-            ("parent_sol", "exact_model"): "gpt-5.6-sol",
             ("parent_sol", "route_kind"): "control",
-            ("supervisor_terra_high", "exact_model"): "gpt-5.6-terra",
-            ("supervisor_terra_high", "reasoning"): "high",
             ("supervisor_terra_high", "route_kind"): "control",
             ("supervisor_terra_high", "enabled"): False,
             ("supervisor_terra_high", "escalation_policy"): "explicit_only",

@@ -96,13 +96,14 @@ rank fails closed. Approval cannot repair an unknown route identity.
 
 | Registry key | Exact model | Reasoning | Authority | Automatic failover |
 | --- | --- | --- | --- | --- |
-| `parent_sol` | `gpt-5.6-sol` | `unknown` unless exposed by the active host | Parent-only acceptance | forbidden |
-| `supervisor_terra_high` | `gpt-5.6-terra` | `high` | one goal-lifetime visible Supervisor | forbidden; model change requires Parent decision |
+| `parent_sol` | `unknown` until active host exposes identity | `unknown` until active host exposes identity | Parent-only acceptance | forbidden |
+| `supervisor_terra_high` | `unknown` until active host exposes identity | `unknown` until active host exposes identity | one goal-lifetime visible Supervisor | forbidden; model change requires Parent decision |
 
-Configuration cannot add another control route or change either historical
-fixed model identity. The Terra Supervisor route is disabled by explicit
-escalation policy and cannot be enabled by an overlay. Neither control route belongs
-in a Worker task profile.
+Compatibility keys preserve role authority. They do not select or prove a model.
+Explicit qualified model and reasoning preferences may change. The invoking host
+supplies Parent identity. The Supervisor route is disabled by explicit escalation
+policy and cannot be enabled by an overlay. Neither control route belongs in a
+Worker task profile.
 
 ## Terra explicit escalation
 
@@ -253,9 +254,10 @@ entitlement, route capacity, identity, and capability remain per-model checks.
 The package-owned `worker_commandcode_model` route is the generic Command Code
 transport for a configured exact model. It keeps provider, runtime, billing,
 and transport fixed while the binding supplies the exact model identity. An
-explicit fan-out may use this route for DeepSeek, MiniMax, and Grok when the
-fresh session probe confirms each exact model. The route is not permission to
-invent a model, endpoint, executable, or provider.
+explicit request may use this route for any model when the operator names
+Command Code and the fresh session probe confirms the exact model. Automatic
+selection never creates this route from the Command Code catalog. The route is
+not permission to invent a model, endpoint, executable, or provider.
 
 Luna is the default low-cost fallback after the task's preferred specialist.
 This rule applies to substantial implementation, review, test, document, and

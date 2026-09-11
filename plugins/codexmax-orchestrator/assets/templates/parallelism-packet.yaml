@@ -2,8 +2,9 @@ schema_version: 1
 goal_id: "<goal-id>"
 checkpoint_id: "<checkpoint-id>"
 parent:
-  model: gpt-5.6-sol
-  reasoning: max
+  # Populate from invoking-host evidence; do not infer identity from role.
+  model: unknown
+  reasoning: unknown
   authority: final_acceptance
 supervisor:
   preferred_model: none

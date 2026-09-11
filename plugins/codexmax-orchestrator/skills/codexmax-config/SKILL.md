@@ -21,6 +21,87 @@ install a package, mutate GoalBuddy, or claim acceptance while using it.
    goal or checkpoint identity. Do not promote expired values.
 7. Use `--json` when a machine-readable receipt is required.
 
+## Natural Language Preference Compilation
+
+When the operator expresses a natural-language role/model preference (e.g.,
+"Use Luna for the worker role" or "Prefer DeepSeek for testing"), compile it
+into the existing scoped configuration fields without inventing new APIs.
+
+### Precedence Order
+
+Effective leaves resolve in this order (lowest to highest precedence):
+
+1. **User scope** — `--workspace-config` when explicitly supplied.
+2. **Project scope** — `<repo-root>/codexmax.config.yaml` when present.
+3. **Task scope** — active goal override, then active checkpoint override.
+4. **Invocation scope** — current invocation operator override.
+5. **Non-overridable constraints** — hard constraints from the package.
+
+Precedence is user < project < task. Task/session or active goal/checkpoint
+identity must survive resume. One-turn operator overrides are invocation-scoped
+and do not persist beyond the current invocation. Project or user scope requires
+an explicit request from the operator.
+
+### PM as Invoking Host
+
+The PM (Project Manager) is the invoking host. Worker model selection is a
+preference, not an authority grant. A native work-role preference is stored in
+the existing `role_preferences.roles.<role>` mapping with
+`selection_mode`, `exact_model`, and `reasoning_effort`; the resolver preserves
+its scope and provenance. Use `default` for no preference, `prefer` for an
+eligible preference that may retain the existing route when unsupported, and
+`exact` for a required model with no silent fallback.
+
+Store the controller preference in the existing `role_preferences.controller`
+mapping. Keep it separate from the six semantic task-priority roles. When
+`controller_execution` is enabled, compile controller, worker, and auditor as
+the reviewer reference from one resolver receipt. Preserve each preference's
+source and lifetime. Use the caller's runtime surface for each role. Never infer
+a provider from a model name.
+
+For Claude session use, the invoking chat is the Parent/PM. Use the documented
+Agent surface, session-only `--agents` configuration, and full model ID or
+`inherit` as described at
+https://code.claude.com/docs/en/sub-agents. These are usable only after current
+host preflight exposes and authorizes them. Do not invent a Claude tool name,
+worker API, model enum, runtime, or child-ID field. Missing or unsupported
+Claude capability returns `resolution_need` or an explicit unsupported result
+and does not substitute another route. Claude session use must not create a
+persistent account or disruptive default. Configuration candidates do not prove
+capability, authentication, billing, usage, cost, or readiness.
+
+Headless route ordering remains separate. Requests for compatible headless
+routes use `headless_dispatch.role_priorities.<role>.route_01..06`; those fields
+do not select a native Codex child. For a native Codex child, pass the resolver JSON
+receipt and the current goal/checkpoint context to the runtime projector:
+
+```sh
+python3 <plugin-root>/scripts/project_codex_runtime.py \
+  <packet.json> --config-receipt <resolver-receipt.json> \
+  --receipt <new-exclusive-receipt.json>
+```
+
+The PM remains the invoking host. An unavailable `exact_model` returns
+`resolution_need`; it never silently selects another model. An unknown or unset
+`reasoning_effort` means that no effort preference was requested.
+
+The same resolver receipt may feed an opt-in `controller_execution` packet. The
+projector binds the effective native controller identity to `selected_route`,
+checks worker and reviewer capability evidence by runtime surface, and emits
+bounded assignment text. The Parent passes that text to the native host tool
+and records its child ID. Scope is an instruction; actual enforcement depends on independently
+configured host permissions; the projection grants no sandbox. This packet is scoped to one complete task and keeps repair authority
+with the controller while Parent retains final acceptance. It is an execution
+projection, not a new role registry or a local-model dependency. Missing host
+support returns `resolution_need` and does not fall back silently.
+
+### Resolution Need on Unavailable Model
+
+An exact unavailable model request must produce `resolution_need` during
+routing preflight. The configuration resolver records preference and provenance;
+it does not itself perform preflight or emit this runtime result. The active PM
+must not substitute another model or route without explicit operator approval.
+
 Supported commands are `show`, `roles`, `explain <leaf>`, `validate`, `init`,
 `explicit-route preview`, and `adapter-binding onboard|add|update|remove`. Inspect the effective semantic-role
 route order without dispatching:
@@ -90,7 +171,7 @@ route registry, use only an opaque `none`, `host_managed`, or
 digests after a permitted binding change. Never add argv, executable, URL,
 module, environment, path, secret, or transport fields.
 
-For first-use setup, native Codex is already ready and needs no file:
+Native-only setup creates no configuration file. Runtime readiness must be observed in the current host.
 
 ```sh
 python3 <plugin-root>/scripts/resolve_codexmax_config.py \

@@ -15,6 +15,7 @@ COMMANDS = {
     "orcastrata-assignment": "codexmax-assignment",
     "orcastrata-orchestrate": "codexmax-orchestrate",
     "orcastrata-discover": "codexmax-discover",
+    "orcastrata-github": "codexmax-github",
     "orcastrata-plan": "codexmax-plan",
     "orcastrata-route": "codexmax-route",
     "orcastrata-supervise": "codexmax-supervise",
@@ -47,12 +48,43 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
         for boundary in ("read-only", "Only the Parent can accept", "Never repair"):
             self.assertIn(boundary, full)
 
+    def test_umbrella_catalog_is_opt_in_under_github(self):
+        skill = (PLUGIN / "skills/codexmax-github/SKILL.md").read_text(encoding="utf-8")
+        readme = (PLUGIN / "README.md").read_text(encoding="utf-8")
+        for text in (skill, readme):
+            self.assertIn("scripts/umbrella_catalog.py", text)
+            self.assertIn("--manifest", text)
+            self.assertIn("--root", text)
+            self.assertIn("--jsonl-out", text)
+            self.assertIn("--markdown-out", text)
+            self.assertIn("opt-in", text)
+        self.assertIn("GitHub-backed project cadence", readme)
+        self.assertIn("high-signal events", readme)
+        self.assertIn("Synchronization Cadence", skill)
+        self.assertIn("Do not use a lifecycle hook to perform GitHub writes", skill)
+        self.assertFalse((PLUGIN / "commands/orcastrata-catalog.toml").exists())
+
     def test_manifest_wires_the_native_hook(self):
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["hooks"], "./hooks/hooks.json")
         hooks = json.loads((PLUGIN / "hooks/hooks.json").read_text(encoding="utf-8"))["hooks"]
         self.assertEqual(set(hooks), {"SessionStart", "SubagentStart"})
-        self.assertTrue(all("$PLUGIN_ROOT/hooks/orcastrata_context.py" in item["hooks"][0]["command"] for rows in hooks.values() for item in rows))
+        commands = [item["hooks"][0]["command"] for rows in hooks.values() for item in rows]
+        self.assertTrue(all("CLAUDE_PLUGIN_ROOT" in command and "PLUGIN_ROOT" in command for command in commands))
+
+    def test_claude_manifest_preserves_identity_and_components(self):
+        manifest = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["name"], "codexmax-orchestrator")
+        self.assertEqual(manifest["version"], "1.4.0")
+        self.assertNotIn("skills", manifest)
+        self.assertNotIn("hooks", manifest)
+        self.assertTrue((PLUGIN / "skills").is_dir())
+        self.assertTrue((PLUGIN / "hooks/hooks.json").is_file())
+
+    def test_claude_manifest_description_is_host_neutral(self):
+        manifest = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertIn("governed", manifest["description"])
+        self.assertNotIn("native-first for Codex", manifest["description"])
 
     def test_hook_is_bounded_event_specific_and_stdlib_only(self):
         script = PLUGIN / "hooks/orcastrata_context.py"
@@ -83,7 +115,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
 
     def test_cache_parity_ignores_only_pycache_bytecode(self):
         with tempfile.TemporaryDirectory() as temporary:
-            cache = Path(temporary) / "codexmax-orchestrator/1.2.0"
+            cache = Path(temporary) / "codexmax-orchestrator/1.4.0"
             shutil.copytree(PLUGIN, cache)
             generated = cache / "scripts/__pycache__/generated.cpython-313.pyc"
             generated.parent.mkdir(exist_ok=True)

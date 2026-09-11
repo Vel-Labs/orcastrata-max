@@ -35,69 +35,36 @@ def probe_runner(argv, **kwargs):
 
 
 class AutomaticSelectorTests(unittest.TestCase):
-    def test_no_binding_discovers_and_selects_by_task_role(self):
+    def test_commandcode_catalog_does_not_create_automatic_candidates(self):
         effective = copy.deepcopy(auto.TASK.CONFIG.DEFAULTS)
 
         def catalog(argv, **kwargs):
-            self.assertEqual(list(argv), ["commandcode", "--list-models"])
-            return subprocess.CompletedProcess(
-                argv, 0,
-                "Available models  ·  4 models\n\n"
-                "Open Source\n\n"
-                "deepseek/deepseek-v4-pro    hybrid-attention long-context reasoning\n"
-                "deepseek/deepseek-v4-flash  fast hybrid-attention reasoning (default)\n"
-                "minimaxai/minimax-m3         frontier coding and agents\n\n"
-                "xAI\n\n"
-                "xai/grok-4.6                 frontier coding and knowledge work\n\n"
-                "Pass the full id, or just the short name after the last slash.\n",
-                "",
-            )
+            self.fail(f"automatic routing must not inspect the CommandCode catalog: {argv}")
 
         with tempfile.TemporaryDirectory(dir=ROOT) as directory, \
              patch.object(auto.DISPATCH, "_effective_config", return_value=effective), \
-             patch.object(auto.SESSION, "probe_existing_session", return_value={"output_sha256": "sha256:" + "a" * 64}), \
-             patch.object(auto.TASK, "build_assignment", return_value=({"route_packet": {}, "proof_mode": "task_scoped_live"}, {"configured": True})), \
-             patch.object(auto.DISPATCH, "_require_assignment", side_effect=lambda value, root: value), \
-             patch.object(auto.DISPATCH, "_resolve_pre_dispatch", return_value={"status": "dispatch_required"}), \
-             patch.object(auto.DISPATCH, "run_dispatch", return_value={
-                 "status": "selected", "attempts": [{
-                     "returncode": 0,
-                     "expected_response_identity": {
-                         "declared_route": "worker", "actual_provider": "provider",
-                         "actual_model": "model", "fallback_used": False, "retry_count": 0,
-                     }, "response_identity_validated": True,
-                 }], "artifact": {}, "usage": {}}):
+             patch.object(auto.DISPATCH, "run_dispatch") as dispatch:
             result = auto.run_automatic_task(
                 repo_root=Path(directory), task_id="T040", prompt="document",
                 read_scope=["."], evidence_directory="reports",
                 expected_artifact="reports/result.json", workspace_config=None,
                 allow_provider_call=True, role="documenter", probe_runner=catalog,
             )
-        self.assertTrue(result["completed"])
-        self.assertEqual(result["selected_role"], "documenter")
-        self.assertEqual(result["selected_model"], "deepseek/deepseek-v4-flash")
-        selected = next(row for row in result["considered"] if row.get("selected") is True)
-        self.assertEqual(selected["candidate_origin"], "discovered_session_model")
+        self.assertFalse(result["selected"])
+        self.assertEqual(result["reason"], "no_eligible_configured_worker")
+        dispatch.assert_not_called()
 
-    def test_current_formatted_catalog_excludes_headings_and_footer(self):
-        output = (
-            "Available models  ·  3 models\n\n"
-            "Open Source\n\n"
-            "deepseek/deepseek-v4-pro  hybrid-attention long-context reasoning\n"
-            "gpt-5.6-luna               optimized for cost-sensitive workloads\n\n"
-            "xAI\n\n"
-            "xai/grok-4.6               frontier coding and knowledge work\n\n"
-            "cmd --model kimi-k2.5\n"
-            "Docs:  https://commandcode.ai/docs/reference/cli/models\n"
-        )
-
-        def catalog(argv, **kwargs):
-            return subprocess.CompletedProcess(argv, 0, output, "")
-
-        self.assertEqual(
-            auto._discover_commandcode_models(catalog),
-            ["deepseek/deepseek-v4-pro", "gpt-5.6-luna", "xai/grok-4.6"],
-        )
+    def test_generic_commandcode_binding_is_explicit_only(self):
+        effective = configured()
+        generic = auto.TASK.CONFIG._build_authored_binding(
+            adapter_type="commandcode", route_name="worker_commandcode_model",
+            credential_kind="host_managed", opaque_id="explicit-only", enabled=True,
+            concurrency_cap=1, token_cap=1, exact_model="gpt-5.6-luna")
+        effective["adapter_registry"]["bindings"][generic["binding_id"]] = generic
+        row = next(row for row in auto._candidates(effective)
+                   if row["binding_id"] == generic["binding_id"])
+        self.assertEqual(row["reason"], "not_in_package_worker_priority")
+        self.assertFalse(row["pre_probe_eligible"])
 
     def test_disabled_only_and_no_binding(self):
         empty = copy.deepcopy(auto.TASK.CONFIG.DEFAULTS)
@@ -129,14 +96,15 @@ class AutomaticSelectorTests(unittest.TestCase):
     def test_probe_failure_then_success_dispatches_once(self):
         effective = configured()
         second = auto.TASK.CONFIG._build_authored_binding(
-            adapter_type="commandcode", route_name="worker_commandcode_model",
+            adapter_type="commandcode", route_name="worker_deepseek_v4_flash",
             credential_kind="host_managed", opaque_id="second", enabled=True,
-            concurrency_cap=None, token_cap=1, exact_model="second-model")
+            concurrency_cap=None, token_cap=1, exact_model="deepseek/deepseek-v4-flash")
         effective["adapter_registry"]["bindings"][second["binding_id"]] = second
+        effective["headless_dispatch"]["role_priorities"]["worker"]["route_02"] = "worker_deepseek_v4_flash"
         calls = []
         def probe(tool, provider, token, **kwargs):
             calls.append(token)
-            if token == "deepseek/deepseek-v4-pro":
+            if len(calls) == 1:
                 raise auto.SESSION.ExplicitSelectionError("identity_unverifiable")
             return {"output_sha256": "sha256:" + "a" * 64}
         with tempfile.TemporaryDirectory(dir=ROOT) as directory, \

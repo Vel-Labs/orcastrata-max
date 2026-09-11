@@ -2,7 +2,7 @@
 
 `VisibleProviderTaskState v1` is a deterministic, non-executing composition
 layer. It truthfully separates the native Codex Desktop host, visible task,
-semantic role, external provider execution, and Parent Sol decision. An
+semantic role, external provider execution, and invoking Parent decision. An
 external provider is never described as the native model behind a Codex task.
 
 ## Compilation boundary
@@ -98,8 +98,11 @@ The result is either `terminal_dispatch_failure`, the distinct terminal
 `candidate_ready_for_sol_review`. `execution_unknown` is never collapsed into
 provider failure, and both terminal classes expose `retry_allowed: false` plus
 typed diagnostics. Every outcome keeps
-`sol_decision: pending` and `accepted: false`. Only Parent Sol may accept,
+`sol_decision: pending` and `accepted: false`. Only the invoking Parent may accept,
 reject, request repair, mutate GoalBuddy, or authorize a native writer.
+
+`sol_decision` is a legacy field name. It does not select a Parent model; the
+invoking chat retains acceptance authority.
 
 ## Proof boundary
 
@@ -110,4 +113,4 @@ installation, external native-model hosting, or product completion.
 `host_action_performed: true` may be recorded only from real Codex Desktop host
 evidence after the host action occurs. Local compilation, tests, or operator
 labels cannot set it. Local validation also proves neither live provider use
-nor Parent Sol acceptance.
+nor invoking Parent acceptance.

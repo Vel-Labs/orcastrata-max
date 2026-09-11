@@ -21,6 +21,87 @@ Effective runtime concurrency is not a configuration claim. The execution
 policy computes the minimum of user, adapter, task, fleet, provider, and
 runtime-host caps after exact qualification. Scoped-write task cap remains one.
 
+## Natural Language Preference Compilation
+
+When the operator expresses a natural-language role/model preference (e.g.,
+"Use Luna for the worker role" or "Prefer DeepSeek for testing"), compile it
+into the existing scoped configuration fields without inventing new APIs.
+
+### Precedence Order
+
+Effective leaves resolve in this order (lowest to highest precedence):
+
+1. **User scope** — `--workspace-config` when explicitly supplied.
+2. **Project scope** — `<repo-root>/codexmax.config.yaml` when present.
+3. **Task scope** — active goal override, then active checkpoint override.
+4. **Invocation scope** — current invocation operator override.
+5. **Non-overridable constraints** — hard constraints from the package.
+
+Precedence is user < project < task. Task/session or active goal/checkpoint
+identity must survive resume. One-turn operator overrides are invocation-scoped
+and do not persist beyond the current invocation. Project or user scope requires
+an explicit request from the operator.
+
+### PM as Invoking Host
+
+The PM (Project Manager) is the invoking host. Worker model selection is a
+preference, not an authority grant. A native work-role preference is stored in
+the existing `role_preferences.roles.<role>` mapping with
+`selection_mode`, `exact_model`, and `reasoning_effort`; the resolver preserves
+its scope and provenance. Use `default` for no preference, `prefer` for an
+eligible preference that may retain the existing route when unsupported, and
+`exact` for a required model with no silent fallback.
+
+The controller preference uses the existing `role_preferences.controller`
+mapping. It is separate from the six semantic task-priority roles. An execution
+package compiles controller, worker, and auditor as the reviewer reference from
+one resolver receipt. Each reference retains selection mode, source, and
+lifetime provenance. The caller supplies each runtime surface; the projector
+does not infer a provider from a model.
+
+Headless route ordering remains separate. Requests for compatible headless
+routes use `headless_dispatch.role_priorities.<role>.route_01..06`; those fields
+do not select a native Codex child. For a native child, pass the resolver JSON
+receipt and the current goal/checkpoint context to the runtime projector:
+
+```sh
+python3 <plugin-root>/scripts/project_codex_runtime.py \
+  <packet.json> --config-receipt <resolver-receipt.json> \
+  --receipt <new-exclusive-receipt.json>
+```
+
+The PM remains the invoking host. An unavailable `exact_model` returns
+`resolution_need`; it never silently selects another model. An unknown or unset
+`reasoning_effort` means that no effort preference was requested.
+
+### Resolution Need on Unavailable Model
+
+An exact unavailable model request must produce `resolution_need` during
+routing preflight. The configuration resolver records preference and provenance;
+it does not itself perform preflight or emit this runtime result. The active PM
+must not substitute another model or route without explicit operator approval.
+
+## Controller Execution Preferences
+
+An opt-in `controller_execution` packet may bind the observed Parent/controller,
+worker, and independent reviewer to exact runtime model and reasoning
+references for one complete task. Controller, worker, and reviewer choices reuse
+the existing role preference resolver and its task or checkpoint provenance. The
+packet does not create a second role registry. Native Codex pairs use the active
+host capability snapshot. A non-native runtime needs its own role-scoped
+capability evidence. Missing model or effort support returns `resolution_need`;
+it does not silently select a local model or another host.
+
+The projection emits bounded assignment text. The Parent passes that text to
+the native host tool and records the returned child ID. Scope is an instruction; actual enforcement depends on independently configured
+host permissions; the projection grants no sandbox.
+
+The controller may own internal preparation, proposal application, validation,
+and changed-hypothesis repair. Internal readiness is not a GoalBuddy
+checkpoint. The invoking Parent remains final acceptance authority. Claude
+subagent or team behavior needs separate current-host capability qualification;
+the Codex projection does not assert Claude support.
+
 ## Boundary
 
 `codexmax-config` is a standalone policy inspection surface. It resolves,
@@ -94,8 +175,9 @@ not effective. Operator overrides last for the current invocation.
 - Silent metered fallback, config-granted authorization, billing-policy
   weakening, acceptance transfer, and config-driven execution are forbidden.
 - `hard_spend_limit_usd: null` does not authorize metered billing.
-- Parent remains exact `gpt-5.6-sol`; the goal-lifetime Supervisor remains
-  exact `gpt-5.6-terra` at `high`. Configuration cannot add a control route.
+- Parent and Supervisor remain distinct control roles. Their observed host model
+  and effort are recorded separately when supplied; configuration cannot add a
+  control route or assert a vendor model identity.
 - Parent owns final acceptance. Supervisor is goal-persistent. Worker is
   assignment-ephemeral. Auditor is frozen-candidate-ephemeral.
 - Every native and external route uses the same Parent capability ceiling.

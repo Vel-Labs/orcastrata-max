@@ -582,7 +582,7 @@ def handoff(args: argparse.Namespace) -> dict[str, Any]:
             for key in ("tree_sha256", "file_count", "directory_count", "total_bytes")
         },
         "raw_evidence_policy": "retrieve_only_for_named_disputed_claim",
-        "acceptance_authority": "parent_sol_only",
+        "acceptance_authority": "parent_only",
     }
     data = (canonical_json(value) + "\n").encode("utf-8")
     if len(data) > HANDOFF_MAX_BYTES:
@@ -599,15 +599,17 @@ def accept(args: argparse.Namespace) -> dict[str, Any]:
     attempt, manifest = _existing(args)
     _require_state(manifest, "integrated")
     _validate_bound_evidence(attempt, manifest)
-    if args.authority != "parent_sol":
-        raise LifecycleError("acceptance_authority_invalid", "--authority parent_sol is required")
+    _CANONICAL_PARENT = "Parent"
+    _LEGACY_PARENT_ALIAS = "parent_sol"
+    if args.authority not in (_CANONICAL_PARENT, "parent", _LEGACY_PARENT_ALIAS):
+        raise LifecycleError("acceptance_authority_invalid", "--authority must be 'parent' (canonical) or 'parent_sol' (legacy alias)")
     handoff_descriptor = _descriptor(attempt / HANDOFF_NAME, attempt, HANDOFF_NAME)
     if manifest["evidence"].get("compact_handoff") != handoff_descriptor:
         raise LifecycleError("descriptor_drift", HANDOFF_NAME)
     value = {
         "schema_version": SCHEMA_VERSION,
         "decision": "accepted",
-        "authority": "parent_sol",
+        "authority": _CANONICAL_PARENT,
         "acceptance_id": _validate_identifier(args.acceptance_id, "acceptance_id"),
         "handoff": handoff_descriptor,
     }
@@ -837,7 +839,7 @@ def parser() -> argparse.ArgumentParser:
     handoff_parser.add_argument("--changed-file", action="append")
     handoff_parser.set_defaults(handler=handoff)
 
-    accept_parser = subparsers.add_parser("accept", help="Record Parent Sol acceptance")
+    accept_parser = subparsers.add_parser("accept", help="Record invoking Parent acceptance")
     _common(accept_parser)
     accept_parser.add_argument("--authority", required=True)
     accept_parser.add_argument("--acceptance-id", required=True)

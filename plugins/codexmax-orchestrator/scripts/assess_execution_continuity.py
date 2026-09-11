@@ -104,6 +104,10 @@ def assess(payload: dict[str, Any]) -> dict[str, Any]:
         signals.get("delegation_only_candidate"),
         "delegation_only_candidate",
     )
+    execution_unknown_signal = _optional_boolean(
+        signals.get("execution_unknown"),
+        "execution_unknown",
+    )
     integration_complete = _optional_boolean(
         signals.get("integration_complete"),
         "integration_complete",
@@ -123,6 +127,10 @@ def assess(payload: dict[str, Any]) -> dict[str, Any]:
     decision_owner = decision.get("decision_owner", "pm")
     if decision_owner not in {"pm", "human"}:
         raise ContinuityError("decision_owner_must_be_pm_or_human")
+    execution_unknown_decision = _optional_boolean(
+        decision.get("execution_unknown"),
+        "execution_unknown",
+    )
     escalation_class = decision.get("escalation_class", "none")
     allowed_escalation_classes = {
         "none",
@@ -285,6 +293,10 @@ def assess(payload: dict[str, Any]) -> dict[str, Any]:
                 "architecture_paths_exhausted" if architecture_exhausted
                 else "repair_budget_exhausted_requires_redesign_or_split"
             )
+    elif execution_unknown_signal or execution_unknown_decision:
+        action = "needs_parent_repair"
+        stop_allowed = True
+        reason_codes.append("execution_unknown")
     elif candidate_ready:
         action = "candidate_closeout"
         reason_codes.append("candidate_ready_for_parent_review")

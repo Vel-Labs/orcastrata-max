@@ -2,7 +2,8 @@
 
 **Give one agent the outcome. Add more inference only when it helps.**
 
-Orcastrata Max is an open orchestration plugin for Codex. It keeps one visible
+Orcastrata Max is an open orchestration layer for governed tasks across
+supported host surfaces. It keeps one visible
 task responsible for the result from request through verification. This task
 is the Parent. It can use native Codex or selected configured tools.
 
@@ -32,6 +33,10 @@ research options before a change, or review completed work. Tool and model
 choices are exact and fail closed. Provider authentication stays with the
 provider's installed tool. Tests match the risk of the change.
 
+Natural-language role preferences resolve through effective configuration and
+current host capability. Exact preferences fail closed when unavailable and
+never silently substitute a route.
+
 ## The 60-Second Native Path
 
 After the plugin is installed, start a new Codex task and ask for the work:
@@ -51,7 +56,8 @@ Keep this task native to Codex.
 ```
 
 ```text
-Use extra workers only when they materially help. Do not use Terra.
+Use extra workers only when they materially help. Honor my task-specific model
+preferences.
 ```
 
 ```text
@@ -182,7 +188,8 @@ task scope. Model capability or reasoning effort never grants extra access.
 | Standalone/provider-neutral contracts | Not generic installed live-harness proof |
 | Automatic provider login or credential storage | Not supported |
 | Persistent tool/model preference | Optional; approval required |
-| Claude or other host-native packages | Roadmap |
+| Claude session-only plugin path | Candidate-supported; requires authorized host validation and strict manifest validation |
+| Grok, standalone MiniMax, or other host-native packages | Roadmap; not public V1 support |
 | AOL protected production admission | Separate future gate |
 
 ## What V1 Does Not Do
@@ -191,13 +198,16 @@ V1 does not increase Codex plan limits, provide external accounts, automate
 provider login, silently substitute routes, or save a tool/model pairing
 without approval. It does not provide an Orcastrata model, globally intercept
 Codex `spawn_agent`, or make an arbitrary harness operational merely because a
-contract or adapter candidate is packaged. Choosing None during optional setup
+contract or adapter candidate is packaged. Claude has a session-only candidate
+path that requires authorized host validation and strict manifest validation.
+Grok, standalone MiniMax, and other host-native packages remain future work.
+Choosing None during optional setup
 creates no file.
 
 Interactive native Codex token counters can remain unknown. V1 usage readouts
-are on demand. Recurring reports and Claude or other non-Codex host packages
-are future work. Configured provider names outside OpenCode and Command Code are
-candidates, not supported V1 exact external-tool routes.
+are on demand. Recurring reports remain future work. Configured provider names
+outside OpenCode and Command Code are candidates, not supported V1 exact
+external-tool routes.
 
 ## Public Skills
 
@@ -231,9 +241,12 @@ Never put secrets or private task content in a public issue.
 
 ## Roadmap
 
-V1 is native-first for Codex with configured OpenCode and Command Code routes.
-Future work can add host-neutral packaging and an Orcastrata family index
-without duplicating this repository.
+V1 is native-first for Codex with a session-only Claude candidate path and
+configured OpenCode and Command Code routes. Claude host validation remains
+separate from installed-loader or adoption proof. AOL custom integration is a
+separate boundary. Broader host packages and an Orcastrata family index remain
+future work. Manual source invocation of a Codex candidate and session-only
+Claude validation do not prove installed-loader adoption.
 
 - [Product roadmap](plugins/codexmax-orchestrator/ROADMAP.md)
 - [Security policy](SECURITY.md)

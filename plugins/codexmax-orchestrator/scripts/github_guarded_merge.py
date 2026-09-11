@@ -20,8 +20,6 @@ REQUEST_TYPE = "orcastrata_github_guarded_merge_request_v1"
 RECEIPT_TYPE = "orcastrata_github_guarded_merge_receipt_v1"
 STATE_TYPE = "orcastrata_github_guarded_merge_state_v1"
 AUDIT_TYPE = "orcastrata_github_merge_independent_audit_v1"
-HOST = "github.com"
-REPOSITORY = "Vel-Labs/orcastrata-max"
 DEFAULT_TASK_ID = "T080"
 REQUEST_NAME = "notes/t080-effects/merge-request.json"
 STATE_NAME = "notes/t080-effects/merge-state.json"
@@ -100,10 +98,11 @@ def _request(value: Any) -> dict[str, Any]:
     }, "request_shape_invalid")
     if request["schema_version"] != 1 or request["artifact_type"] != REQUEST_TYPE:
         raise MergeError("request_identity_invalid")
-    if _closed(request["target"], {"host", "repository"}, "target_invalid") != {
-        "host": HOST, "repository": REPOSITORY,
-    }:
-        raise MergeError("authority_target_mismatch")
+    target = _closed(request["target"], {"host", "repository"}, "target_invalid")
+    try:
+        github._target(target)
+    except github.GithubReadError as exc:
+        raise MergeError("target_invalid") from exc
     if not isinstance(request["expected_user"], str) or not request["expected_user"] or len(request["expected_user"]) > 100:
         raise MergeError("expected_user_invalid")
     pull = _closed(request["pull_request"], {
@@ -371,7 +370,8 @@ def _bound_observation(request: Mapping[str, Any], value: Mapping[str, Any], cod
 
 def _fresh_gates(request: Mapping[str, Any], executable: str, runner, environment) -> dict[str, Any]:
     expected = request["pull_request"]
-    arguments = {"host": HOST, "repository": REPOSITORY, "number": expected["number"]}
+    target = request["target"]
+    arguments = {**target, "number": expected["number"]}
     pull = _read("readPullRequest", arguments, executable, runner, environment)
     _exact_pull(request, pull)
     if pull["merged"]:
@@ -382,7 +382,7 @@ def _fresh_gates(request: Mapping[str, Any], executable: str, runner, environmen
         raise MergeError("pull_request_conflict_or_unready")
     requirements = _read(
         "readMergeRequirements",
-        {"host": HOST, "repository": REPOSITORY, "branch": expected["base"]},
+        {**target, "branch": expected["base"]},
         executable, runner, environment,
     )
     if (
@@ -480,6 +480,9 @@ def _failure(code: str, commands: int, *, unknown: bool, attempted: bool) -> dic
 def execute(
     execution_directory: Path,
     *,
+    expected_host: str,
+    expected_repository: str,
+    expected_user: str,
     task_id: str = DEFAULT_TASK_ID,
     runner=github._run_command,
     resolver=github._resolve_gh,
@@ -497,6 +500,11 @@ def execute(
         descriptor = _lock(root, lock_name)
         pending_reconciliation = _state_requires_reconciliation_hint(root, state_name)
         request = _load_request(root, request_name)
+        if request["target"] != {
+            "host": expected_host,
+            "repository": expected_repository,
+        } or request["expected_user"] != expected_user:
+            raise MergeError("authority_target_mismatch")
         prior = _load_state(root, request, state_name)
         pending_reconciliation = pending_reconciliation or (
             prior is not None and prior["status"] in {"effect_started", "unknown"}
@@ -517,12 +525,15 @@ def execute(
             command_count += 1
             return runner(argv, env)
 
-        facts = live._identity(executable, environment, HOST, REPOSITORY, counted)
-        if facts["username"] != request["expected_user"]:
+        target = request["target"]
+        facts = live._identity(
+            executable, environment, target["host"], target["repository"], counted
+        )
+        if facts["username"] != expected_user:
             raise MergeError("identity_mismatch")
         if facts["permission"] not in live.ALLOWED_PERMISSIONS:
             raise MergeError("repository_write_permission_required")
-        arguments = {"host": HOST, "repository": REPOSITORY, "number": request["pull_request"]["number"]}
+        arguments = {**target, "number": request["pull_request"]["number"]}
         if pending_reconciliation:
             pull = _read("readPullRequest", arguments, executable, counted, environment)
             _exact_pull(request, pull)
@@ -557,9 +568,9 @@ def execute(
             live._write_state(root / state_name, _state(request, "reconciled_unmerged"), initial=False)
             effect_prepared = False
             raise MergeError("pre_effect_pull_request_unready")
-        endpoint = f"repos/Vel-Labs/orcastrata-max/pulls/{request['pull_request']['number']}/merge"
+        endpoint = f"repos/{target['repository']}/pulls/{request['pull_request']['number']}/merge"
         argv = (
-            executable, "api", "--hostname", HOST, "--method", "PUT", endpoint,
+            executable, "api", "--hostname", target["host"], "--method", "PUT", endpoint,
             "-f", f"sha={request['pull_request']['expected_head_sha']}",
         )
         put_started = True
@@ -597,9 +608,18 @@ def execute(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execution-directory", type=Path, required=True)
+    parser.add_argument("--expected-host", required=True)
+    parser.add_argument("--expected-repository", required=True)
+    parser.add_argument("--expected-user", required=True)
     parser.add_argument("--task-id", default=DEFAULT_TASK_ID)
     args = parser.parse_args(argv)
-    receipt = execute(args.execution_directory, task_id=args.task_id)
+    receipt = execute(
+        args.execution_directory,
+        expected_host=args.expected_host,
+        expected_repository=args.expected_repository,
+        expected_user=args.expected_user,
+        task_id=args.task_id,
+    )
     print(json.dumps(receipt, sort_keys=True, separators=(",", ":")))
     return 0 if receipt["status"] == "bound" else 2
 

@@ -1,10 +1,10 @@
-# Orcastrata Max
+# Orcastrata
 
 **One Parent owns the result. Extra inference joins only when it helps.**
 
-Orcastrata Max is the open orchestration plugin for Codex. It keeps one visible
-task responsible for planning, useful delegation, integration, and
-verification. This task is the Parent.
+Orcastrata is an open orchestration layer for governed tasks across supported
+host surfaces. The invoking chat is the Parent/PM and remains responsible for
+scope, useful delegation, integration, and verification.
 
 The package ID remains `codexmax-orchestrator`. The installed skills retain
 their `codexmax-*` names as V1 compatibility IDs.
@@ -34,7 +34,7 @@ class. Automatic loading requires a separate fresh no-tool JSONL smoke through
 After installation, start a new Codex task and ask for the work you want:
 
 ```text
-Use Orcastrata Max to improve this project's onboarding and verify the result.
+Use Orcastrata to improve this project's onboarding and verify the result.
 ```
 
 Or use the native command:
@@ -52,10 +52,10 @@ onboarding and verify the result.
 ```
 
 The visible Parent task remains responsible for the outcome and final answer.
-Orcastrata Max does not increase Codex plan limits or include external tool
+Orcastrata does not increase Codex plan limits or include external tool
 accounts.
 
-In plain language, Orcastrata Max helps you get three outcomes:
+In plain language, Orcastrata helps you get three outcomes:
 
 1. One Parent stays responsible for the result.
 2. Extra inference joins only when it can improve the result.
@@ -78,7 +78,7 @@ or:
 Use deepseek/deepseek-v4-pro through Command Code.
 ```
 
-Orcastrata Max checks the existing tool session and exact model. It shows the
+Orcastrata checks the existing tool session and exact model. It shows the
 selected tool, model, task access, and billing basis before it sends work. If a
 check fails, configure that exact tool and try again, or ask to continue with
 native Codex. It does not substitute another tool, model, route, or billing
@@ -96,7 +96,7 @@ The Parent owns the outcome and final answer. Each worker receives only the
 access approved for its task. Model identity and reasoning effort never grant
 extra file access.
 
-Orcastrata Max does not read, copy, refresh, or store provider credentials.
+Orcastrata does not read, copy, refresh, or store provider credentials.
 Authentication remains in the provider tool that you configured.
 
 ## Native Commands
@@ -106,15 +106,52 @@ Authentication remains in the provider tool that you configured.
 | Run work | `/orcastrata-orchestrate` |
 | Explore first | `/orcastrata-discover` |
 | Build a plan | `/orcastrata-plan` |
+| Run a GitHub project | `/orcastrata-github` |
 | Inspect setup | `/orcastrata-config` |
 | Choose a route | `/orcastrata-route` |
 | Compile an assignment | `/orcastrata-assignment` |
 | Supervise workers | `/orcastrata-supervise` |
 | Audit a result | `/orcastrata-audit` |
+| Audit a full GitHub workflow | `/orcastrata-audit-full` |
 | Close execution | `/orcastrata-closeout` |
 | Run an accepted loop | `/orcastrata-loop` |
 
 The existing `$codexmax-orchestrator:codexmax-*` skill IDs remain supported.
+
+### GitHub-backed project cadence
+
+Use `/orcastrata-github` as the supervisor route when a project uses GitHub and
+the operator names the exact repository plus the allowed read or write effects.
+Keep GoalBuddy and WorkGraph canonical. Synchronize only high-signal events to
+the managed umbrella:
+
+- accepted plan and issue creation;
+- task start, completion, or material blocker;
+- pull-request creation and review state;
+- independent audit verdict;
+- guarded merge and terminal closeout.
+
+Keep command logs, retries, and detailed evidence in local receipts. Do not add
+a GitHub comment for every agent step. Orcastrata does not perform background
+GitHub writes or treat authentication as authority. Each task must still pass
+the repository, identity, permission, scope, and reconciliation gates.
+
+### Optional umbrella catalog
+
+`/orcastrata-github` can build a local index from an explicit manifest of saved
+umbrella projection receipts. It does not discover projects or call GitHub.
+
+```text
+python3 scripts/umbrella_catalog.py --manifest <manifest.json> --root <source-root> --jsonl-out <umbrella-catalog.jsonl> --markdown-out <umbrella-catalog.md>
+```
+
+The JSONL file is the machine contract. The Markdown file is a generated human
+view. Both represent a source snapshot. GoalBuddy remains lifecycle authority,
+and WorkGraph remains dependency and evidence authority. A stale or incomplete
+record requires direct source inspection or a deferred answer. Catalog-first
+retrieval is opt-in; Orcastrata does not inject the catalog into each task or
+turn. See the [catalog contract](assets/contracts/umbrella-catalog-v1.md) and
+[schema](assets/templates/umbrella-catalog-v1-schema.json).
 
 The plugin also loads concise Parent and worker context through native
 `SessionStart` and `SubagentStart` hooks. Codex must trust the installed hook
@@ -130,30 +167,33 @@ that live activation occurred.
 | Configured OpenCode route | Exact adapter dispatch after fresh verification |
 | Configured Command Code route | Exact adapter dispatch after fresh verification |
 | Standalone/provider-neutral contracts | Architecture and qualification substrate; not generic live harness proof |
-| Claude, Grok, standalone MiniMax, or other host packages | Roadmap; not public V1 support |
+| Claude session-only plugin path | Candidate-supported; requires authorized host validation and strict manifest validation |
+| Grok, standalone MiniMax, or other host-native packages | Roadmap; not public V1 support |
 | Provider login or credential storage | Not supported |
 | Saved tool/model preference | Approval required |
 
 ## First Use
 
-On first use, Orcastrata Max explains the native default and can ask whether you
+On first use, Orcastrata explains the native default and can ask whether you
 want to add OpenCode or Command Code. **None** is a valid answer. Native work
 does not wait for optional setup, and choosing None creates no file.
 
 If you add a tool, use its own trusted sign-in flow when authentication is
-needed. Orcastrata Max runs fresh task-scoped checks before dispatch.
+needed. Orcastrata runs fresh task-scoped checks before dispatch.
 
 Read [Getting Started](GETTING_STARTED.md) for the complete flow and
 [ROADMAP.md](ROADMAP.md) for the product boundary.
 
-Project context and usage records are optional. Ask Orcastrata Max to preview
+Project context and usage records are optional. Ask Orcastrata to preview
 them before it creates project files. Ask for a used-only usage readout in
 ordinary language. It lists only invoked tools and models, keeps missing values
 unknown, and never estimates tokens from worker count.
 
 V1 supports exact external requests through configured OpenCode and Command
-Code installations. Claude, Grok, standalone MiniMax, and other host packages
-are future work. Their names in configuration do not prove a usable V1 route.
+Code installations. Claude has a session-only candidate path that requires
+authorized host validation and strict manifest validation. Grok, standalone MiniMax,
+and other host packages remain future work. Names in configuration do not prove
+a usable V1 route.
 
 Provider workers receive bounded inputs under the
 [provider task input contract](assets/contracts/provider-task-input.md).
@@ -169,7 +209,7 @@ Use [GitHub Issues](https://github.com/Vel-Labs/orcastrata-max/issues) for
 support. Use
 [GitHub private vulnerability reporting](https://github.com/Vel-Labs/orcastrata-max/security/advisories/new).
 
-Orcastrata Max is licensed under [Apache-2.0](LICENSE). It is local software,
+Orcastrata is licensed under [Apache-2.0](LICENSE). It is local software,
 not a hosted provider or credential service.
 
 ## Read Next

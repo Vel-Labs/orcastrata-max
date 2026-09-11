@@ -7,9 +7,10 @@ import sys
 
 CONTEXT = {
     "SessionStart": (
-        "ORCASTRATA: The visible Codex task is Parent/PM. Keep GoalBuddy as board truth "
+        "ORCASTRATA: The visible host task is Parent/PM. Keep GoalBuddy as board truth "
         "and WorkGraph as dependency truth. Delegate only bounded useful work. The Parent "
-        "owns integration, acceptance, and the final answer."
+        "owns integration, acceptance, and the final answer. Route an explicitly GitHub-backed "
+        "project through the Orcastrata GitHub workflow; authentication alone grants no authority."
     ),
     "SubagentStart": (
         "ORCASTRATA WORKER: Own only the assigned packet. Do not widen scope, merge, or "

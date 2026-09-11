@@ -1,7 +1,7 @@
 {
   "name": "codexmax-orchestrator",
-  "version": "1.2.0",
-  "description": "Orcastrata Max is the open agentic orchestration layer, native-first for Codex V1.",
+  "version": "1.4.0",
+  "description": "The open agentic orchestration layer for governed multi-host tasks.",
   "author": {
     "name": "Vel Labs"
   },
@@ -19,10 +19,11 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Orchestrate — Use /orcastrata-orchestrate for native-first work and optional account setup.",
-      "Discover — Use /orcastrata-discover for evidence-backed directions for this repository.",
-      "Audit — Use /orcastrata-audit for focused verification.",
-      "Audit Full — Use /orcastrata-audit-full for the read-only umbrella gate."
+      "Orchestrate \u2014 Use /orcastrata-orchestrate for native-first work and optional account setup.",
+      "GitHub \u2014 Use /orcastrata-github for the governed issue-to-merge workflow.",
+      "Discover \u2014 Use /orcastrata-discover for evidence-backed directions for this repository.",
+      "Audit \u2014 Use /orcastrata-audit for focused verification.",
+      "Audit Full \u2014 Use /orcastrata-audit-full for the read-only umbrella gate."
     ]
   }
 }

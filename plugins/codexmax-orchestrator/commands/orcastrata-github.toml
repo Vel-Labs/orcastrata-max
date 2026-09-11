@@ -1,0 +1,2 @@
+description = "Run the governed Orcastrata GitHub workflow"
+prompt = "Invoke $codexmax-orchestrator:codexmax-github for this request: {{args}}"

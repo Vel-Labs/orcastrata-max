@@ -1,12 +1,13 @@
-# Getting Started With Orcastrata Max
+# Getting Started With Orcastrata
 
-Orcastrata Max is native-first for Codex. After installation, it can begin work
-without a second model account, API key, or project configuration file.
+Orcastrata supports governed task roles across supported host surfaces. The
+invoking chat is the Parent/PM. Native work can begin without a second model
+account, API key, or project configuration file.
 
 The V1 package and skill names use the compatibility ID
 `codexmax-orchestrator`. Keep that ID in explicit skill invocations.
 
-Orcastrata Max provides three plain outcomes:
+Orcastrata provides three plain outcomes:
 
 1. One Parent stays responsible for the result.
 2. It adds extra inference only when that can improve the result.
@@ -18,7 +19,7 @@ Parent remains responsible, even when it uses one or more useful workers.
 
 ## 1. Install The Public Release
 
-Add the public Git marketplace and install Orcastrata Max:
+Add the public Git marketplace and install Orcastrata:
 
 ```sh
 codex plugin marketplace add Vel-Labs/orcastrata-max --ref main --json
@@ -38,7 +39,7 @@ codex plugin remove codexmax-orchestrator@codexmax-orchestrator --json
 codex plugin add codexmax-orchestrator@codexmax-orchestrator --json
 ```
 
-To uninstall Orcastrata Max and its marketplace entry:
+To uninstall Orcastrata and its marketplace entry:
 
 ```sh
 codex plugin remove codexmax-orchestrator@codexmax-orchestrator --json
@@ -62,7 +63,7 @@ reinstall command. Start a new task. Do not delete caches manually.
 Ask for the result you want:
 
 ```text
-Use Orcastrata Max to fix the import bug and verify the user-visible result.
+Use Orcastrata to fix the import bug and verify the user-visible result.
 ```
 
 The equivalent native command is:
@@ -71,6 +72,17 @@ The equivalent native command is:
 /orcastrata-orchestrate fix the import bug and verify the user-visible result
 ```
 
+For an authorized GitHub-backed board, use:
+
+```text
+/orcastrata-github execute this board for github.com/owner/repository
+```
+
+The command composes issue reconciliation, bounded Workers, pull requests,
+full audit, merge, and guarded closeout. Authentication alone does not
+authorize GitHub effects. Name the exact repository and allowed effects in the
+request.
+
 If automatic selection is unavailable, use:
 
 ```text
@@ -78,7 +90,7 @@ Use $codexmax-orchestrator:codexmax-orchestrate to fix the import bug and
 verify the user-visible result.
 ```
 
-Orcastrata Max keeps the visible task responsible for the outcome, integration,
+Orcastrata keeps the visible task responsible for the outcome, integration,
 verification, and final answer. This task is the Parent.
 
 Add limits in ordinary language when you want them:
@@ -88,11 +100,11 @@ Keep this task native to Codex.
 ```
 
 ```text
-Use extra workers only when they materially help. Do not use Terra.
+Use extra workers only when they materially help and the current host exposes an eligible route.
 ```
 
 ```text
-Use Sol high for the Parent and Luna high for useful workers.
+Task roles and model preferences use effective configuration precedence and current host capability. Exact preferences fail closed when unavailable and never silently substitute a route.
 ```
 
 ```text
@@ -100,10 +112,10 @@ Show usage for this task. List only tools and models that were used. Keep
 missing token values unknown.
 ```
 
-Native Codex needs no external account or setup file. Orcastrata Max does not
+Native Codex needs no external account or setup file. Orcastrata does not
 increase your Codex plan limits.
 
-If the requested native model or effort is unavailable, Orcastrata Max reports
+If the requested native model or effort is unavailable, Orcastrata reports
 the mismatch and does not substitute another choice silently. You can approve
 an available native route, change the request, or stop that part of the work.
 
@@ -127,7 +139,7 @@ failures remain governed by the provider dispatch and retry contracts.
 ### Where Orcastrata governance applies
 
 Orcastrata governs this native projection only when the task has loaded or
-explicitly invoked Orcastrata Max. Codex still owns `spawn_agent` and executes
+explicitly invoked Orcastrata. Codex still owns `spawn_agent` and executes
 the native child. The plugin does not globally intercept unrelated Codex
 spawns, register an Orcastrata model, or replace native model weights.
 
@@ -139,30 +151,40 @@ are not proof of a live generic harness. Read the complete
 [Runtime Support And Ownership](RUNTIME_SUPPORT.md) matrix before relying on a
 non-Codex route.
 
+Claude uses a session-only plugin path: `claude --plugin-dir <WORKTREE>/plugins/codexmax-orchestrator`.
+The Claude host owns its workers; Orcastrata provides bounded assignment packets.
+See [Claude sub-agents documentation](https://code.claude.com/docs/en/sub-agents) for the Agent surface,
+session-only `--agents` configuration, and full model ID or inherit. Package and
+manifest checks are not runtime or acceptance proof; the real Claude smoke remains
+a later authorized host validation step.
+
+AOL custom integration is outside the scope of this package. No AOL admission or
+edit claim is made.
+
 ### Complete native example
 
 This transcript shows the expected interaction. It is an example, not evidence
 that an installed package or live task ran.
 
 ```text
-User: Use Orcastrata Max to debug the failed import and verify the fix. Keep
+User: Use Orcastrata to debug the failed import and verify the fix. Keep
 this task native to Codex.
 
-Orcastrata Max: I will keep this Parent task responsible for the result.
+Orcastrata: I will keep this Parent task responsible for the result.
 Native Codex is ready and needs no second account. Would you like to add an
 already-configured OpenCode or Command Code installation? You can answer
 "None," and I will continue now.
 
 User: None.
 
-Orcastrata Max: I will stay on the native Codex path. Choosing None creates no
+Orcastrata: I will stay on the native Codex path. Choosing None creates no
 file. I will inspect the failure, make only the needed changes, and run the
 focused check that covers the user-visible import behavior.
 
 [The Parent inspects the project, repairs the import, and runs the focused
 check.]
 
-Orcastrata Max: The import now succeeds in the focused check.
+Orcastrata: The import now succeeds in the focused check.
 - Parent: native Codex
 - Additional tools and models used: none
 - Token values: unknown; the host did not provide counters
@@ -197,7 +219,7 @@ Use one exact tool-and-model clause. A second route clause fails. A request to
 save, remember, persist, or make the pairing a default also stops for separate
 approval.
 
-Orcastrata Max checks the tool and verifies the existing session and exact
+Orcastrata checks the tool and verifies the existing session and exact
 model. For Command Code, a model that has no saved binding can use an in-memory
 binding on the package-owned generic transport. This does not save a profile.
 An existing disabled binding remains disabled. OpenCode requires a saved
@@ -221,11 +243,11 @@ is the approved read and write scope.
 
 An external route can send the authorized task content through the selected
 tool. That tool uses your existing account, privacy terms, quota, and billing.
-Orcastrata Max does not include that account or increase your Codex plan limits.
+Orcastrata does not include that account or increase your Codex plan limits.
 
 If the requested tool or model cannot be verified exactly, dispatch stops. You
 can configure that exact tool and try again, or ask to continue with native
-Codex. Orcastrata Max does not silently use another tool, model, route, or
+Codex. Orcastrata does not silently use another tool, model, route, or
 billing path.
 
 OpenCode and Command Code are the only public V1 exact external-tool surfaces.
@@ -253,7 +275,7 @@ starts. Ask separately if you want to save the pairing.
 For normal work, do not name a model:
 
 ```text
-Use Orcastrata Max to review this change with a compatible available worker.
+Use Orcastrata to review this change with a compatible available worker.
 ```
 
 Automatic selection uses the task role. It probes enabled candidates first.
@@ -289,11 +311,11 @@ are illustrative transcripts, not claims of live provider execution.
 ```text
 User: Use deepseek/deepseek-v4-pro through Command Code to review this patch.
 
-Orcastrata Max: I will verify the existing Command Code session, the exact
+Orcastrata: I will verify the existing Command Code session, the exact
 deepseek/deepseek-v4-pro model, and the approved task access. I will not log in
 or substitute another route.
 
-Orcastrata Max: Route preview
+Orcastrata: Route preview
 Tool: Command Code
 Model: deepseek/deepseek-v4-pro
 Runtime and billing: existing Command Code account
@@ -304,21 +326,21 @@ Fallback: disabled
 User: Continue with that preview.
 
 Success branch:
-Orcastrata Max: The verified route completed the review.
+Orcastrata: The verified route completed the review.
 - Tool and model used: Command Code, deepseek/deepseek-v4-pro
 - Result: one missing error-path test was returned to the Parent
 - Usage: unknown; Command Code did not report counters for this example
 - Final acceptance: still owned by the Parent
 
 Fail-closed branch:
-Orcastrata Max: Dispatch did not run. The existing Command Code session or the
+Orcastrata: Dispatch did not run. The existing Command Code session or the
 exact deepseek/deepseek-v4-pro model could not be verified. No other tool or
 model was used. Configure that exact pairing in Command Code and retry, or ask
 me to continue with native Codex.
 
 User: Continue with native Codex.
 
-Orcastrata Max: I will use native Codex for this task. I did not save the
+Orcastrata: I will use native Codex for this task. I did not save the
 external pairing or create a fallback preference.
 ```
 
@@ -338,7 +360,7 @@ reasoning. A worker can write only when its task approves the exact scope.
 
 ## 5. Optional First-Time Setup
 
-On first use, Orcastrata Max can explain its native defaults and ask whether
+On first use, Orcastrata can explain its native defaults and ask whether
 you want to add an optional tool.
 
 ```text
@@ -347,10 +369,10 @@ ready. Do you want to add a configured OpenCode or Command Code installation?
 "None" is valid, and native work does not wait for this choice.
 ```
 
-If you choose **None**, work continues with native Codex. Orcastrata Max does
+If you choose **None**, work continues with native Codex. Orcastrata does
 not create a configuration file only to record that answer.
 
-If you choose a tool, Orcastrata Max previews its configuration. It does not
+If you choose a tool, Orcastrata previews its configuration. It does not
 collect secrets. Complete any required authentication inside that tool's own
 trusted sign-in flow. Then return to the original task.
 
@@ -360,7 +382,7 @@ request does fail closed because substitution would violate your instruction.
 ## 6. Save A Pairing Only When You Want It
 
 The default pairing is task-local. To reuse it later, ask separately to save it.
-Orcastrata Max must show the configuration change and receive approval before
+Orcastrata must show the configuration change and receive approval before
 it writes a persistent preference.
 
 ## Advanced Options
@@ -375,14 +397,14 @@ same command, or continue without that optional feature.
 ## 7. Add Project Context And Managed Usage
 
 Project context is opt-in. Native-only work creates no project files. When you
-want Orcastrata Max to remember bounded project guidance, start in chat:
+want Orcastrata to remember bounded project guidance, start in chat:
 
 ```text
 Set up bounded project context and usage for this folder. Use AGENTS.md as the
 context file. Show me the proposed files before you create them.
 ```
 
-Orcastrata Max explains the project marker and asks for approval before it
+Orcastrata explains the project marker and asks for approval before it
 writes. You do not need a terminal command for ordinary use. The following CLI
 is an optional advanced equivalent:
 
@@ -395,7 +417,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -B \
   --skill-id codexmax-orchestrate
 ```
 
-The marker stores hashes, not copied context. Orcastrata Max reads the nearest
+The marker stores hashes, not copied context. Orcastrata reads the nearest
 valid marker for the current folder. To review more than one project, create a
 workspace marker with explicit project roots; it never scans unregistered
 directories. Installed skill IDs are references only and are not executable
@@ -419,7 +441,7 @@ Managed dispatch usage is written only for initialized projects to
 `.orcastrata/usage/dispatch.jsonl`. Ask for a used-only readout. It includes
 input, cached-input, output, reasoning, and total tokens when the provider
 reports them. Direct counters are `observed`. If a receipt omits total tokens,
-Orcastrata Max can record a `derived` input-plus-output total. Unknown values
+Orcastrata can record a `derived` input-plus-output total. Unknown values
 remain unknown with a reason. Models that were not called are not listed.
 
 Work status and accounting status are separate. A completed task can remain
@@ -520,7 +542,7 @@ me the report before I share it.
 
 ## V1 Limits
 
-Orcastrata Max V1 does not:
+Orcastrata V1 does not:
 
 - increase Codex subscription or plan limits;
 - provide, authenticate, or pay for external accounts;
@@ -535,10 +557,12 @@ Orcastrata Max V1 does not:
 - provide an Orcastrata model or replace native model weights;
 - turn provider-neutral contracts into a live generic harness;
 - run recurring monthly reports; or
-- provide Claude or other non-Codex host packages.
+- provide Grok, standalone MiniMax, or other host-native packages.
+
+Claude session-only plugin path is available only after authorized host validation and strict manifest validation.
 
 Project, month, and registered-workspace usage readouts are on-demand V1
-features. Recurring reports and non-Codex host packages are future work.
+These features remain limited by the host capabilities and validation described above. Recurring reports and unsupported host packages are future work.
 
 ## Get Help
 

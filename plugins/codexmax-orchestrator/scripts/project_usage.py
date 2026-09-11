@@ -127,6 +127,13 @@ def _token(value: Any, fallback: str) -> str:
     return fallback
 
 
+def _status(value: Any, fallback: str = "unknown") -> str:
+    """Keep short lifecycle labels while rejecting arbitrary transcript text."""
+    if isinstance(value, str) and 0 < len(value) <= 64 and "\n" not in value and "\r" not in value:
+        return value
+    return fallback
+
+
 def _source_lines(source: Any):
     if hasattr(source, "readline"):
         while True:
@@ -142,12 +149,32 @@ def _source_lines(source: Any):
     yield from iterator
 
 
+def _derive_import_action_id(event: dict[str, Any], index: int) -> str:
+    return _token(event.get("action_id") or event.get("turn_id") or event.get("id"), f"turn-{index}")
+
+
+def _import_event_identity(event: dict[str, Any]) -> tuple[str | None, bool]:
+    """Return a bounded explicit identity, if the host supplied one."""
+    value = event.get("action_id") or event.get("turn_id") or event.get("id")
+    if isinstance(value, str) and TOKEN.fullmatch(value):
+        return value, True
+    return None, False
+
+
+def _import_timestamp(value: Any, fallback: str) -> str:
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return fallback
+    return value
+
+
 def import_codex_exec_json(
     project_root: str | Path,
     task_id: str,
     source: Any,
 ) -> dict[str, Any]:
-    """Import only bounded ``turn.completed`` usage from a Codex JSON stream.
+    """Import bounded terminal turn usage from a Codex JSON stream.
 
     The stream is hashed and discarded line by line. No prompt, response,
     command, stdout, stderr, or transcript content is written to the ledger.
@@ -164,6 +191,9 @@ def import_codex_exec_json(
     line_count = 0
     byte_count = 0
     completed: list[dict[str, Any]] = []
+    active: list[dict[str, Any]] = []
+    active_explicit: dict[str, dict[str, Any]] = {}
+    next_ordinal = 1
     for raw_line in _source_lines(source):
         if isinstance(raw_line, str):
             encoded = raw_line.encode("utf-8")
@@ -180,25 +210,82 @@ def import_codex_exec_json(
             event = json.loads(encoded.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise orcastrata_project.ProjectError("usage_import_json_invalid") from exc
-        if not isinstance(event, dict) or event.get("type") != "turn.completed":
+        if not isinstance(event, dict):
+            continue
+        event_type = event.get("type")
+        if event_type == "turn.started":
+            explicit_id, has_explicit_id = _import_event_identity(event)
+            ordinal = next_ordinal
+            next_ordinal += 1
+            action_id = explicit_id or f"turn-{ordinal}"
+            timestamp = _import_timestamp(event.get("timestamp"), import_timestamp)
+            if has_explicit_id and explicit_id in active_explicit:
+                previous = active_explicit[explicit_id]
+                if previous["timestamp"] != timestamp:
+                    raise orcastrata_project.ProjectError("usage_import_turn_conflict")
+                continue
+            record = {
+                "action_id": action_id,
+                "explicit": has_explicit_id,
+                "ordinal": ordinal,
+                "timestamp": timestamp,
+            }
+            active.append(record)
+            if has_explicit_id:
+                active_explicit[action_id] = record
+            continue
+        if event_type not in {"turn.completed", "turn.failed"}:
+            # Item events and other host records are deliberately not usage rows.
             continue
         if len(completed) >= MAX_IMPORT_LINES:
             raise orcastrata_project.ProjectError("usage_import_turns_exceeded")
-        action_id = _token(
-            event.get("action_id") or event.get("turn_id") or event.get("id"),
-            f"turn-{len(completed) + 1}",
+        explicit_id, has_explicit_id = _import_event_identity(event)
+        matched: dict[str, Any] | None = None
+        if has_explicit_id:
+            matched = active_explicit.pop(explicit_id, None)
+            if matched is not None:
+                active.remove(matched)
+        else:
+            # Native streams without IDs are sequential. Match the current
+            # active no-ID turn, and allocate a fresh ordinal after completion.
+            for index in range(len(active) - 1, -1, -1):
+                if active[index]["explicit"] is False:
+                    matched = active.pop(index)
+                    break
+        if matched is None:
+            ordinal = next_ordinal
+            next_ordinal += 1
+            action_id = explicit_id or f"turn-{ordinal}"
+            ordinal_timestamp = import_timestamp
+        else:
+            action_id = matched["action_id"]
+            ordinal = matched["ordinal"]
+            ordinal_timestamp = matched["timestamp"]
+        outcome = "completed" if event_type == "turn.completed" else "failed"
+        work_status = "completed" if outcome == "completed" else "execution_unknown"
+        direct_timestamp = _import_timestamp(
+            event.get("timestamp") or event.get("completed_at"),
+            ordinal_timestamp,
         )
-        direct_timestamp = event.get("timestamp") or event.get("completed_at")
-        try:
-            datetime.strptime(direct_timestamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
-        except (TypeError, ValueError):
-            direct_timestamp = import_timestamp
         completed.append({
             "action_id": action_id,
+            "ordinal": ordinal,
             "timestamp": direct_timestamp,
             "tokens": _host_tokens(event.get("usage")),
+            "work_status": work_status,
+            "attempt_outcome": outcome,
+            "lifecycle": "completed_only" if outcome == "completed" else "terminal_event",
         })
-        del event
+    for info in active:
+        completed.append({
+            "action_id": info["action_id"],
+            "ordinal": info["ordinal"],
+            "timestamp": info["timestamp"],
+            "tokens": {field: _unknown("execution_unknown") for field in TOKEN_FIELDS},
+            "work_status": "execution_unknown",
+            "attempt_outcome": "execution_unknown",
+            "lifecycle": "open_started_turn",
+        })
     source_sha256 = "sha256:" + digest.hexdigest()
     if not completed:
         return {
@@ -223,7 +310,7 @@ def import_codex_exec_json(
         event = {
             "schema_version": 1,
             "event_id": _digest([project_id, task_id, action_id]),
-            "event_type": "dispatch_finished",
+            "event_type": "execution_unknown" if turn.get("work_status") == "execution_unknown" else "dispatch_finished",
             "timestamp": turn["timestamp"],
             "goal_id": "orcastrata:" + project_id,
             "checkpoint_id": "host_native_usage",
@@ -246,7 +333,7 @@ def import_codex_exec_json(
                 "observed_cost": _unknown("host_cost_not_reported"),
                 "token_usage": turn["tokens"],
                 "usage_source": "host_codex_exec_json",
-                "accounting_status": ACCOUNTED,
+                "accounting_status": UNKNOWN_STATUS if turn.get("work_status") == "execution_unknown" else ACCOUNTED,
                 "accounting_scope": ACCOUNTING_SCOPE,
                 "accounting_method": "bounded_native_import",
             },
@@ -255,27 +342,28 @@ def import_codex_exec_json(
                 "task_id": task_id,
                 "action_id": action_id,
                 "execution_owner": "host_native",
-                "work_status": "completed",
-                "dispatch_status": "completed",
+                "work_status": turn.get("work_status", "completed"),
+                "dispatch_status": turn.get("work_status", "completed"),
                 "import_acceptance": "accepted_bounded",
-                "lifecycle": "completed_only",
+                "lifecycle": turn.get("lifecycle", "completed_only"),
                 "external_call_performed": "unknown",
+                "attempt_outcome": turn.get("attempt_outcome", turn.get("work_status", "unknown")),
                 "source_sha256": source_sha256,
                 "source_line_count": line_count,
                 "source_bytes": byte_count,
-                "source_turn_index": len(events) + 1,
+                "source_turn_index": turn.get("ordinal", len(events) + 1),
             },
         }
         events.append(event)
     result = dispatch_ledger.append_events_idempotent(ledger_path, events)
     return {
         "status": "imported",
-        "work_status": "completed",
-        "accounting_status": ACCOUNTED,
+        "work_status": "completed" if all(t.get("work_status") == "completed" for t in completed) else "execution_unknown",
+        "accounting_status": ACCOUNTED if all(t.get("work_status") == "completed" for t in completed) else UNKNOWN_STATUS,
         "accounting_scope": ACCOUNTING_SCOPE,
         "project_id": project_id,
         "task_id": task_id,
-        "completed_turns": len(completed),
+        "completed_turns": sum(1 for t in completed if t.get("work_status") == "completed"),
         "appended": result["appended"],
         "idempotent": result["idempotent"],
         "source_sha256": source_sha256,
@@ -357,75 +445,100 @@ def _validate_month(month: str | None) -> None:
 
 
 def append_dispatch_manifest(project_root: str | Path, manifest: dict[str, Any]) -> dict[str, Any] | None:
-    """Append one metadata-only dispatch result when the project is initialized."""
-    # A preview or a rejected/non-started dispatch is not a used lane. The
-    # runner supplies this explicit provider-start fact only after a process
-    # was authorized and started.
+    """Append metadata for every provider-started attempt in a dispatch."""
     if manifest.get("external_call_performed") is not True:
         return None
     project = orcastrata_project.find_nearest(project_root)
     if project is None:
         return None
-    project_manifest = project["manifest"]
-    project_id = project_manifest["project_id"]
+    project_id = project["manifest"]["project_id"]
     dispatch_id = manifest.get("dispatch_id")
     if not isinstance(dispatch_id, str) or not dispatch_id:
         raise orcastrata_project.ProjectError("usage_dispatch_id_invalid")
+    semantic_role = str(manifest.get("semantic_role", "dispatch"))
+    assignment_id = str(manifest.get("supervisor_assignment_id", dispatch_id))
     tokens, usage_reason = _manifest_usage(manifest)
-    selected = _safe_route(manifest.get("selected_route"))
-    if not selected and isinstance(manifest.get("attempts"), list) and manifest["attempts"]:
-        last_attempt = manifest["attempts"][-1]
-        selected = _safe_route(last_attempt.get("identity"))
-        if isinstance(last_attempt.get("route_name"), str):
-            selected["route_name"] = last_attempt["route_name"]
-    accounting = {
+    base_accounting = {
         "project_id": project_id,
         "observed_tokens": tokens["total_tokens"]["value"],
         "observed_cost": _value((manifest.get("usage") or {}).get("cost")),
         "token_usage": tokens,
         "usage_source": usage_reason,
-        # This row is written only through the managed append boundary. If the
-        # append fails, no accounted row exists and the runner reports that
-        # failure separately from work status.
         "accounting_status": ACCOUNTED,
         "accounting_scope": ACCOUNTING_SCOPE,
         "accounting_method": "managed_ledger_append",
     }
     attempts = manifest.get("attempts")
-    provider_started_unknown = manifest.get("status") == "execution_unknown" or (
-        isinstance(attempts, list) and any(
-            isinstance(attempt, dict) and attempt.get("outcome") == "execution_unknown"
-            for attempt in attempts
-        )
-    )
-    event = {
-        "schema_version": 1,
-        "event_id": _digest([project_id, dispatch_id]),
-        "event_type": "execution_unknown" if provider_started_unknown else "dispatch_finished",
-        "timestamp": _timestamp(),
-        "goal_id": "orcastrata:" + project_id,
-        "checkpoint_id": str(manifest.get("semantic_role", "dispatch")),
-        "task_id": dispatch_id,
-        "assignment_id": str(manifest.get("supervisor_assignment_id", dispatch_id)),
-        "envelope_sha256": _digest({"dispatch_id": dispatch_id}),
-        "config_sha256": str(manifest.get("effective_config_sha256", "sha256:" + "0" * 64)),
-        "board_sha256": "sha256:" + "0" * 64,
-        "route": selected,
-        "lease": {},
-        "accounting": accounting,
-        "evidence": {
-            "project_id": project_id,
-            "dispatch_status": manifest.get("status", "unknown"),
-            "work_status": manifest.get("work_status", manifest.get("status", "unknown")),
-            "execution_owner": "orcastrata_managed",
-            "external_call_performed": manifest.get("external_call_performed", "unknown"),
-            "manifest_sha256": _digest(manifest),
-        },
-    }
+    started = []
+    if isinstance(attempts, list):
+        for index, attempt in enumerate(attempts):
+            if not isinstance(attempt, dict):
+                continue
+            if not (attempt.get("returncode") is not None or attempt.get("process_started") is True
+                    or attempt.get("started") is True or attempt.get("provider_process_started") is True):
+                continue
+            identity = attempt.get("attempt_id") or f"{dispatch_id}:attempt:{index}"
+            started.append((str(identity), attempt))
+    if not started and attempts is None:
+        started = [(dispatch_id, {})]
+    events = []
+    for attempt_id, attempt in started:
+        route = _safe_route(attempt.get("identity"))
+        if not route:
+            route = _safe_route(manifest.get("selected_route"))
+        if isinstance(attempt.get("route_name"), str):
+            route["route_name"] = attempt["route_name"]
+        attempt_outcome = _status(attempt.get("outcome"))
+        attempt_work_status = _status(attempt.get("work_status"), attempt_outcome)
+        attempt_dispatch_status = _status(attempt.get("dispatch_status"), attempt_outcome)
+        unknown = attempt_outcome == "execution_unknown" or attempt_work_status == "execution_unknown"
+        attempt_usage = _tokens(attempt.get("usage"))
+        attempt_accounting = {
+            **base_accounting,
+            "observed_tokens": attempt_usage["total_tokens"]["value"],
+            "token_usage": attempt_usage,
+            "observed_cost": _value((attempt.get("usage") or {}).get("cost"), reason="attempt_cost_not_reported"),
+        }
+        if "usage" not in attempt:
+            attempt_accounting["observed_cost"] = _unknown("attempt_cost_not_reported")
+            attempt_accounting["usage_source"] = "attempt_usage_not_reported"
+        else:
+            attempt_accounting["usage_source"] = "provider_manifest"
+        if unknown:
+            attempt_accounting["accounting_status"] = UNKNOWN_STATUS
+        attempt_manifest_sha = _digest({"dispatch_id": dispatch_id, "attempt": attempt})
+        event = {
+            "schema_version": 1,
+            "event_id": _digest([project_id, dispatch_id, attempt_id]),
+            "event_type": "execution_unknown" if unknown else "dispatch_finished",
+            "timestamp": _timestamp(),
+            "goal_id": "orcastrata:" + project_id,
+            "checkpoint_id": semantic_role,
+            "task_id": dispatch_id,
+            "assignment_id": assignment_id,
+            "envelope_sha256": _digest({"dispatch_id": dispatch_id, "attempt_id": attempt_id}),
+            "config_sha256": str(manifest.get("effective_config_sha256", "sha256:" + "0" * 64)),
+            "board_sha256": "sha256:" + "0" * 64,
+            "route": route,
+            "lease": {},
+            "accounting": {**attempt_accounting, "attempt_identity": attempt_id, "semantic_role": semantic_role},
+            "evidence": {
+                "project_id": project_id,
+                "action_id": attempt_id,
+                "dispatch_status": attempt_dispatch_status,
+                "work_status": attempt_work_status,
+                "execution_owner": "orcastrata_managed",
+                "external_call_performed": True,
+                "manifest_sha256": attempt_manifest_sha,
+                "attempt_identity": attempt_id,
+                "attempt_outcome": attempt_outcome,
+            },
+        }
+        events.append(event)
     ledger_path = _project_usage_ledger_path(project)
     import dispatch_ledger
-    return dispatch_ledger.append_event(ledger_path, event)
-
+    result = dispatch_ledger.append_events_idempotent(ledger_path, events)
+    return result["records"][-1] if result.get("records") else None
 
 def _sum_field(rows: list[dict[str, Any]], field: str) -> Any:
     values = [row["accounting"].get("token_usage", {}).get(field, {}).get("value") for row in rows]
@@ -504,16 +617,22 @@ def readout(ledger_path: str | Path, *, project_id: str | None = None, month: st
     for row in rows:
         route = row["route"]
         accounting_status = _accounting_status(row)
+        attempt_identity = row["accounting"].get("attempt_identity", row["task_id"])
+        semantic_role = row["accounting"].get("semantic_role", row["checkpoint_id"])
         entries.append({
             "event_id": row["event_id"],
             "project_id": row["accounting"].get("project_id", project_id or "unknown"),
             "ask_id": row["task_id"],
             "action_id": row["evidence"].get("action_id", row["task_id"]),
+            "attempt_identity": attempt_identity,
+            "semantic_role": semantic_role,
+            "assignment_id": row["assignment_id"],
             "tool": route.get("tool", route.get("provider", "unknown")),
             "model": route.get("model", "unknown"),
             "route": route.get("route_name", route.get("route_id", "unknown")),
             "status": row["evidence"].get("dispatch_status", row["event_type"]),
             "work_status": row["evidence"].get("work_status", row["evidence"].get("dispatch_status", row["event_type"])),
+            "attempt_outcome": row["evidence"].get("attempt_outcome", row["evidence"].get("work_status", row["event_type"])),
             "accounting_status": accounting_status,
             "execution_owner": row["evidence"].get("execution_owner", "unknown"),
             "usage": row["accounting"].get("token_usage", {field: _unknown() for field in TOKEN_FIELDS}),

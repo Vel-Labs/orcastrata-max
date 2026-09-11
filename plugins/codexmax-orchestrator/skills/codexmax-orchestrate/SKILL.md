@@ -16,23 +16,28 @@ nearest `AGENTS.md`. Do not scan historical plugin caches, reports, goals,
 archives, or memory unless asked. If identity is stale or ambiguous, report it
 first. Use the supported update or reinstall path. Do not delete caches manually.
 
-Native Codex defaults are usable without a configuration file. Explain this
-once when setup has not been completed:
+The invoking chat is the Parent/PM for scope, integration, verification, and
+final acceptance. Preserve its reported model identity; if the host does not
+report it, record it as unknown. Worker and Supervisor model preferences are
+optional. When no preference is supplied, use an observed eligible host default
+under the existing authority rules. Do not force setup or model selection.
 
-- native Codex is ready now;
-- Sol medium or high is the recommended Parent starting point;
-- Luna is one native starting option, not an exclusive Worker or review lane;
-- Terra is never selected automatically;
-- model identity never grants read or write authority; and
-- additional inference is useful only when it can change the outcome.
+Natural-language role preferences compile into existing scoped configuration
+fields. An exact unavailable or unverified preference returns `resolution_need`
+with no silent fallback. A prefer request may retain an already eligible route
+only when the requested pair is unavailable. Model identity never grants read
+or write authority. Additional inference is useful only when it can change the
+outcome.
+
+Use the native Codex surface when the current host exposes it. Use Claude's
+native Agent surface only when the current host exposes and authorizes it. The
+OpenCode and Command Code paths remain the exact external-tool boundaries.
 
 Ask one non-blocking question: which optional accounts, if any, should be added
 for OpenCode or Command Code. `None` is valid.
 Continue useful native work while the answer is absent. Do not repeat the
 question in the same conversation. Choosing `None` creates no file. OpenCode
-and Command Code are the only V1 exact external-tool surfaces. Other hosts are
-future packages, even when their names appear as configuration candidates.
-
+and Command Code are the only V1 exact external-tool surfaces.
 For native-only use, create no configuration file. For selected accounts, use
 `$codexmax-orchestrator:codexmax-config` and preview an absent-only overlay.
 Never handle a secret. Configuration proves no authentication, qualification,
@@ -73,22 +78,23 @@ Use this decision order:
    recovery-heavy, multi-session, or high-risk work.
 
 Ask: `Would an independent lane add material value?` Parent always owns scope,
-integration, and final acceptance. Use the fewest lanes that can change the
-outcome. Provider availability is not a reason to delegate. A Worker must pass
+integration, and final acceptance. Select lanes that minimize expected Parent
+effort, repair cost, uncertainty, and critical path within authority and
+budget. Provider availability is not a reason to delegate. A Worker must pass
 identity, capability, authority, privacy, billing, health, quota, and capacity
 checks. Unknown cost is not cheapest.
 
 For ordinary read-only work, when an independent external lane adds material
 value, use `scripts/run_automatic_provider_task.py`. Infer one semantic role
 from the task: `planner`, `architect`, `worker`, `tester`, `documenter`, or
-`auditor`. Do not ask the operator to select a model. The selector first probes
-enabled saved bindings in package role order. It can then inspect the fixed
-Command Code model catalog and create in-memory bindings on the generic
-Command Code transport. It records the exact selected model and does not save
-the discovery. A probe denial can move to the next candidate. A started task
-never falls back. The selector accepts no executable, endpoint, credential, or
-arbitrary transport from the operator. Native workers remain valid. This is
-not global interception outside the loaded skill.
+`auditor`. Do not ask the operator to select a model. The selector probes only
+enabled saved bindings in package role order. It does not turn models listed by
+Command Code into automatic candidates. A generic Command Code model binding
+is valid only when the operator explicitly names Command Code. A probe denial
+can move to the next configured candidate. A started task never falls back.
+The selector accepts no executable, endpoint, credential, or arbitrary
+transport from the operator. Native workers remain valid. This is not global
+interception outside the loaded skill.
 
 Select from all configured and qualified routes. Require fresh identity,
 capability, authority, privacy, billing, health, quota, and capacity. Prefer
@@ -108,6 +114,18 @@ Parent unless explicitly overridden and fixed native roles select their own
 model. If that would override the intended route, fail closed and show the
 concise approval preview. Persist the projection receipt and returned child ID.
 Do not call native collaboration an external-provider dispatch.
+
+For an opt-in `controller_execution` package, include the complete task scope
+and exact controller, worker, and reviewer model/effort references in the same
+projection packet. The controller may prepare inputs, apply allowed proposals,
+run validation, and request changed-hypothesis repairs. An independent reviewer
+receives the frozen candidate. Internal readiness does not advance GoalBuddy or
+transfer final acceptance. Parent remains the observed invoking identity and
+final acceptance owner. Pass the projector's bounded assignment text verbatim
+to the native host tool. Record the returned child ID with the projection
+receipt. Scope is an instruction; actual enforcement depends on independently
+configured host permissions; the projection grants no sandbox. A missing host pair returns `resolution_need`; do not substitute a
+model or assume local-model support.
 
 When a native child fails because its model usage, quota, or rate limit is
 exhausted, preserve that exact attempt and rotate through Orcastrata to the next
@@ -133,6 +151,13 @@ Codex. Orcastrata Max owns bounded Worker execution. GoalBuddy owns durable
 board truth; it does not dispatch providers or accept work.
 
 ## Route The Work
+
+When the operator asks Orcastrata to execute a GitHub-backed GoalBuddy or
+WorkGraph project, invoke `$codexmax-orchestrator:codexmax-github`. That skill
+is the single Parent-owned route across projection, issue reconciliation,
+bounded pull requests, full audit, guarded merge, and terminal closeout. It
+does not infer authority from authentication, the current directory, or Git
+remotes.
 
 For an explicit read-only GitHub request, use
 `scripts/github_cli_read.py`. Require the operator to supply the exact lowercase
