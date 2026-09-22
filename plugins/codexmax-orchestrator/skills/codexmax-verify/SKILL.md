@@ -16,6 +16,12 @@ changed behavior -> focused proof -> risk-based independent check when useful
 -> Parent review -> release/global proof only when the boundary requires it
 ```
 
+For a benchmark, retrieval system, model pipeline, or optimization, verify the
+mechanism first on one or two representative cases. Inspect exact input,
+output, and failure behavior before broad aggregate validation. An audit,
+package check, or reproducible harness does not prove product value. Do not
+freeze a release candidate with a known material regression.
+
 - Builder runs focused repository-native checks for the changed behavior.
 - Add Tester only when independent reproduction, a user path, or a distinct
   negative or boundary case can change the acceptance decision.
@@ -28,10 +34,12 @@ changed behavior -> focused proof -> risk-based independent check when useful
   migration or destructive scope, shared-runtime change with unknown global
   impact, or another named repository-wide acceptance boundary.
 
-Do not add a lane, test, fixture, receipt, or rerun only to make the process
-look complete. Reuse a passing result when the tested source and relevant
-environment are unchanged. A changed hypothesis can justify a new focused run;
-an unchanged failure does not justify repetition.
+Do not add a lane, test, fixture, receipt, benchmark generation, audit, or rerun
+only to make the process look complete. Reuse a passing result when the tested
+source and relevant environment are unchanged. A changed product hypothesis,
+candidate, or tested boundary can justify a new focused run; an unchanged
+failure or harness-only repair does not justify a new governed cycle. After two
+harness failures before product evidence exists, use a direct executable path.
 
 A passing style validator is not technical proof. A passing unit test is not
 proof of untested workflows. Record `not_run`, `not_applicable`, and `unknown`

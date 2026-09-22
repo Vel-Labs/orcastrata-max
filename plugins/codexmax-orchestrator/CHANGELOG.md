@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1 - 2026-09-22
+
+- Put the smallest real product proof before orchestration, packaging, and
+  release work.
+- Default to one owner and require material value before delegation.
+- Stop repeated harness repair after two failures without product evidence.
+- Keep routine commands and internal gates with the Parent instead of the
+  operator.
+
 ## 1.4.0 - 2026-09-11
 
 - Keep the invoking chat as PM and resolve model preferences by task role.
