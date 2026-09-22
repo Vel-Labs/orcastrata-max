@@ -75,7 +75,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
     def test_claude_manifest_preserves_identity_and_components(self):
         manifest = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "codexmax-orchestrator")
-        self.assertEqual(manifest["version"], "1.4.0")
+        self.assertEqual(manifest["version"], "1.4.1")
         self.assertNotIn("skills", manifest)
         self.assertNotIn("hooks", manifest)
         self.assertTrue((PLUGIN / "skills").is_dir())
@@ -115,7 +115,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
 
     def test_cache_parity_ignores_only_pycache_bytecode(self):
         with tempfile.TemporaryDirectory() as temporary:
-            cache = Path(temporary) / "codexmax-orchestrator/1.4.0"
+            cache = Path(temporary) / "codexmax-orchestrator/1.4.1"
             shutil.copytree(PLUGIN, cache)
             generated = cache / "scripts/__pycache__/generated.cpython-313.pyc"
             generated.parent.mkdir(exist_ok=True)

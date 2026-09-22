@@ -8,6 +8,17 @@
 4. Preserve the requested outcome, scope, and safety boundaries.
 5. Ask only when a decision is materially ambiguous or needs approval.
 
+## Execution Priority
+
+1. Preserve safety, authority, user data, and external-effect boundaries.
+2. Prove the primary product hypothesis through the smallest real end-to-end path.
+3. Implement the smallest change that improves that observable result.
+4. Run proportional validation.
+5. Record governance, audit, package, and lifecycle evidence.
+
+Governance artifacts do not count as product progress. Do not let them delay a
+safe product proof.
+
 ## Parent Ownership
 
 - Keep one visible Parent responsible for the outcome.
@@ -17,6 +28,7 @@
 - Give each worker a bounded task, allowed files, and acceptance condition.
 - Preserve other contributors' work in a dirty repository.
 - Do not create workers, tests, or reports only to increase activity.
+- Available model capacity is not a reason to delegate.
 
 ## Tool And Model Requests
 
@@ -62,8 +74,21 @@
 - Do not rerun an expensive green command without changed inputs or a stated reason.
 - A passing synthetic test does not prove installation or a real user journey.
 - Classify failures as product, baseline, or harness/environment defects.
+- For a benchmark, retrieval system, model pipeline, or optimization, inspect
+  exact input, output, and failure behavior on one or two representative cases
+  before a broad study, package freeze, release candidate, or aggregate claim.
+- After two harness failures before product evidence exists, stop extending the
+  harness and use a direct executable path.
+- Do not package or name a release candidate with a known material regression.
 - Keep work status separate from accounting status. Report missing usage as
   `unknown`; do not infer it from configured routes or worker count.
+
+## Operator Burden
+
+- Own routine commands, retries, environment checks, and validation inside the
+  approved scope.
+- Do not ask the operator to run a command only to satisfy an Orcastrata-created gate.
+- Validate every non-secret prerequisite before one complete unavoidable operator action.
 
 ## Handoff
 

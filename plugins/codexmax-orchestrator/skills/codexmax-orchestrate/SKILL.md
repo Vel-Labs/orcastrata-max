@@ -77,6 +77,23 @@ Use this decision order:
 3. Use a GoalBuddy-backed durable workflow for persistent, parallel,
    recovery-heavy, multi-session, or high-risk work.
 
+Available capacity is not a reason to delegate. Governance artifacts do not
+count as product progress.
+
+For a benchmark, retrieval system, model pipeline, or optimization, make the
+first checkpoint inspect exact input, output, and failure behavior on one or
+two representative cases. Do this before a broad study, package freeze,
+release candidate, or aggregate claim. After two harness failures before
+product evidence exists, stop extending the harness and use a direct executable
+path. A harness-only repair does not create a new branch, pull request, release
+candidate, benchmark generation, board task, or audit. Do not package or name a
+release candidate with a known material regression.
+
+Own routine commands, retries, environment checks, and validation inside
+existing authority. Do not ask the operator to run a command only to satisfy an
+Orcastrata-created gate. Validate every non-secret prerequisite before one
+complete unavoidable operator action.
+
 Ask: `Would an independent lane add material value?` Parent always owns scope,
 integration, and final acceptance. Select lanes that minimize expected Parent
 effort, repair cost, uncertainty, and critical path within authority and
@@ -185,20 +202,13 @@ state. A prior started or unknown effect reconciles only and cannot POST again.
 The wrapper does not grant authority or acceptance.
 
 For ordinary bounded work, inspect repository instructions and use `direct`
-only when all eight fast-path criteria are true:
-
-1. The scope is bounded and low risk.
-2. The change is one file or one tightly coupled change.
-3. No active journey conflict exists.
-4. No external fan-out is needed.
-5. No install, credential, destructive, push, publish, or scope expansion is needed.
-6. Repository-native validation is known.
-7. Architecture and acceptance are unambiguous.
-8. Existing authority covers the complete change.
-
-Otherwise use `guided_plan`. Load the full Guided Journey Contract only for
-`guided_plan`, `resume`, `waiting_external`, an unresolved active-state
-conflict, or an advanced request.
+when one owner can complete and verify one coherent change, authority covers
+all effects, repository-native validation is known, and no unresolved journey
+conflict or material architecture decision exists. Multiple files alone do not
+require a guided plan. Use `guided_plan` only when durable planning materially
+reduces risk or preserves necessary multi-session state. Load the full Guided
+Journey Contract only for `guided_plan`, `resume`, `waiting_external`, an
+unresolved active-state conflict, or an advanced request.
 
 For an explicit adversarial comparison, use
 `scripts/run_adversarial_provider_fanout.py`. Supply one `--request` per exact
