@@ -70,6 +70,15 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
                 self.assertIn("persistent", text)
                 self.assertIn("GoalBuddy", text)
 
+    def test_document_only_plan_does_not_create_a_child_board(self):
+        for path in ("skills/codexmax-plan/SKILL.md", "assets/templates/implementation-plan.md"):
+            with self.subTest(path=path):
+                text = (PLUGIN / path).read_text(encoding="utf-8")
+                hierarchy = text.split("## Phase-To-Milestone Hierarchy", 1)[1].split("\n## ", 1)[0]
+                self.assertIn("For `document_only`", hierarchy)
+                self.assertIn("do not create a child board", hierarchy)
+                self.assertIn("For board-backed modes", hierarchy)
+
     def test_audit_full_is_advisory_and_read_only(self):
         focused = (PLUGIN / "commands/orcastrata-audit.toml").read_text(encoding="utf-8")
         full = (PLUGIN / "skills/codexmax-audit-full/SKILL.md").read_text(encoding="utf-8")

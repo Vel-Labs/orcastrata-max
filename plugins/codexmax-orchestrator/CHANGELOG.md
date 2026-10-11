@@ -4,7 +4,9 @@
 
 - Keep bounded parallel and tandem feature-planning lanes board-free; align the
   planning skill and guided contracts while preserving selected durable workflows.
-- Correct the instruction conflict found by the 1.4.2 post-installation workers.
+- Keep document-only plans free of child boards; apply the milestone board
+  hierarchy only to selected board-backed modes.
+- Correct the instruction conflicts found by post-installation and isolated tests.
 
 ## 1.4.2 - 2026-10-10
 

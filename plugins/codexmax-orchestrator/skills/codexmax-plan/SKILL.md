@@ -61,8 +61,9 @@ roadmap owner at closeout; never silently edit or complete the roadmap.
 
 ## Phase-To-Milestone Hierarchy
 
-Reject or split a flat mega-task or giga-task before execution. Use a Parent
-task as the phase container. Put its executable work in one depth-one child
+Reject or split a flat mega-task or giga-task before execution.
+For `document_only`, keep bounded milestones in the plan; do not create a child board.
+For board-backed modes, use a Parent task as the phase container. Put its executable work in one depth-one child
 board whose tasks are bounded milestones. Each milestone must name its
 dependencies, its independently useful outcome, its proof, and its stop
 conditions. Keep exactly one milestone active unless the board contract

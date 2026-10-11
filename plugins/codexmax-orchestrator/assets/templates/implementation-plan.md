@@ -33,6 +33,9 @@ No active task. This document-only plan has not created execution state.
 
 ## Phase-To-Milestone Hierarchy
 
+For `document_only`, keep bounded milestones in this plan; do not create a child board.
+Parallelism alone does not require GoalBuddy or WorkGraph.
+
 - Parent phase: <Parent task id and phase outcome>
 - Child board: <depth-one child board path, or not applicable>
 - Child milestones: <ordered milestone ids and outcomes>
@@ -42,7 +45,7 @@ No active task. This document-only plan has not created execution state.
 - Dependencies: <milestone dependency order>
 - Independently useful outcomes: <usable result produced by each milestone>
 
-Use the Parent task as a phase container. Put bounded executable milestones in
+For board-backed modes, use the Parent task as a phase container. Put bounded executable milestones in
 one depth-one child board. Do not create child `T999` tasks. Reserve terminal
 `T999` for Parent/PM lifecycle closeout.
 
