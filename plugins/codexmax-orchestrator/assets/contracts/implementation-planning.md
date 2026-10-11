@@ -49,11 +49,14 @@ any of these are true:
 - work likely spans more than one session;
 - the plan contains four or more implementation tasks;
 - dependency gates or independent audit are required;
-- parallel or tandem lanes are useful;
 - external authorization, retention, privacy, or other fail-closed constraints
   affect the work;
 - the operator requests persistent progress, handoffs, continuous execution,
   GoalBuddy, or `/goal`.
+
+Parallelism alone does not require GoalBuddy or WorkGraph. Useful bounded
+parallel or tandem lanes may use `document_only`; preserve explicitly selected
+board-backed workflows and their existing authority.
 
 When repository conventions do not provide a planning location,
 `document_only` plans default to `docs/plans/`. Board-backed plans default to

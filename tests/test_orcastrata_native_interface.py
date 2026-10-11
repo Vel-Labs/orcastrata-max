@@ -50,6 +50,26 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
             self.assertTrue((PLUGIN / "skills" / tokens[0].split(":", 1)[1] / "SKILL.md").is_file())
             self.assertNotIn("/orcastrata-", prompt)
 
+    def test_bounded_parallel_planning_does_not_require_board_state(self):
+        paths = (
+            "assets/contracts/guided-journey.md",
+            "assets/contracts/implementation-planning.md",
+            "skills/codexmax-plan/SKILL.md",
+        )
+        obsolete_triggers = (
+            "Persistent, parallel,", "persistent, parallel,",
+            "persistent, gated, parallel,", "gates, parallel or tandem lanes",
+            "- parallel or tandem lanes are useful;",
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                text = (PLUGIN / path).read_text(encoding="utf-8")
+                for trigger in obsolete_triggers:
+                    self.assertNotIn(trigger, text)
+                self.assertIn("Parallelism alone does not require GoalBuddy or WorkGraph", text)
+                self.assertIn("persistent", text)
+                self.assertIn("GoalBuddy", text)
+
     def test_audit_full_is_advisory_and_read_only(self):
         focused = (PLUGIN / "commands/orcastrata-audit.toml").read_text(encoding="utf-8")
         full = (PLUGIN / "skills/codexmax-audit-full/SKILL.md").read_text(encoding="utf-8")
@@ -86,7 +106,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
     def test_claude_manifest_preserves_identity_and_components(self):
         manifest = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "codexmax-orchestrator")
-        self.assertEqual(manifest["version"], "1.4.2")
+        self.assertEqual(manifest["version"], "1.4.3")
         self.assertNotIn("skills", manifest)
         self.assertNotIn("hooks", manifest)
         self.assertTrue((PLUGIN / "skills").is_dir())
@@ -143,7 +163,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
 
     def test_cache_parity_ignores_only_pycache_bytecode(self):
         with tempfile.TemporaryDirectory() as temporary:
-            cache = Path(temporary) / "codexmax-orchestrator/1.4.2"
+            cache = Path(temporary) / "codexmax-orchestrator/1.4.3"
             shutil.copytree(PLUGIN, cache)
             generated = cache / "scripts/__pycache__/generated.cpython-313.pyc"
             generated.parent.mkdir(exist_ok=True)

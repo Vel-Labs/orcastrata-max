@@ -1,6 +1,6 @@
 {
   "name": "codexmax-orchestrator",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "The open agentic orchestration layer for governed multi-host tasks.",
   "author": {
     "name": "Vel Labs"

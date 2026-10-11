@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.3 - 2026-10-10
+
+- Keep bounded parallel and tandem feature-planning lanes board-free; align the
+  planning skill and guided contracts while preserving selected durable workflows.
+- Correct the instruction conflict found by the 1.4.2 post-installation workers.
+
 ## 1.4.2 - 2026-10-10
 
 - Use the supported Codex skill entry; disclose the CLI 0.162.0 slash-command

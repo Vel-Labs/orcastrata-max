@@ -45,10 +45,14 @@ Choose exactly one mode:
 - `document_only` for bounded work that does not need persistent execution
   state;
 - `board_prepared` when the plan spans sessions, has four or more tasks, uses
-  gates, parallel or tandem lanes, external constraints, persistent handoffs,
+  gates, external constraints, persistent handoffs,
   GoalBuddy, or `/goal`;
 - `execution_authorized` only when the operator has explicitly authorized
   execution within the recorded scope.
+
+Parallelism alone does not require GoalBuddy or WorkGraph. Useful bounded
+parallel or tandem lanes may use `document_only`; preserve explicitly selected
+board-backed workflows and their existing authority.
 
 Multiple roadmap items belong in one implementation plan only when they share
 one acceptance oracle, architecture boundary, and delivery sequence. Otherwise

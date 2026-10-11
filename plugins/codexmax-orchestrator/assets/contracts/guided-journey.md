@@ -40,7 +40,7 @@ expansion, push, or publication.
 ```mermaid
 flowchart TD
   R["Ordinary-language request"] --> P["Parent owns outcome and integration"]
-  P --> D{"Persistent, parallel, recovery-heavy, multi-session, or high-risk?"}
+  P --> D{"Persistent, recovery-heavy, multi-session, or high-risk?"}
   D -->|Yes| G["GoalBuddy-backed durable workflow"]
   D -->|No| V{"Would an independent lane add material value?"}
   V -->|No| X["Parent executes directly"]
@@ -57,8 +57,11 @@ Use these three levels by default:
    its context, and work where delegation overhead exceeds its value.
 2. Codexmax delegates a bounded task only when independence adds material
    confidence, challenges a decision, or shortens the critical path.
-3. GoalBuddy backs persistent, parallel, recovery-heavy, multi-session, or
+3. GoalBuddy backs persistent, recovery-heavy, multi-session, or
    high-risk work with a durable Supervisor workflow.
+
+Parallelism alone does not require GoalBuddy or WorkGraph. Preserve explicitly
+selected board-backed workflows and their existing authority.
 
 Parent always owns scope, integration, and final acceptance. Provider
 availability is not a reason to delegate. Use the fewest lanes that can change
@@ -133,7 +136,7 @@ use `guided_plan` and the
 become broad roadmap compilation solely because a roadmap is their source.
 
 The planning output is adaptive: `document_only` for bounded work,
-`board_prepared` for persistent, gated, parallel, or multi-session work, and
+`board_prepared` for persistent, gated, or multi-session work, and
 `execution_authorized` only with explicit authority. No new first-run public
 skill is introduced. GoalBuddy remains board truth when backing is selected.
 
