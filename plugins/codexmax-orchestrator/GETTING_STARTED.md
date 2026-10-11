@@ -49,8 +49,9 @@ codex plugin marketplace remove codexmax-orchestrator --json
 Start a new Codex task after installation so the host reloads its skill
 inventory.
 
-The plugin includes native `/orcastrata-*` commands and lifecycle hooks. Review
-and trust the installed hook when Codex requests it. Trust is bound to the
+The plugin registers Codex skills and lifecycle hooks. Codex CLI 0.162.0 does
+not register plugin slash commands; use `/skills` or the explicit skill below.
+Review and trust the installed hook when Codex requests it. Trust is bound to the
 installed hook hash, so a changed package can require trust again.
 
 The first conversation uses the currently installed package. It does not need
@@ -66,10 +67,10 @@ Ask for the result you want:
 Use Orcastrata to fix the import bug and verify the user-visible result.
 ```
 
-The equivalent native command is:
+The explicit Codex skill entry is:
 
 ```text
-/orcastrata-orchestrate fix the import bug and verify the user-visible result
+$codexmax-orchestrator:codexmax-orchestrate fix the import bug and verify the user-visible result
 ```
 
 Ordinary bounded native repository work can stay board-free, including useful
@@ -89,10 +90,10 @@ See [local handoff guidance](skills/codexmax-github/SKILL.md#ordinary-local-repo
 For an explicitly selected, authorized GitHub-backed board, use:
 
 ```text
-/orcastrata-github execute this board for github.com/owner/repository
+$codexmax-orchestrator:codexmax-github execute this board for github.com/owner/repository
 ```
 
-The command composes issue reconciliation, bounded Workers, pull requests,
+The skill composes issue reconciliation, bounded Workers, pull requests,
 full audit, merge, and guarded closeout. Authentication alone does not
 authorize GitHub effects. Name the exact repository and allowed effects in the
 request.

@@ -19,11 +19,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Orchestrate \u2014 Use /orcastrata-orchestrate for native-first work and optional account setup.",
-      "GitHub \u2014 Use /orcastrata-github for the governed issue-to-merge workflow.",
-      "Discover \u2014 Use /orcastrata-discover for evidence-backed directions for this repository.",
-      "Audit \u2014 Use /orcastrata-audit for focused verification.",
-      "Audit Full \u2014 Use /orcastrata-audit-full for the read-only umbrella gate."
+      "Orchestrate \u2014 Use $codexmax-orchestrator:codexmax-orchestrate for native-first work.",
+      "GitHub \u2014 Use $codexmax-orchestrator:codexmax-github for an explicitly governed workflow.",
+      "Audit \u2014 Use $codexmax-orchestrator:codexmax-verify for focused verification."
     ]
   }
 }

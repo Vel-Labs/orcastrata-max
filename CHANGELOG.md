@@ -2,6 +2,8 @@
 
 ## 1.4.2 - 2026-10-10
 
+- Use the supported Codex skill entry; disclose the CLI 0.162.0 slash-command
+  limitation and keep interface prompts within the host limit of three.
 - Keep ordinary bounded native delegation and local issue/PR drafts board-free;
   retain explicitly selected GoalBuddy and WorkGraph authority.
 - Align session guidance, the orchestration entry, and the local GitHub handoff.

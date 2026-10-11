@@ -37,14 +37,8 @@ After installation, start a new Codex task and ask for the work you want:
 Use Orcastrata to improve this project's onboarding and verify the result.
 ```
 
-Or use the native command:
-
-```text
-/orcastrata-orchestrate improve this project's onboarding and verify the result
-```
-
-Native Codex works without another account or configuration file. If needed,
-invoke the compatibility skill directly:
+Native Codex works without another account or configuration file. Invoke the
+compatible skill directly:
 
 ```text
 Use $codexmax-orchestrator:codexmax-orchestrate to improve this project's
@@ -103,28 +97,32 @@ the host permissions. Model identity and reasoning effort never grant extra file
 Orcastrata does not read, copy, refresh, or store provider credentials.
 Authentication remains in the provider tool that you configured.
 
-## Native Commands
+## Codex Skills
 
-| Need | Native command |
+Use `/skills` or the exact skill ID. Codex CLI 0.162.0 does not register plugin
+slash commands. The packaged `commands/*.toml` aliases remain compatibility
+assets; their presence does not prove host activation.
+
+| Need | Codex skill |
 | --- | --- |
-| Run work | `/orcastrata-orchestrate` |
-| Explore first | `/orcastrata-discover` |
-| Build a plan | `/orcastrata-plan` |
-| Run a GitHub project | `/orcastrata-github` |
-| Inspect setup | `/orcastrata-config` |
-| Choose a route | `/orcastrata-route` |
-| Compile an assignment | `/orcastrata-assignment` |
-| Supervise workers | `/orcastrata-supervise` |
-| Audit a result | `/orcastrata-audit` |
-| Audit a full GitHub workflow | `/orcastrata-audit-full` |
-| Close execution | `/orcastrata-closeout` |
-| Run an accepted loop | `/orcastrata-loop` |
+| Run work | `$codexmax-orchestrator:codexmax-orchestrate` |
+| Explore first | `$codexmax-orchestrator:codexmax-discover` |
+| Build a plan | `$codexmax-orchestrator:codexmax-plan` |
+| Run a GitHub project | `$codexmax-orchestrator:codexmax-github` |
+| Inspect setup | `$codexmax-orchestrator:codexmax-config` |
+| Choose a route | `$codexmax-orchestrator:codexmax-route` |
+| Compile an assignment | `$codexmax-orchestrator:codexmax-assignment` |
+| Supervise workers | `$codexmax-orchestrator:codexmax-supervise` |
+| Audit a result | `$codexmax-orchestrator:codexmax-verify` |
+| Audit a full GitHub workflow | `$codexmax-orchestrator:codexmax-audit-full` |
+| Close execution | `$codexmax-orchestrator:codexmax-closeout` |
+| Run an accepted loop | `$codexmax-orchestrator:codexmax-loop` |
 
 The existing `$codexmax-orchestrator:codexmax-*` skill IDs remain supported.
 
 ### GitHub-backed project cadence
 
-Use `/orcastrata-github` as the supervisor route when a project uses GitHub and
+Use `$codexmax-orchestrator:codexmax-github` as the supervisor route when a project uses GitHub and
 the operator names the exact repository plus the allowed read or write effects.
 Keep GoalBuddy and WorkGraph canonical. Synchronize only high-signal events to
 the managed umbrella:
@@ -142,7 +140,7 @@ the repository, identity, permission, scope, and reconciliation gates.
 
 ### Optional umbrella catalog
 
-`/orcastrata-github` can build a local index from an explicit manifest of saved
+`$codexmax-orchestrator:codexmax-github` can build a local index from an explicit manifest of saved
 umbrella projection receipts. It does not discover projects or call GitHub.
 
 ```text

@@ -39,6 +39,17 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
             self.assertIn("{{args}}", prompt)
             self.assertTrue((PLUGIN / "skills" / COMMANDS[path.stem] / "SKILL.md").is_file())
 
+    def test_codex_interface_prompts_use_loadable_skills(self):
+        manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        prompts = manifest["interface"]["defaultPrompt"]
+        self.assertGreater(len(prompts), 0)
+        self.assertLessEqual(len(prompts), 3)
+        for prompt in prompts:
+            tokens = [word for word in prompt.split() if word.startswith("$codexmax-orchestrator:")]
+            self.assertEqual(len(tokens), 1)
+            self.assertTrue((PLUGIN / "skills" / tokens[0].split(":", 1)[1] / "SKILL.md").is_file())
+            self.assertNotIn("/orcastrata-", prompt)
+
     def test_audit_full_is_advisory_and_read_only(self):
         focused = (PLUGIN / "commands/orcastrata-audit.toml").read_text(encoding="utf-8")
         full = (PLUGIN / "skills/codexmax-audit-full/SKILL.md").read_text(encoding="utf-8")
