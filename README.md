@@ -10,7 +10,7 @@ is the Parent. It can use native Codex or selected configured tools.
 You can make an exact tool and model request in ordinary language:
 
 ```text
-Use MiniMax-M3 through OpenCode.
+Use <verified-opencode-model-id> through OpenCode.
 ```
 
 Native Codex is enough for normal use. Orcastrata Max does not increase your
@@ -26,7 +26,7 @@ Orcastrata Max provides three plain outcomes:
 
 1. One visible Parent owns the result, integration, and final answer.
 2. Extra inference joins only when it can improve the result.
-3. Every worker stays inside the access approved for its task.
+3. Each worker receives an explicit task scope; host permissions control access.
 
 Use it to debug a defect, build a bounded feature, clean up a repository,
 research options before a change, or review completed work. Tool and model
@@ -111,13 +111,13 @@ matrix before relying on a native or external route.
 If OpenCode or Command Code is already installed and configured, say:
 
 ```text
-Use MiniMax-M3 through OpenCode.
+Use <verified-opencode-model-id> through OpenCode.
 ```
 
 or:
 
 ```text
-Use deepseek/deepseek-v4-pro through Command Code.
+Use deepseek/deepseek-v4.1-flash through Command Code.
 ```
 
 Orcastrata Max verifies the existing tool session and exact model. It then
@@ -129,6 +129,10 @@ routes, or billing paths silently.
 An external request can send the authorized task content through the selected
 tool. That tool uses your account, privacy terms, quota, and billing. Orcastrata
 Max does not add an external account or increase your Codex plan limits.
+
+The public provider task path requires read access to the whole admitted
+repository root. Naming a patch does not enforce narrower reads. Use a separate
+nonsecret input root when only selected files may be disclosed.
 
 The pairing applies only to the current task. Saving it as a preference is a
 separate configuration change and requires your approval.
@@ -174,8 +178,9 @@ Provider workers receive bounded inputs under the
 ## Trust Model
 
 The Parent owns the outcome and accepts the final result. Your request selects
-an exact tool or model when you name one. Each worker receives only its approved
-task scope. Model capability or reasoning effort never grants extra access.
+an exact tool or model when you name one. Each worker receives its approved
+task scope. Scope instructions do not create a sandbox; enforcement depends on
+the host permissions. Model capability or reasoning effort never grants extra access.
 
 ## Support Matrix
 

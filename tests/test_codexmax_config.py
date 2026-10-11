@@ -1,9 +1,15 @@
 import importlib.util
+import contextlib
+import copy
+import io
+import json
+import subprocess
 import argparse
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 _PATH = Path(__file__).parents[1] / "plugins/codexmax-orchestrator/scripts/resolve_codexmax_config.py"
@@ -93,6 +99,77 @@ class DeclarativeModelConfigTests(unittest.TestCase):
             self.assertEqual(first.read_bytes(), first_bytes)
             self.assertFalse(second_receipt["input_mutated"])
 
+
+
+class ExplicitRoutePreviewTests(unittest.TestCase):
+    MODEL = "synthetic/sprint-model"
+
+    def preview(self, root, overlay=None):
+        argv = ["explicit-route", "preview", "--repo-root", str(root),
+                "--request", f"Use {self.MODEL} through Command Code",
+                "--task-id", "preview-regression", "--task-grant-sha256", "sha256:" + "a" * 64,
+                "--json"]
+        if overlay is not None:
+            path = root / "overlay.json"
+            path.write_text(json.dumps({"schema_version": 3, "adapter_registry": {"bindings": {
+                overlay["binding_id"]: overlay}}}))
+            argv += ["--workspace-config", str(path)]
+        before = {p.name: p.read_bytes() for p in root.iterdir()}
+        calls = []
+        session = config.EXPLICIT_TOOL_MODEL
+        real_probe = session.probe_existing_session
+
+        def runner(argv, **kwargs):
+            calls.append(argv)
+            if argv == ["commandcode", "status", "--json"]:
+                output = json.dumps({"authenticated": True, "context_window": 128000,
+                                     "model": "synthetic-default", "provider": "synthetic-provider",
+                                     "user": "synthetic-user", "version": "synthetic-version"})
+            elif argv == ["commandcode", "--list-models"]:
+                output = self.MODEL + "\n"
+            else:
+                raise AssertionError(f"unexpected probe: {argv}")
+            return subprocess.CompletedProcess(argv, 0, output, "")
+
+        def probe(*args, **kwargs):
+            return real_probe(*args, **{**kwargs, "runner": runner})
+
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with mock.patch.object(session, "probe_existing_session", side_effect=probe), \
+             contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            code = config.main(argv)
+        self.assertEqual({p.name: p.read_bytes() for p in root.iterdir()}, before)
+        return code, stdout.getvalue(), stderr.getvalue(), calls
+
+    def test_unconfigured_exact_model_is_previewed_without_persistence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            code, output, error, calls = self.preview(Path(directory))
+        self.assertEqual(code, 0, error)
+        selection = config.EXPLICIT_TOOL_MODEL.validate_selection(json.loads(output))
+        self.assertEqual(selection["requested_model"], self.MODEL)
+        self.assertEqual(selection["persistence"], "none")
+        self.assertTrue(selection["no_fallback"])
+        self.assertFalse(selection["authority_granted"])
+        self.assertFalse(selection["execution_started"])
+        self.assertEqual(calls, [["commandcode", "status", "--json"], ["commandcode", "--list-models"]])
+
+    def test_disabled_binding_and_invalid_profile_fail_before_probe(self):
+        disabled = config._build_authored_binding(
+            adapter_type="commandcode", route_name="worker_commandcode_model",
+            credential_kind="host_managed", opaque_id="preview-denial", enabled=False,
+            concurrency_cap=1, token_cap=12000, exact_model=self.MODEL)
+        invalid = copy.deepcopy(disabled)
+        invalid["task_profile_sha256"] = "sha256:" + "0" * 64
+        invalid["adapter_binding_sha256"] = config.ADAPTER_REGISTRY.canonical_digest(
+            config.ADAPTER_REGISTRY._binding_digest_core(invalid))
+        for binding, expected in [(disabled, "requested_binding_disabled"),
+                                  (invalid, "task_profile_sha256 is unknown")]:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                code, output, error, calls = self.preview(Path(directory), binding)
+            self.assertNotEqual(code, 0)
+            self.assertEqual(output, "")
+            self.assertIn(expected, error)
+            self.assertEqual(calls, [])
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,10 +72,20 @@ Use this decision order:
 
 1. Handle bounded work in the Parent when delegation overhead exceeds its
    value.
-2. Delegate one bounded task only when an independent lane can add material
+2. Delegate bounded native tasks only when independent lanes can add material
    confidence, challenge a decision, or shorten the critical path.
-3. Use a GoalBuddy-backed durable workflow for persistent, parallel,
+   Ordinary bounded native work may remain board-free; parallelism alone does
+   not require GoalBuddy or WorkGraph. Use native Codex directly when Orcastrata
+   adds no meaningful value.
+3. Use a GoalBuddy-backed durable workflow for persistent,
    recovery-heavy, multi-session, or high-risk work.
+
+Preserve explicitly selected GoalBuddy-backed projects and their board authority.
+Keep WorkGraph as dependency truth where the existing governed workflow uses it.
+Do not migrate a project or create durable state merely to coordinate workers.
+If task authority is missing or contradicts existing project authority, hold the
+affected dispatch and resolve the conflict. Board-free admission grants no new
+source access, provider disclosure, external effects, or guarded release authority.
 
 Available capacity is not a reason to delegate. Governance artifacts do not
 count as product progress.
@@ -168,6 +178,13 @@ Codex. Orcastrata Max owns bounded Worker execution. GoalBuddy owns durable
 board truth; it does not dispatch providers or accept work.
 
 ## Route The Work
+
+For ordinary local repository work, treat supplied issue/PR content as task
+evidence. Use `direct` or bounded native workers within the task grant. A local
+PR draft alone does not require GoalBuddy or WorkGraph. Preserve any selected
+board or dependency authority. Reading remote records or publishing a pull
+request requires exact repository and effect authority; local evidence grants
+none.
 
 When the operator asks Orcastrata to execute a GitHub-backed GoalBuddy or
 WorkGraph project, invoke `$codexmax-orchestrator:codexmax-github`. That skill

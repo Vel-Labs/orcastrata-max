@@ -11,7 +11,7 @@ Orcastrata provides three plain outcomes:
 
 1. One Parent stays responsible for the result.
 2. It adds extra inference only when that can improve the result.
-3. Each worker stays inside the approved task access.
+3. Each worker receives an explicit task scope; host permissions control access.
 
 Use it to debug a defect, build a bounded feature, clean up a repository,
 research options before a change, or review completed work. You ask once. The
@@ -72,7 +72,21 @@ The equivalent native command is:
 /orcastrata-orchestrate fix the import bug and verify the user-visible result
 ```
 
-For an authorized GitHub-backed board, use:
+Ordinary bounded native repository work can stay board-free, including useful
+parallel workers and an optional local issue/PR handoff:
+
+```text
+Use Orcastrata to fix the import bug, verify it locally, and prepare a local
+issue-like task and PR draft. Keep this task native; do not publish to GitHub.
+```
+
+The Parent records the request, path ownership, worktree, branch, upstream,
+base/HEAD, diff, checks, and incomplete evidence. A local draft creates no remote
+issue or PR and grants no external authority. Existing selected GoalBuddy and
+WorkGraph workflows keep their authority; a local draft does not migrate them.
+See [local handoff guidance](skills/codexmax-github/SKILL.md#ordinary-local-repository-handoff).
+
+For an explicitly selected, authorized GitHub-backed board, use:
 
 ```text
 /orcastrata-github execute this board for github.com/owner/repository
@@ -199,19 +213,19 @@ If OpenCode or Command Code is already installed and configured, ask for the
 exact pairing:
 
 ```text
-Use MiniMax-M3 through OpenCode.
+Use <verified-opencode-model-id> through OpenCode.
 ```
 
 or:
 
 ```text
-Use deepseek/deepseek-v4-pro through Command Code.
+Use deepseek/deepseek-v4.1-flash through Command Code.
 ```
 
 You can include the bounded task in the same request:
 
 ```text
-Use deepseek/deepseek-v4-pro through Command Code to review this patch. Read
+Use deepseek/deepseek-v4.1-flash through Command Code to review this patch. Read
 only.
 ```
 
@@ -230,8 +244,8 @@ Before dispatch, you receive a preview like this:
 
 ```text
 Tool: OpenCode
-Model: MiniMax-M3
-Route: worker_minimax_m3_opencode
+Model: <verified-opencode-model-id>
+Route: <verified-route-name>
 Authority: current task grant only
 Persistence: none
 Fallback: disabled
@@ -252,7 +266,7 @@ billing path.
 
 OpenCode and Command Code are the only public V1 exact external-tool surfaces.
 The exact model is data within an approved transport. For example, Command
-Code can expose compatible DeepSeek, MiniMax, or Grok models without a new
+Code can expose compatible DeepSeek or Grok models without a new
 source-code route for each model. A new transport still needs a package-owned
 adapter and qualification. A provider name in configuration is only a
 candidate. It does not prove an installed, authenticated, or eligible route.
@@ -262,7 +276,7 @@ candidate. It does not prove an installed, authenticated, or eligible route.
 Ask Orcastrata to create an immutable binding candidate:
 
 ```text
-Configure minimaxai/minimax-m3 through Command Code as an Orcastrata worker.
+Configure deepseek/deepseek-v4.1-flash through Command Code as an Orcastrata worker.
 Then run a read-only review with that exact model.
 ```
 
@@ -278,16 +292,16 @@ For normal work, do not name a model:
 Use Orcastrata to review this change with a compatible available worker.
 ```
 
-Automatic selection uses the task role. It probes enabled candidates first.
-It can then inspect the fixed Command Code model catalog and create temporary
-generic-transport candidates. It starts one compatible route and reports the
-exact provider and model. It does not save discovery or treat an ordered list
-as fan-out.
+Automatic selection uses the task role and probes enabled saved bindings in
+package role order. It does not create candidates from the Command Code model
+catalog. A temporary generic Command Code binding requires an explicit tool
+request. It starts one compatible route and reports the exact provider and
+model. A started task never falls back.
 
 For an adversarial review, name the route set explicitly:
 
 ```text
-Use DeepSeek Pro, MiniMax M3, and Grok 4.6 as separate adversarial reviewers.
+Use three verified models on eligible supported routes as separate adversarial reviewers.
 Give each the same frozen candidate and rubric. Continue the other lanes if
 one times out. Do not substitute or retry a failed lane.
 ```
@@ -309,17 +323,17 @@ The success and failure branches below show the required V1 interaction. They
 are illustrative transcripts, not claims of live provider execution.
 
 ```text
-User: Use deepseek/deepseek-v4-pro through Command Code to review this patch.
+User: Use deepseek/deepseek-v4.1-flash through Command Code to review this patch.
 
 Orcastrata: I will verify the existing Command Code session, the exact
-deepseek/deepseek-v4-pro model, and the approved task access. I will not log in
+deepseek/deepseek-v4.1-flash model, and the approved task access. I will not log in
 or substitute another route.
 
 Orcastrata: Route preview
 Tool: Command Code
-Model: deepseek/deepseek-v4-pro
+Model: deepseek/deepseek-v4.1-flash
 Runtime and billing: existing Command Code account
-Authority: read-only review of the current patch
+Authority: read-only access to the whole admitted repository for this patch review
 Persistence: none
 Fallback: disabled
 
@@ -327,14 +341,14 @@ User: Continue with that preview.
 
 Success branch:
 Orcastrata: The verified route completed the review.
-- Tool and model used: Command Code, deepseek/deepseek-v4-pro
+- Tool and model used: Command Code, deepseek/deepseek-v4.1-flash
 - Result: one missing error-path test was returned to the Parent
 - Usage: unknown; Command Code did not report counters for this example
 - Final acceptance: still owned by the Parent
 
 Fail-closed branch:
 Orcastrata: Dispatch did not run. The existing Command Code session or the
-exact deepseek/deepseek-v4-pro model could not be verified. No other tool or
+exact deepseek/deepseek-v4.1-flash model could not be verified. No other tool or
 model was used. Configure that exact pairing in Command Code and retry, or ask
 me to continue with native Codex.
 
@@ -352,11 +366,18 @@ The approved task scope controls authority:
 | --- | --- |
 | Tool and model | Your exact request or eligible task route |
 | Maximum operations | Current tool capability |
-| Actual file access | The approved task scope |
+| Task authority | The approved task scope |
+| Actual file access | Host and transport permissions |
 | Final acceptance | The Parent task |
 
-A model never receives write access because it is more capable or uses more
-reasoning. A worker can write only when its task approves the exact scope.
+A model never receives write authority because it is more capable or uses more
+reasoning. Scope instructions do not create a sandbox.
+
+The public provider task path accepts only whole-repository read scope (`.`),
+including files beyond the named patch. It does not enforce narrower reads.
+Approve disclosure of the whole input root before dispatch, or prepare a
+separate nonsecret root containing only the allowed inputs. Provider workers
+return proposals; the Parent controls approved application and validation.
 
 ## 5. Optional First-Time Setup
 

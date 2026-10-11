@@ -1097,75 +1097,9 @@ class FanoutController:
             try:
                 attempt = self._attempt(plan, lane, index)
             except ExecutionError as claim_error:
-                if (
-                    claim_error.code != "evidence_collision_before_claim"
-                    or index >= lane["max_attempts"]
-                ):
-                    raise
-                attempt = self._claim_failure_attempt(plan, lane, index)
-                started_at = self.clock()
-                admission = {
-                    "selected_route": {
-                        "name": lane["route_name"], "provider": lane["provider"],
-                        "exact_model": lane["model"],
-                    },
-                    "lease": {
-                        "lease_id": f"unbound:{attempt['attempt_id']}",
-                        "fencing_token": 0,
-                    },
-                }
-                binding = {
-                    "attempt_id": attempt["attempt_id"],
-                    "route_name": lane["route_name"],
-                    "preflight_sha256": digest([
-                        attempt["attempt_id"], "evidence-claim-unbound"
-                    ]),
-                }
-                failure = {
-                    "code": claim_error.code, "detail": claim_error.detail,
-                    "failure_receipt_descriptor": "pending",
-                    "retry_allowed": True,
-                }
-                record = _attempt_binding_record(
-                    lane=lane, attempt=attempt, admission=admission, binding=binding,
-                    returned=None, finalization=None,
-                    status="failed_certain_pre_provider",
-                    started_at=started_at, completed_at=self.clock(), failure=failure,
-                )
-                receipt = {
-                    "schema_version": 1,
-                    "artifact_type": "FanoutPreProviderFailureReceipt",
-                    "fanout_id": plan["fanout_id"], "lane_id": lane["lane_id"],
-                    "attempt_id": record["attempt_id"],
-                    "attempt_index": record["attempt_index"],
-                    "route": copy.deepcopy(record["route"]),
-                    "authority": copy.deepcopy(record["authority"]),
-                    "failure_class": claim_error.code,
-                    "claim_failed_before_binding": True,
-                    "run_one_started": False, "provider_process_started": False,
-                    "external_call_performed": False, "mutation_started": False,
-                    "possible_mutation": False, "execution_unknown": False,
-                    "receipt_finalized": True,
-                }
-                receipt["receipt_sha256"] = digest(receipt)
-                failure_descriptor, stored_failure = self._persist_claim_failure_document(
-                    lane, index, "pre-provider-failure-receipt.json",
-                    "FanoutPreProviderFailureReceipt", receipt,
-                )
-                record["failure"]["failure_receipt_descriptor"] = failure_descriptor
-                record["record_sha256"] = digest({
-                    key: value for key, value in record.items()
-                    if key != "record_sha256"
-                })
-                validate_failure_receipt(stored_failure, lane, record)
-                validate_attempt_record(
-                    record, lane, records[-1] if records else None,
-                    fanout_id=plan["fanout_id"],
-                )
-                stored_record = self._persist_claim_failure_record(lane, index, record)
-                records.append(stored_record)
-                pending_retry = (stored_record, failure_descriptor, stored_failure)
-                continue
+                if claim_error.code == "evidence_collision_before_claim":
+                    raise ExecutionError("retained_evidence_requires_recovery", claim_error.detail) from claim_error
+                raise
             started_at = self.clock()
             admission: dict[str, Any] = {}
             binding: dict[str, Any] = {}

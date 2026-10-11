@@ -59,7 +59,7 @@ In plain language, Orcastrata helps you get three outcomes:
 
 1. One Parent stays responsible for the result.
 2. Extra inference joins only when it can improve the result.
-3. Every worker stays inside the access approved for its task.
+3. Each worker receives an explicit task scope; host permissions control access.
 
 Examples include debugging a defect, building a bounded feature, cleaning up a
 repository, researching options before a change, and reviewing completed work.
@@ -69,13 +69,13 @@ repository, researching options before a change, and reviewing completed work.
 For an existing configured OpenCode or Command Code installation, say:
 
 ```text
-Use MiniMax-M3 through OpenCode.
+Use <verified-opencode-model-id> through OpenCode.
 ```
 
 or:
 
 ```text
-Use deepseek/deepseek-v4-pro through Command Code.
+Use deepseek/deepseek-v4.1-flash through Command Code.
 ```
 
 Orcastrata checks the existing tool session and exact model. It shows the
@@ -87,14 +87,18 @@ path.
 An external request can send authorized task content through that tool. The
 tool uses your existing account, privacy terms, quota, and billing.
 
+The public provider task path requires read access to the whole admitted
+repository root. Naming a patch does not enforce narrower reads. Use a separate
+nonsecret input root when only selected files may be disclosed.
+
 The tool/model pairing is temporary. Saving it as a preference is optional and
 requires separate approval.
 
 ## Authority Is Task-Local
 
-The Parent owns the outcome and final answer. Each worker receives only the
-access approved for its task. Model identity and reasoning effort never grant
-extra file access.
+The Parent owns the outcome and final answer. Each worker receives its approved
+task scope. Scope instructions do not create a sandbox; enforcement depends on
+the host permissions. Model identity and reasoning effort never grant extra file access.
 
 Orcastrata does not read, copy, refresh, or store provider credentials.
 Authentication remains in the provider tool that you configured.

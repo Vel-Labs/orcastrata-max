@@ -1,15 +1,45 @@
 ---
 name: codexmax-github
-description: "Parent-owned GitHub workflow from one GoalBuddy board through bounded issues, pull requests, audit, guarded merge, and T999 closeout."
+description: "Parent-owned local repository handoff or admitted board-backed GitHub workflow through issues, pull requests, audit, guarded merge, and T999 closeout."
 ---
 
 # Orcastrata GitHub Workflow
 
-Use this skill when the operator asks Orcastrata to execute a GitHub-backed
-project. This is the single supervisor route. It composes existing Orcastrata
-stages. It does not replace their validators or effect boundaries.
+Use this skill for an optional local issue/PR handoff or an explicitly selected
+GitHub-backed GoalBuddy or WorkGraph project. The admitted board-backed route
+composes existing Orcastrata stages and retains their validators and effect
+boundaries.
 
-## Admission
+## Ordinary Local Repository Handoff
+
+Ordinary bounded native repository work may remain board-free, including useful
+parallel workers and a local PR draft. Use the native route in
+`$codexmax-orchestrator:codexmax-orchestrate`; the Parent owns scope, integration,
+verification, and final acceptance. Preserve any explicitly selected durable
+GoalBuddy or WorkGraph workflow. A local handoff does not migrate that project.
+
+When a local handoff is useful or requested:
+
+1. Record an issue-like task with the actual request, allowed paths, acceptance
+   checks, exclusions, and worker ownership. Label it local; invent no remote
+   issue number, board state, lifecycle marker, or lease.
+2. Inspect repository instructions and record the worktree, branch, upstream
+   (or absent), base/HEAD, and current diff before changing source. Preserve
+   unrelated work and bind the returned diff to that observed baseline.
+3. Complete and verify the authorized change. Return changed paths, exact
+   checks, results, failed or skipped checks, and unresolved limits to Parent.
+4. Prepare a local PR title/body describing the defect, resulting behavior,
+   diff, verification, and incomplete evidence. Distinguish implemented,
+   verified, and Parent-accepted work. A draft proves no remote PR, live
+   authentication, installed host activation, or merge readiness.
+
+This route creates no board or claim store and invokes no GitHub effect adapter.
+Repository remotes and local drafts grant no network, push, publication, or merge
+authority. An explicitly authorized remote handoff requires the relevant
+supported surface and its own checks. Do not fabricate durable inputs to call
+`github_issue_effect.py` or `github_pr_lifecycle.py` for a board-free task.
+
+## Board-Backed Admission
 
 Require the exact lowercase host and `owner/repository`. The task grant must
 name the allowed read and write effects. Authentication, the current directory,

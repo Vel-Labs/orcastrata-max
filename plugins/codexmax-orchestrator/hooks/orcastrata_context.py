@@ -7,10 +7,11 @@ import sys
 
 CONTEXT = {
     "SessionStart": (
-        "ORCASTRATA: The visible host task is Parent/PM. Keep GoalBuddy as board truth "
-        "and WorkGraph as dependency truth. Delegate only bounded useful work. The Parent "
-        "owns integration, acceptance, and the final answer. Route an explicitly GitHub-backed "
-        "project through the Orcastrata GitHub workflow; authentication alone grants no authority."
+        "ORCASTRATA: Parent/PM owns integration, acceptance and the final answer. "
+        "Bounded native work may be board-free; parallelism alone needs no board. "
+        "Preserve selected GoalBuddy board and governed WorkGraph dependency authority. "
+        "Delegate only useful bounded work. Keep disclosure and external-effect limits. "
+        "Local issue/PR evidence stays board-free. Board-backed execution uses GitHub workflow; authentication grants no authority."
     ),
     "SubagentStart": (
         "ORCASTRATA WORKER: Own only the assigned packet. Do not widen scope, merge, or "

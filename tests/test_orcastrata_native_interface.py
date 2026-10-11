@@ -75,7 +75,7 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
     def test_claude_manifest_preserves_identity_and_components(self):
         manifest = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "codexmax-orchestrator")
-        self.assertEqual(manifest["version"], "1.4.1")
+        self.assertEqual(manifest["version"], "1.4.2")
         self.assertNotIn("skills", manifest)
         self.assertNotIn("hooks", manifest)
         self.assertTrue((PLUGIN / "skills").is_dir())
@@ -113,9 +113,26 @@ class OrcastrataNativeInterfaceTests(unittest.TestCase):
         )
         self.assertEqual(json.loads(malformed.stdout), {})
 
+    def test_local_issue_pr_evidence_does_not_select_board_execution(self):
+        run = subprocess.run(
+            [sys.executable, str(PLUGIN / "hooks/orcastrata_context.py")],
+            input=json.dumps({"hook_event_name": "SessionStart"}),
+            text=True, capture_output=True, check=True,
+        )
+        context = json.loads(run.stdout)["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("Local issue/PR evidence stays board-free", context)
+        self.assertIn("Board-backed execution uses GitHub workflow", context)
+        self.assertIn("Preserve selected GoalBuddy board and governed WorkGraph dependency authority", context)
+        self.assertIn("authentication grants no authority", context)
+        skill = (PLUGIN / "skills/codexmax-orchestrate/SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Use `direct` or bounded native workers within the task grant", skill)
+        self.assertIn("PR draft alone does not require GoalBuddy or WorkGraph", skill)
+        self.assertIn("GitHub-backed GoalBuddy or\nWorkGraph project", skill)
+        self.assertIn("exact repository and effect authority; local evidence grants\nnone", skill)
+
     def test_cache_parity_ignores_only_pycache_bytecode(self):
         with tempfile.TemporaryDirectory() as temporary:
-            cache = Path(temporary) / "codexmax-orchestrator/1.4.1"
+            cache = Path(temporary) / "codexmax-orchestrator/1.4.2"
             shutil.copytree(PLUGIN, cache)
             generated = cache / "scripts/__pycache__/generated.cpython-313.pyc"
             generated.parent.mkdir(exist_ok=True)

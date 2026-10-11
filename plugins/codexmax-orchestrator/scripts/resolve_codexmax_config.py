@@ -89,6 +89,14 @@ if _EXPLICIT_SPEC is None or _EXPLICIT_SPEC.loader is None:  # pragma: no cover
 EXPLICIT_TOOL_MODEL = importlib.util.module_from_spec(_EXPLICIT_SPEC)
 _EXPLICIT_SPEC.loader.exec_module(EXPLICIT_TOOL_MODEL)
 
+_TASK_EXECUTION_SPEC = importlib.util.spec_from_file_location(
+    "codexmax_preview_task_execution", PLUGIN_ROOT / "scripts" / "provider_task_execution.py"
+)
+if _TASK_EXECUTION_SPEC is None or _TASK_EXECUTION_SPEC.loader is None:  # pragma: no cover
+    raise RuntimeError("task-local binding constructor is unavailable")
+TASK_EXECUTION = importlib.util.module_from_spec(_TASK_EXECUTION_SPEC)
+_TASK_EXECUTION_SPEC.loader.exec_module(TASK_EXECUTION)
+
 
 def _capability_model_defaults() -> dict[str, Any]:
     """Build the package-owned capability/authority composition contract."""
@@ -3428,11 +3436,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "explicit-route":
             if args.probe_timeout_seconds < 1 or args.probe_timeout_seconds > 30:
                 raise ValidationError("probe timeout must be from 1 through 30 seconds")
+            effective, _ = TASK_EXECUTION.task_local_exact_config(
+                effective=receipt["effective_config"], request=args.request,
+                session_module=EXPLICIT_TOOL_MODEL, config_module=sys.modules[__name__],
+            )
             result = EXPLICIT_TOOL_MODEL.compile_selection(
                 args.request,
                 task_id=args.task_id,
                 task_grant_sha256=args.task_grant_sha256,
-                effective_config=receipt["effective_config"],
+                effective_config=effective,
                 timeout_seconds=args.probe_timeout_seconds,
             )
             if args.json:

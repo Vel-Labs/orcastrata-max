@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.2 - 2026-10-10
+
+- Keep ordinary bounded native delegation and local issue/PR drafts board-free;
+  retain explicitly selected GoalBuddy and WorkGraph authority.
+- Align session guidance, the orchestration entry, and the local GitHub handoff.
+- Preview an exact task-local Command Code model without persisting a binding;
+  keep disabled bindings and invalid profiles fail-closed.
+- Require recovery for occupied provider attempt directories before execution.
+- Clarify provider disclosure scope and host permission limits.
+
 ## 1.4.1 - 2026-09-22
 
 - Put the smallest real product proof before orchestration, packaging, and
