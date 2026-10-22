@@ -20,6 +20,32 @@ Codex plan limits or include external tool accounts.
 > `codexmax-orchestrator` and the `codexmax-*` skill names remain V1
 > compatibility IDs.
 
+## At a glance
+
+| Question | Answer |
+| --- | --- |
+| Who is it for? | Codex users who want one accountable Parent for a bounded task, with additional workers only when useful. |
+| What does it do? | Helps scope, route, review and finish the work. Codex or the selected external tool executes it. |
+| What setup is supported? | A Codex host with plugin support and Python 3.11+. Native work needs no second provider account; optional external tools must already be configured and verified. |
+| What can I try? | The [60-second native example](#the-60-second-native-path) fixes a bounded import bug and verifies its result. |
+| What are the limits? | The [support matrix](#support-matrix) separates supported routes, candidates and future work. |
+
+## Install the source described here
+
+```sh
+codex plugin marketplace add Vel-Labs/orcastrata-max --ref main --json
+codex plugin add codexmax-orchestrator@codexmax-orchestrator --json
+codex plugin list --marketplace codexmax-orchestrator --json
+```
+
+These are the existing [Getting Started](plugins/codexmax-orchestrator/GETTING_STARTED.md) commands. Confirm the installed version and start a new Codex task. Installation registers skills and hooks; it does not prove a worker ran or grant new permissions.
+
+**Version note — checked October 22, 2026:** [source commit `efd066dd`](https://github.com/Vel-Labs/orcastrata-max/commit/efd066ddafcf429410f8f48c9dc29ac26949bb0e) on `main` declares package/plugin version **1.4.3**. The latest tagged GitHub release is still [v1.0.3](https://github.com/Vel-Labs/orcastrata-max/releases/tag/v1.0.3), at `2bdd4c53`. Version 1.4.3 is available as source on `main`; no v1.4.3 tag or GitHub Release is claimed. The older release does not describe every feature on this branch.
+
+## Codex workflow demo
+
+**Still to do:** record and link a short real Codex workflow showing a bounded task, the tools used, and the verified result. No public recording was found in the repository or release assets checked on October 22, 2026. The native example below and the illustrative Getting Started transcript are instructions, not recorded runs. Internal tests and maintainer-authored PRs do not establish independent adoption.
+
 ## Why Orcastrata Max
 
 Orcastrata Max provides three plain outcomes:
