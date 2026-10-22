@@ -40,7 +40,7 @@ codex plugin list --marketplace codexmax-orchestrator --json
 
 These are the existing [Getting Started](plugins/codexmax-orchestrator/GETTING_STARTED.md) commands. Confirm the installed version and start a new Codex task. Installation registers skills and hooks; it does not prove a worker ran or grant new permissions.
 
-**Version note — checked October 22, 2026:** [source commit `efd066dd`](https://github.com/Vel-Labs/orcastrata-max/commit/efd066ddafcf429410f8f48c9dc29ac26949bb0e) on `main` declares package/plugin version **1.4.3**. The latest tagged GitHub release is still [v1.0.3](https://github.com/Vel-Labs/orcastrata-max/releases/tag/v1.0.3), at `2bdd4c53`. Version 1.4.3 is available as source on `main`; no v1.4.3 tag or GitHub Release is claimed. The older release does not describe every feature on this branch.
+**Version history:** This source declares package/plugin version **1.4.3** and includes substantial routing, GitHub workflow, controller, recovery and accounting changes since v1.0.3. See the [changelog](CHANGELOG.md) for the progression and [GitHub Releases](https://github.com/Vel-Labs/orcastrata-max/releases) for published snapshots. The install commands above follow `main`; use a verified release tag with `--ref` to pin a snapshot.
 
 ## Codex workflow demo
 
